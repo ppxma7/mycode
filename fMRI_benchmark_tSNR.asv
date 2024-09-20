@@ -1,0 +1,356 @@
+%script
+% Look at tSNR from data September 2023
+clear all
+close all
+clear all hidden
+clc
+
+datasets = {'T1 map 2D 0p7', 'PH rsfMRI 1p25 TR1',...
+    'Ret 1p5 TR2', 'SM 1p25 TR2', 'T1 map 3D 1mm',...
+    'Vaso 1mm t2383', 'Vaso 1mm t1150','PH coronal 3D 1mm',...
+    'T1 map 3D 1p5', 'Teaching tap 2p25 TR2', 'WH rsfMRI 2mm TR1p5',...
+    'Ret 1p5 TR2', 'PH rsfMRI 1p25 TR1', 'WH rsfMRI 2mm TR1p5'};
+
+meantSNR = [41 20 41 30 12 34 25 11 13 110 61,...
+    73 48 99];
+
+nordGrp = [repmat({'preNord'},11,1); repmat({'postNord'},3,1)];
+
+figure
+g = gramm('x',datasets,'y',meantSNR,'color',nordGrp);
+g.geom_point()
+g.set_names('x','dataset','y', 'mean tSNR')
+g.set_text_options('Font','Helvetica', 'base_size', 16)
+g.set_point_options('base_size',10)
+g.axe_property('XGrid','on','YGrid','on')
+
+%g.axe_property('YLim',[mylim(1) mylim(2)])
+
+%g.set_order_options('x',0)
+g.draw
+
+
+%filename = sprintf(['prfsize_' sep '_' datafilenames{thisModel} '_' currentSub '.pdf'],'%s%s%s');
+savedir='/Users/ppzma/The University of Nottingham/SPMIC User Groups - Imaging for Neuroscience/fMRI_benchmark_sept_2023/';
+filename = 'fMRI_benchmark_tSNR';
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
+
+%%
+% Look at tSNR from data October 2023
+clear all
+close all
+clear all hidden
+clc
+
+% datasets = {'M1','PH1','RET1','S1','WH1',...
+%     'M1nord','PH1nord','RET1nord','S1nord','WH1nord',...
+%     'M2','PH2','RET2','S2','WH2',...
+%     'M2nord','PH2nord','RET2nord','S2nord','WH2nord'};
+
+datasets = {'M','PH','RET','S','WH',...
+    'M','PH','RET','S','WH',...
+    'M_mtx','PH_mtx','RET_mtx','S_mtx','WH_mtx',...
+    'M_mtx','PH_mtx','RET_mtx','S_mtx','WH_mtx'};
+
+nordGrp = [repmat({'NoNord'},5,1); repmat({'Nord'},5,1); ...
+    repmat({'NoNord'},5,1); repmat({'Nord'},5,1)];
+
+coilGrp = [repmat({'Classic'},10,1); repmat({'MTX'},10,1)];
+
+meantSNR = [39.6 18.2 41.2 29.2 60.9,...
+            44.8 34.9 49.2 45.1 63.3,...
+            34.6 15   35.5 24.3 51.2,...
+            35.4 19.7 36.7 26.7 51.5];
+
+
+figure
+g = gramm('x',datasets,'y',meantSNR,'color',nordGrp);
+g.geom_point()
+g.set_names('x','dataset','y', 'mean tSNR')
+g.set_text_options('Font','Helvetica', 'base_size', 16)
+g.set_point_options('base_size',10)
+g.axe_property('XGrid','on','YGrid','on')
+g.draw
+savedir='/Users/ppzma/The University of Nottingham/SPMIC User Groups - Imaging for Neuroscience/fMRI_benchmark_oct_2023/';
+filename = 'fMRI_benchmark_tSNR_oct';
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
+
+%% ISNR?
+
+clear variables
+close all
+
+myslice = 25;
+mylims = [-400 400];
+ricianFactor = 0.66;
+% https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3170395/
+% https://doi.org/10.1118/1.3618730
+% "The SDs of the noise ROIs were averaged to obtain the mean noise and 
+% divided by the 0.66 Rician distribution cor- rection factor to obtain
+% total image noise."
+% Actually, you should multiply. Because, the noise scan is effectively
+% your SNR in that region. And SNR .* rician factor is the same as
+% std(noise) ./ rician factor
+
+thispath = '/Volumes/styx/fMRI_benchmark_v2_161023/look_at_isnr/classic/';
+thispath2 = '/Volumes/styx/fMRI_benchmark_v2_161023/look_at_isnr/mtx/';
+
+classicData = {'look_at_isnr_WholeHead_rsfMRI_2mm_iso_TR1p5_20231016140529_9.nii',...
+    'look_at_isnr_PartialHead_rsfMRI_1p25mm_iso_TR1_20231016140529_13.nii',...
+    'look_at_isnr_Retinotopy_1p5mm_iso_TR2_perpcalc_20231016140529_10.nii',...
+    'look_at_isnr_Motor_TW_fwd_20231016140529_18.nii',...
+    'look_at_isnr_Sensorimotor_1p25mm_iso_TR2_20231016140529_14.nii'};
+
+mtxData = {'look_at_isnr_WholeHead_rsfMRI_2mm_iso_TR1p5_20231016151649_14.nii',...
+    'look_at_isnr_PartialHead_rsfMRI_1p25mm_iso_TR1_20231016151649_18.nii',...
+    'look_at_isnr_Retinotopy_1p5mm_iso_TR2_perpcalc_20231016151649_15.nii',...
+    'look_at_isnr_Motor_TW_fwd_20231016151649_21.nii',...
+    'look_at_isnr_Sensorimotor_1p25mm_iso_TR2_20231016151649_19.nii'};
+tic
+mISNR_classic = zeros(1,5);
+mISNR_mtx = zeros(1,5);
+storedImage_classic = cell(1,5);
+storedImage_mtx = cell(1,5);
+for ii = 1:length(classicData)
+    data = MRIread([thispath classicData{ii}]);
+    data = data.vol;
+    signal = data(:,:,:,1:size(data,4)-1);
+%     signalvec = signal(:);
+%     sigDex = signalvec>0.05*max(signalvec(:));
+%     signalvecLog = signalvec.*sigDex;
+%     signal_clean = reshape(signalvecLog,size(signal));
+    msignal = mean(signal,4);
+    noise = data(:,:,:,size(data,4));
+    noise = noise ./ ricianFactor;
+    noise = mean(noise(:));
+    iSNR = msignal./noise;
+    vecISNR = iSNR(:);
+    nanDex = isnan(vecISNR);
+    vecISNR(nanDex) = 0;
+    infDex = isinf(vecISNR);
+    vecISNR(infDex) = 0;
+    vecISNR_nz = nonzeros(vecISNR);
+    mISNR_classic(ii) = mean(vecISNR_nz);
+    storedImage_classic{ii} = reshape(vecISNR,size(msignal));
+
+    data2 = MRIread([thispath2 mtxData{ii}]);
+    data2 = data2.vol;
+    signal2 = data2(:,:,:,1:size(data2,4)-1);
+%     signal2vec = signal2(:);
+%     sigDex2 = signal2vec>0.05*max(signal2vec(:));
+%     signal2vecLog = signal2vec.*sigDex2;
+%     signal2_clean = reshape(signal2vecLog,size(signal2));
+    msignal2 = mean(signal2,4);
+    noise2 = data2(:,:,:,size(data2,4));
+    noise2 = noise2 ./ ricianFactor;
+    noise2 = mean(noise2(:));
+    iSNR2 = msignal2./noise2;
+    vecISNR2 = iSNR2(:);
+    nanDex2 = isnan(vecISNR2);
+    vecISNR2(nanDex2) = 0;
+    infDex2 = isinf(vecISNR2);
+    vecISNR2(infDex2) = 0;
+    vecISNR_nz2 = nonzeros(vecISNR2);
+    mISNR_mtx(ii) = mean(vecISNR_nz2);
+    storedImage_mtx{ii} = reshape(vecISNR2,size(msignal2));
+end
+toc
+%%
+%
+datasets = {'WH','PH','RET','M','SM',...
+    'WH','PH','RET','M','SM'};
+theISNR = [mISNR_classic(:); mISNR_mtx(:)];
+coilGrp = [repmat({'Classic'},length(mISNR_classic),1);...
+    repmat({'MTX'},length(mISNR_classic),1)];
+figure
+g = gramm('x',datasets,'y',theISNR,'color',coilGrp);
+g.geom_jitter()
+g.set_names('x','dataset','y', 'mode iSNR')
+g.set_text_options('Font','Helvetica', 'base_size', 16)
+g.set_point_options('base_size',10)
+g.axe_property('XGrid','on','YGrid','on')
+g.draw
+savedir='/Users/ppzma/The University of Nottingham/SPMIC User Groups - Imaging for Neuroscience/fMRI_benchmark_oct_2023/';
+filename = 'fMRI_benchmark_tSNR_oct_isnr';
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
+
+
+%% spit out iSNR images
+mylabels = {'WH','PH','RET','MOT','SOM'};
+myclim = 150;
+for kk = 1:5
+
+    test = flipud(storedImage_classic{kk});
+    nSlices = [size(test,3)./10; (size(test,3)./10).*2; (size(test,3)./10).*3;...
+        (size(test,3)./10).*4; (size(test,3)./10).*5; (size(test,3)./10).*6;...
+        (size(test,3)./10).*7; (size(test,3)./10).*8; (size(test,3)./10).*9];
+    nSlices = round(nSlices);
+
+    figure('Position',[100 100 1024 768])
+    tiledlayout(3,3)
+    for ii = 1:9
+        nexttile
+        imagesc(test(:,:,nSlices(ii)))
+        title(sprintf('%s slice %d',mylabels{kk}, nSlices(ii)))
+        colormap viridis
+        colorbar
+        clim([0 myclim])
+    end
+    filename = fullfile('/Users/ppzma/The University of Nottingham/SPMIC User Groups - Imaging for Neuroscience/fMRI_benchmark_oct_2023/', ...
+        sprintf('iSNR_classic_%s', mylabels{kk}));
+    print(filename,'-dpng')
+
+    test = flipud(storedImage_mtx{kk});
+    nSlices = [size(test,3)./10; (size(test,3)./10).*2; (size(test,3)./10).*3;...
+        (size(test,3)./10).*4; (size(test,3)./10).*5; (size(test,3)./10).*6;...
+        (size(test,3)./10).*7; (size(test,3)./10).*8; (size(test,3)./10).*9];
+    nSlices = round(nSlices);
+
+    figure('Position',[100 100 1024 768])
+    tiledlayout(3,3)
+    for ii = 1:9
+        nexttile
+        imagesc(test(:,:,nSlices(ii)))
+        title(sprintf('%s slice %d',mylabels{kk}, nSlices(ii)))
+        colormap viridis
+        colorbar
+        clim([0 myclim])
+    end
+    filename = fullfile('/Users/ppzma/The University of Nottingham/SPMIC User Groups - Imaging for Neuroscience/fMRI_benchmark_oct_2023/', ...
+        sprintf('iSNR_mtx_%s', mylabels{kk}));
+    print(filename,'-dpng')
+
+
+
+end
+
+
+%% Look at tSNR from data October 27th 2023
+
+clear all
+close all
+clear all hidden
+clc
+
+% thenumbers = [10 18 35 20
+%     9 17 34 19
+%     10 18 35 20
+%     9 17 34 19];
+
+slice = {'WH','WH','WH','WH',...
+    'SM','SM','SM','SM',...
+    'WH','WH','WH','WH',...
+    'SM','SM','SM','SM'};
+
+phantom = {'quad','ball','quad','ball',...
+    'quad','ball','quad','ball',...
+    'quad','ball','quad','ball',...
+    'quad','ball','quad','ball'};
+
+stack = {'MB2','MB2','MB0','MB0',...
+    'MB2','MB2','MB0','MB0',...
+    'MB2','MB2','MB0','MB0',...
+    'MB2','MB2','MB0','MB0'};
+
+nord = {'orig','orig','orig','orig',...
+    'orig','orig','orig','orig',...
+    'nord','nord','nord','nord',...
+    'nord','nord','nord','nord'};
+
+
+meantSNR = [310 232 304 182,...
+    141 102 159 118,...
+    572 520 429 433,...
+    378 255 400 393];
+
+basesize = 12;
+figure
+g = gramm('x',slice,'y',meantSNR,'color',nord);
+g.geom_jitter()
+g.set_names('x','dataset','y', 'mean tSNR')
+g.set_text_options('Font','Helvetica', 'base_size', 16)
+g.set_point_options('base_size',basesize)
+g.axe_property('XGrid','on','YGrid','on')
+g.set_title('nordic')
+g.draw
+savedir='/Users/ppzma/The University of Nottingham/SPMIC User Groups - Imaging for Neuroscience/fMRI_benchmark_phantom_oct27/';
+filename = 'fMRI_benchmark_tSNR_oct_27';
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
+
+clear g
+figure
+g = gramm('x',slice,'y',meantSNR,'color',phantom);
+g.geom_jitter()
+g.set_names('x','dataset','y', 'mean tSNR')
+g.set_text_options('Font','Helvetica', 'base_size', 16)
+g.set_point_options('base_size',basesize)
+g.axe_property('XGrid','on','YGrid','on')
+g.set_title('phantom')
+g.draw
+savedir='/Users/ppzma/The University of Nottingham/SPMIC User Groups - Imaging for Neuroscience/fMRI_benchmark_phantom_oct27/';
+filename = 'fMRI_benchmark_tSNR_oct_27_2';
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
+
+clear g
+figure
+g = gramm('x',slice,'y',meantSNR,'color',stack);
+g.geom_jitter()
+g.set_names('x','dataset','y', 'mean tSNR')
+g.set_text_options('Font','Helvetica', 'base_size', 16)
+g.set_point_options('base_size',basesize)
+g.axe_property('XGrid','on','YGrid','on')
+g.set_title('multiband')
+g.draw
+savedir='/Users/ppzma/The University of Nottingham/SPMIC User Groups - Imaging for Neuroscience/fMRI_benchmark_phantom_oct27/';
+filename = 'fMRI_benchmark_tSNR_oct_27_3';
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
+
+
+%% MTX data October 30th
+clear all
+close all
+clear all hidden
+clc
+
+% thenumbers = [9 10 11 13 18 19 20
+%           9 10 11 13 18 19 20];
+
+slice = {'SM','WH','SM','WH','SM','WH','SM',...
+    'SM','WH','SM','WH','SM','WH','SM'};
+
+phantom = {'quad','quad','quad','quad','ball','ball','ball',...
+    'quad','quad','quad','quad','ball','ball','ball'};
+
+stack = {'MB2','MB2','MB0','MB0','MB2','MB2','MB0',...
+    'MB2','MB2','MB0','MB0','MB2','MB2','MB0'};
+
+nord = {'nord','nord',};
+
+
+meantSNR = [310 232 304 182,...
+    141 102 159 118,...
+    572 520 429 433,...
+    378 255 400 393];
+
+
+
+
+

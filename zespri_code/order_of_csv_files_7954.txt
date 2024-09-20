@@ -1,0 +1,12 @@
+Subject 1: /Users/spmic/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_brand_gold.csv
+Subject 2: /Users/spmic/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_unbrand_green.csv
+Subject 3: /Users/spmic/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_brand_red.csv
+Subject 4: /Users/spmic/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_unbrand_green.csv
+Subject 5: /Users/spmic/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_unbrand_red.csv
+Subject 6: /Users/spmic/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_unbrand_gold.csv
+Subject 7: /Users/spmic/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_brand_green.csv
+Subject 8: /Users/spmic/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_unbrand_red.csv
+Subject 9: /Users/spmic/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_brand_green.csv
+Subject 10: /Users/spmic/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_brand_red.csv
+Subject 11: /Users/spmic/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_brand_gold.csv
+Subject 12: /Users/spmic/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_unbrand_gold.csv
