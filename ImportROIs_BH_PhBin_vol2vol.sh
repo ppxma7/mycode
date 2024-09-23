@@ -8,17 +8,18 @@ source $FREESURFER_HOME/SetUpFreeSurfer.sh
 
 #subjectlist="11240"
 #subjectlist="00393 03677 04217 08740 08966 09621 10289 10301 10320 10329 10654 10875 11240 11120 11251 11753 HB1 HB2 HB3 HB4 HB5"
-subjectlist="00393"
+subjectlist="Map04"
+MOUNT='/Users/spmic/data/caitlin/'
 
 for subject in $subjectlist
 do
     echo $subject
-     for (( k=1; k<=5; k++ ))
+     for (( k=2; k<=5; k++ ))
      do
-        mri_vol2vol --mov ~/data/DigitAtlas/atlas_subjects_vol2vol/$subject/LD${k}.nii.gz --mni152reg --o ~/data/DigitAtlas/atlas_subjects_vol2vol/$subject/LD${k}_mni.nii.gz
+        #mri_vol2vol --mov ~/data/DigitAtlas/atlas_subjects_vol2vol/$subject/LD${k}.nii.gz --mni152reg --o ~/data/DigitAtlas/atlas_subjects_vol2vol/$subject/LD${k}_mni.nii.gz
         mri_vol2vol --mov ~/data/DigitAtlas/atlas_subjects_vol2vol/$subject/RD${k}.nii.gz --mni152reg --o ~/data/DigitAtlas/atlas_subjects_vol2vol/$subject/RD${k}_mni.nii.gz 
         mri_binarize --i  ~/data/DigitAtlas/atlas_subjects_vol2vol/$subject/RD${k}_mni.nii.gz --min 0.1 --o ~/data/DigitAtlas/atlas_subjects_vol2vol/RD${k}_${subject}.nii
-        mri_binarize --i  ~/data/DigitAtlas/atlas_subjects_vol2vol/$subject/LD${k}_mni.nii.gz --min 0.1 --o ~/data/DigitAtlas/atlas_subjects_vol2vol/LD${k}_${subject}.nii
+        #mri_binarize --i  ~/data/DigitAtlas/atlas_subjects_vol2vol/$subject/LD${k}_mni.nii.gz --min 0.1 --o ~/data/DigitAtlas/atlas_subjects_vol2vol/LD${k}_${subject}.nii
 
 
     done
