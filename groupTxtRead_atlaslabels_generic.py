@@ -2,10 +2,14 @@ import pandas as pd
 import numpy as np
 from nilearn import datasets
 import nibabel as nib
+import os
 
 # Load the updated Excel file with the full path
 # updated_file_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Zespri- fMRI - General/analysis/nback/combined_data_nback.xlsx'
-updated_file_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Pain Relief Grant - General/PFP_results/spmexcelfiles_3t/cttouch_combined.xlsx'
+#updated_file_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Pain Relief Grant - General/PFP_results/spmexcelfiles_3t/cttouch_combined.xlsx'
+root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - Touchmap - Touchmap/results/restingstate/'
+updated_file_path = os.path.join(root_folder_path,'rs_combined_output.xlsx')
+#updated_file_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - Touchmap - Touchmap/results/restingstate/rs_combined_output.xlsx'
 
 all_data = pd.read_excel(updated_file_path)
 
@@ -34,13 +38,14 @@ def get_region_from_coordinates(x, y, z):
     return 'Unknown region'
 
 # Apply the function to each row of the DataFrame
-all_data['Region'] = all_data.apply(lambda row: get_region_from_coordinates(row['mm1'], row['mm2'], row['mm3']), axis=1)
+all_data['Region'] = all_data.apply(lambda row: get_region_from_coordinates(row['X'], row['Y'], row['Z']), axis=1)
 
 # Remove rows where the region is 'Unknown region'
 all_data = all_data[all_data['Region'] != 'Unknown region']
 
 # Save the updated DataFrame back to Excel
-output_file_with_regions = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Pain Relief Grant - General/PFP_results/spmexcelfiles_3t/cttouch_combined_with_regions.xlsx'
+#output_file_with_regions = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Pain Relief Grant - General/PFP_results/spmexcelfiles_3t/cttouch_combined_with_regions.xlsx'
+output_file_with_regions = os.path.join(root_folder_path,'rs_combined_output_withregions.xlsx')
 all_data.to_excel(output_file_with_regions, index=False)
 
 # Display the first few rows of the updated DataFrame
