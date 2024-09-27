@@ -3,10 +3,11 @@ import os
 
 # Define the root folder path and specify subfolders to search
 #root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Pain Relief Grant - General/PFP_results/spmexcelfiles_3t/'
-root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - Touchmap - Touchmap/results/restingstate/'
+#root_folder_path = '/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - Touchmap - Touchmap/results/restingstate/'
+root_folder_path = '/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_dry_run_270924/plots/'
 #subfolders_to_search = ['scan1_vs_scan2', 'kiwi_vs_mtx','red_vs_green','red_vs_mtx']  # List the specific subfolders you want to search
 #subfolders_to_search = ['cttouch']  # List the specific subfolders you want to search
-subfolders_to_search = ['postCGL', 'postCGR']
+subfolders_to_search = ['contrasts']
 
 # Create an empty DataFrame to store all data
 all_data = pd.DataFrame()
@@ -24,26 +25,27 @@ for subfolder in subfolders_to_search:
             # # Skip the 'labelsatlas.txt' file
             # if filename == 'labelsatlas.txt':
             #     continue
-            print(f"Found file: {filename}")
-            print(f"Looking into subfolder: {full_subfolder_path}")
+            #print(f"Found file: {filename}")
+            #print(f"Looking into subfolder: {full_subfolder_path}")
 
-            if filename.endswith('.txt'):
+            if filename.endswith('.csv'):
                 file_path = os.path.join(dirpath, filename)
 
                 file_path = os.path.join(dirpath, filename)
                 print(f"Reading file: {file_path}")
                 data = pd.read_csv(file_path)
-                print(f"Data shape: {data.shape}")
+                #print(f"Data shape: {data.shape}")
                 
                 # # If it's the first file, read with header; otherwise, skip the header
-                if is_first_file:
-                    data = pd.read_csv(file_path, delim_whitespace=False, sep=r'\s{2,}', engine='python')  # Adjust delimiter if necessary
-                    is_first_file = False  # Set flag to False after the first file
-                else:
-                    data = pd.read_csv(file_path, delim_whitespace=False, sep=r'\s{2,}', engine='python', header=0)  # Skip the header row
+                # this is for when you have spaces in your headers
+                # if is_first_file:
+                #     data = pd.read_csv(file_path, delim_whitespace=False, sep=r'\s{2,}', engine='python')  # Adjust delimiter if necessary
+                #     is_first_file = False  # Set flag to False after the first file
+                # else:
+                #     data = pd.read_csv(file_path, delim_whitespace=False, sep=r'\s{2,}', engine='python', header=0)  # Skip the header row
 
                 # Read the CSV file into a DataFrame with header
-                #data = pd.read_csv(file_path)
+                data = pd.read_csv(file_path)
 
                 # Add a new column for the subfolder name
                 data['Subfolder'] = subfolder
@@ -61,7 +63,7 @@ all_data = all_data[cols]
 
 # Save the combined DataFrame to an Excel file
 
-output_file = os.path.join(root_folder_path, 'rs_combined.xlsx')
+output_file = os.path.join(root_folder_path, 'combined.xlsx')
 #output_file = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - Touchmap - Touchmap/results/restingstate/rs_combined.xlsx'
 
 #output_file = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Pain Relief Grant - General/PFP_results/spmexcelfiles_3t/cttouch_combined.xlsx'
@@ -73,26 +75,25 @@ print(all_data.head())
 
 
 #Load the combined Excel file
-#combined_file_path = output_file = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - Touchmap - Touchmap/results/restingstate/rs_combined.xlsx'
-combined_file_path = os.path.join(root_folder_path, 'rs_combined.xlsx')
-all_data = pd.read_excel(combined_file_path)
+# combined_file_path = os.path.join(root_folder_path, 'combined.xlsx')
+# all_data = pd.read_excel(combined_file_path)
 
-# Clean up the 'Cluster (x,y,z)' column to remove leading/trailing spaces
-all_data['Cluster (x,y,z)'] = all_data['Cluster (x,y,z)'].str.strip()
+# # Clean up the 'Cluster (x,y,z)' column to remove leading/trailing spaces
+# all_data['Cluster (x,y,z)'] = all_data['Cluster (x,y,z)'].str.strip()
 
-# Use a more flexible regex to extract coordinates
-# This regex accounts for optional spaces and captures all numeric formats
-all_data[['X', 'Y', 'Z']] = all_data['Cluster (x,y,z)'].str.extract(r'([-+]?\d+)\s+([-+]?\d+)\s+([-+]?\d+)')
+# # Use a more flexible regex to extract coordinates
+# # This regex accounts for optional spaces and captures all numeric formats
+# all_data[['X', 'Y', 'Z']] = all_data['Cluster (x,y,z)'].str.extract(r'([-+]?\d+)\s+([-+]?\d+)\s+([-+]?\d+)')
 
-# Convert the new columns to numeric, handling errors if any
-all_data['X'] = pd.to_numeric(all_data['X'], errors='coerce')
-all_data['Y'] = pd.to_numeric(all_data['Y'], errors='coerce')
-all_data['Z'] = pd.to_numeric(all_data['Z'], errors='coerce')
+# # Convert the new columns to numeric, handling errors if any
+# all_data['X'] = pd.to_numeric(all_data['X'], errors='coerce')
+# all_data['Y'] = pd.to_numeric(all_data['Y'], errors='coerce')
+# all_data['Z'] = pd.to_numeric(all_data['Z'], errors='coerce')
 
-# Save the updated DataFrame back to Excel
-#output_file = 'rs_combined_output.xlsx'
-output_file = os.path.join(root_folder_path, 'rs_combined_output.xlsx')
-all_data.to_excel(output_file, index=False)
+# # Save the updated DataFrame back to Excel
+# #output_file = 'rs_combined_output.xlsx'
+# output_file = os.path.join(root_folder_path, 'combined_output.xlsx')
+# all_data.to_excel(output_file, index=False)
 
 
 
