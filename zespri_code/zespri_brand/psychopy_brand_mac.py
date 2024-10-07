@@ -15,18 +15,18 @@ win = visual.Window(size=(800, 600), units='pix')
 
 # Read image file paths from multiple CSV files into a list of Pandas DataFrames
 csv_files = [
-    "/Users/ppzma/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_brand_green.csv",
-    "/Users/ppzma/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_brand_gold.csv",
-    "/Users/ppzma/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_unbrand_green.csv",
-    "/Users/ppzma/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_brand_red.csv",
-    "/Users/ppzma/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_unbrand_gold.csv",
-    "/Users/ppzma/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_unbrand_red.csv",
-    "/Users/ppzma/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_brand_green.csv",
-    "/Users/ppzma/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_brand_gold.csv",
-    "/Users/ppzma/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_unbrand_green.csv",
-    "/Users/ppzma/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_brand_red.csv",
-    "/Users/ppzma/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_unbrand_gold.csv",
-    "/Users/ppzma/Documents/MATLAB/nottingham/michael/zespri_code/zespri_brand/zespri_unbrand_red.csv"
+    "/Users/ppzma/Documents/MATLAB/mycode/zespri_code/zespri_brand/zespri_brand_green.csv",
+    "/Users/ppzma/Documents/MATLAB/mycode/zespri_code/zespri_brand/zespri_brand_gold.csv",
+    "/Users/ppzma/Documents/MATLAB/mycode/zespri_code/zespri_brand/zespri_unbrand_green.csv",
+    "/Users/ppzma/Documents/MATLAB/mycode/zespri_code/zespri_brand/zespri_brand_red.csv",
+    "/Users/ppzma/Documents/MATLAB/mycode/zespri_code/zespri_brand/zespri_unbrand_gold.csv",
+    "/Users/ppzma/Documents/MATLAB/mycode/zespri_code/zespri_brand/zespri_unbrand_red.csv",
+    "/Users/ppzma/Documents/MATLAB/mycode/zespri_code/zespri_brand/zespri_brand_green.csv",
+    "/Users/ppzma/Documents/MATLAB/mycode/zespri_code/zespri_brand/zespri_brand_gold.csv",
+    "/Users/ppzma/Documents/MATLAB/mycode/zespri_code/zespri_brand/zespri_unbrand_green.csv",
+    "/Users/ppzma/Documents/MATLAB/mycode/zespri_code/zespri_brand/zespri_brand_red.csv",
+    "/Users/ppzma/Documents/MATLAB/mycode/zespri_code/zespri_brand/zespri_unbrand_gold.csv",
+    "/Users/ppzma/Documents/MATLAB/mycode/zespri_code/zespri_brand/zespri_unbrand_red.csv"
 ]
 
 # Set the random seed for pseudorandomization

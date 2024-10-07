@@ -16,7 +16,7 @@ subject = 'test'
 run = 1
 #trig_path = r'C:\Users\Achieva\Documents\michael_nback\psychopy_nback_fMRI_final\trigger_timings'
 #trig_path = "/Volumes/ares/ZESPRI_images/tasks/psychopy_nback_fMRI_final/trigger_timings/"
-trig_path = "/Users/spmic/Documents/MATLAB/nottingham/michael/michael_nback/psychopy_nback_fMRI_final/trigger_timings/"
+trig_path = "/Users/ppzma/Documents/MATLAB/mycode/michael_nback/psychopy_nback_fMRI_final/trigger_timings/"
 trig_file = trig_path + '/' + subject + '_r5un0' + str(run) + '.txt'
 
 #serial port settings
@@ -52,7 +52,7 @@ resp = 10
 ### use pandas to load in letter and condition sequences
 #filepath = r'C:\Users\Achieva\Documents\michael_nback\psychopy_nback_fMRI_final'
 #filepath = "/Volumes/ares/ZESPRI/tasks/psychopy_nback_fMRI_final/"
-filepath = "/Users/spmic/Documents/MATLAB/nottingham/michael/michael_nback/psychopy_nback_fMRI_final"
+filepath = "/Users/ppzma/Documents/MATLAB/mycode/michael_nback/psychopy_nback_fMRI_final"
 
 letters_fname_0back = filepath + '/letter_sequences/0back_0' + str(run) + '.txt'
 letters_fname_1back = filepath + '/letter_sequences/1back_0' + str(run) + '.txt'
