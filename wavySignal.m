@@ -1,5 +1,8 @@
+function[convolved_signal] = wavySignal()
+
+
 % Define parameters
-n_timepoints = 100;  % Total number of timepoints
+n_timepoints = 114;  % Total number of timepoints
 TR = 1.5;            % Time resolution in seconds
 time = (1:n_timepoints) * TR;  % Time vector from 1 to 150 seconds
 
@@ -32,9 +35,59 @@ for ii = 1:length(on_times)
 end
 
 % Plot the resulting signal
-figure;
-plot(time, signal);
-xlabel('Time (s)');
-ylabel('Signal');
-title('Wavy, Noisy Block Signal');
-grid on;
+% figure;
+% plot(time, signal);
+% xlabel('Time (s)');
+% ylabel('Signal');
+% title('Wavy, Noisy Block Signal');
+% grid on;
+
+
+% SPM Canonical HRF (hemodynamic response function)
+hrf = spm_hrf(TR);  % Get the canonical HRF for convolution
+
+% Convolve the EMG-modulated neural signal with the HRF
+convolved_signal = conv(signal, hrf);
+convolved_signal = convolved_signal(1:n_timepoints);  % Trim to match original length
+
+% figure
+% plot(time, convolved_signal);
+% xlabel('Time (s)');
+% ylabel('Signal');
+% title('Wavy, Noisy Block Signal');
+% grid on;
+
+
+%% try editing realign files to create matrix
+% 
+% mypath = '/Volumes/hermes/canapi_full_run_111024/spm_analysis/';
+% 
+% myFiles = {'rp_parrec_WIP1bar_20241011131601_4_nordic_clv.txt',...
+%     'rp_parrec_WIP1bar_20241011131601_10_nordic_clv.txt',...
+%     'rp_parrec_WIP30prc_20241011131601_5_nordic_clv.txt',...
+%     'rp_parrec_WIP30prc_20241011131601_11_nordic_clv.txt',...
+%     'rp_parrec_WIP50prc_20241011131601_6_nordic_clv.txt',...
+%     'rp_parrec_WIP50prc_20241011131601_12_nordic_clv.txt',...
+%     'rp_parrec_WIP70prc_20241011131601_13_nordic_clv.txt'};
+% 
+% 
+% for ii = 1:length(myFiles)
+%     thisFile = load(myFiles{ii});
+%     newSignal = [signal thisFile];
+%     thisFile_noExt = extractBefore(myFiles{ii},'.');
+%     writematrix(newSignal,[mypath thisFile_noExt '_wavy.txt'])
+% end
+
+
+
+end
+
+
+
+
+
+
+
+
+
+
