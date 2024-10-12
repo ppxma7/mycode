@@ -25,7 +25,7 @@ legend('x','y','z','Location','eastoutside')
 grid minor
 ylabel('mm')
 %title(sprintf('dataset %s',{names}))
-title(sprintf('dataset %s', names{1}));
+title(sprintf('dataset %s', names));
 nexttile([1 2])
 plot(moparams(:,4),'LineWidth',2)
 hold on
@@ -35,7 +35,7 @@ legend('pitch','roll','yaw','Location','eastoutside')
 %ylim([-0.02 0.02])
 grid minor
 ylabel('degrees/radians')
-print([savedir 'subject_motion_' names{1} '.png'], '-dpng', '-r300');
+print([savedir 'subject_motion_' names '.png'], '-dpng', '-r300');
 
 
 
