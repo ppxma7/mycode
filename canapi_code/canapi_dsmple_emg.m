@@ -17,13 +17,14 @@ myfiles = {'1bar.dat','30prc.dat','50prc.dat',...
 Fs = 2500;
 num_channels = 2;
 target_num_samples = 114; % this is how long the fMRI timeseries is
-
+TR = 1.5;
 firstMarker = 2;
 lastMarker = 11;
 twoBefore = lastMarker-2;
 
 %saveMat = struct('ch1',[],'ch2',[]);
 saveMat = cell(length(myfiles),num_channels);
+hrf = spm_hrf(TR);
 
 tic
 for ii = 1:length(myfiles)
@@ -54,14 +55,26 @@ for ii = 1:length(myfiles)
     % downsample the signal, to the desired target, here it is 114
     ch1_clv_dt_nrm_dsmpl = resample(ch1_clv_dt_nrm, target_num_samples,thisLen);
     ch2_clv_dt_nrm_dsmpl = resample(ch2_clv_dt_nrm, target_num_samples,thisLen_ch2);
+    
+    % convolve signal
+    ch1_clv_dt_nrm_dsmpl_conv = conv(ch1_clv_dt_nrm_dsmpl, hrf);
+    ch2_clv_dt_nrm_dsmpl_conv = conv(ch2_clv_dt_nrm_dsmpl, hrf);
+    
+
+    ch1_clv_dt_nrm_dsmpl_conv_clv = ch1_clv_dt_nrm_dsmpl_conv(1:target_num_samples);  % Trim to match original length
+    ch2_clv_dt_nrm_dsmpl_conv_clv = ch2_clv_dt_nrm_dsmpl_conv(1:target_num_samples);  % Trim to match original length
+
 
 %     figure
 %     plot(ch1_clv_dt_nrm_dsmpl)
 %     hold on
 %     plot(ch2_clv_dt_nrm_dsmpl)
 
-    saveMat{ii,1} = ch1_clv_dt_nrm_dsmpl;
-    saveMat{ii,2} = ch2_clv_dt_nrm_dsmpl;
+    saveMat{ii,1} = ch1_clv_dt_nrm_dsmpl_conv_clv;
+    saveMat{ii,2} = ch2_clv_dt_nrm_dsmpl_conv_clv;
+
+    saveMat_noconv{ii,1} = ch1_clv_dt_nrm_dsmpl;
+    saveMat_noconv{ii,2} = ch2_clv_dt_nrm_dsmpl;
 
 
 end
@@ -87,9 +100,9 @@ figure('Position',[0 400 1400 800])
 tiledlayout(2,3)
 for jj = 1:length(myfiles)
     nexttile
-    plot(saveMat{jj,1},'linewidth',2)
+    plot(saveMat_noconv{jj,1},'linewidth',2)
     hold on
-    plot(saveMat{jj,2},'linewidth',2)
+    plot(saveMat_noconv{jj,2},'linewidth',2)
     legend('ch1','ch2')
 
     if jj<4
