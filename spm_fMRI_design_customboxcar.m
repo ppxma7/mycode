@@ -272,8 +272,11 @@ for s = 1:length(SPM.nscan)
     SPM.Sess(s).Fc     = Fc;
 
     %-Replace with custom boxcar
-    customBoxcar = wavySignal;
-    X = [customBoxcar X(:,2:size(X,2))];
+    %%customBoxcar = wavySignal;
+%     myMat=canapi_custom_regressor();
+%     customBoxcar = myMat(:,s);
+%     X = [customBoxcar X(:,2:size(X,2))];
+%     clear myMat
 
     %-Append into Xx and Xb
     %======================================================================
