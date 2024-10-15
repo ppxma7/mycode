@@ -10,8 +10,11 @@ dataset = 'canapi_full_run_111024';
 mypath='/Volumes/hermes/canapi_full_run_111024/EMG/Export/';
 userName = char(java.lang.System.getProperty('user.name'));
 savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_full_run_111024/plots/'];
+
 myfiles = {'1bar.dat','30prc.dat','50prc.dat',...
-    '1bar_LL.dat','30prc_LL.dat','50prc_LL.dat'};
+    '1bar_LL.dat','30prc_LL.dat','50prc_LL.dat','70prc_LL.dat'};
+
+% myfiles = {'70prc_LL.dat'};
 
 
 Fs = 2500;
@@ -96,8 +99,8 @@ end
 
 
 %% plot
-figure('Position',[0 400 1400 800])
-tiledlayout(2,3)
+figure('Position',[0 400 1600 800])
+tiledlayout(2,4)
 for jj = 1:length(myfiles)
     nexttile
     plot(saveMat_noconv{jj,1},'linewidth',2)
@@ -106,9 +109,9 @@ for jj = 1:length(myfiles)
     legend('ch1','ch2')
 
     if jj<4
-        title([extractBefore(myfiles{1},'.') ' right leg'])
+        title([extractBefore(myfiles{jj},'.') ' right leg'])
     elseif jj>3
-        title([extractBefore(myfiles{4},'_') ' left leg'])
+        title([extractBefore(myfiles{jj},'_') ' left leg'])
     end
 end
 

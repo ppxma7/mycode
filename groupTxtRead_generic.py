@@ -4,10 +4,10 @@ import os
 # Define the root folder path and specify subfolders to search
 #root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Pain Relief Grant - General/PFP_results/spmexcelfiles_3t/'
 #root_folder_path = '/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - Touchmap - Touchmap/results/restingstate/'
-root_folder_path = '/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_dry_run_270924/plots/'
+root_folder_path = '/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_full_run_111024/plots/'
 #subfolders_to_search = ['scan1_vs_scan2', 'kiwi_vs_mtx','red_vs_green','red_vs_mtx']  # List the specific subfolders you want to search
 #subfolders_to_search = ['cttouch']  # List the specific subfolders you want to search
-subfolders_to_search = ['contrasts']
+subfolders_to_search = ['leftleg','leftleg_normalboxcar','rightleg','rightleg_normalboxcar']
 
 # Create an empty DataFrame to store all data
 all_data = pd.DataFrame()
