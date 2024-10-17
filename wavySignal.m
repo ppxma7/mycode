@@ -1,6 +1,13 @@
-function[convolved_signal] = wavySignal()
+function[convolved_signal, signal] = wavySignal(noise_val, no_wave)
 
 
+if nargin==1
+    %noise_val = 0.5;
+    no_wave = 0;
+elseif nargin==0
+    noise_val = 0.5;
+    no_wave = 0;
+end
 % Define parameters
 n_timepoints = 114;  % Total number of timepoints
 TR = 1.5;            % Time resolution in seconds
@@ -27,8 +34,12 @@ for ii = 1:length(on_times)
     wave = sin(2 * pi * (1 / block_duration) * t);  % Wavy pattern
     
     % Add more noise to the wave
-    noise = 0.5 * randn(size(wave));  % Increased noise level (0.5)
+    noise = noise_val * randn(size(wave));  % Increased noise level (0.5)
     wavy_block = wave + noise;
+
+    if no_wave == 1
+        wavy_block = ones(1,length(wavy_block));
+    end
     
     % Insert the noisy, wavy block into the signal
     signal(start_idx:end_idx) = wavy_block;
