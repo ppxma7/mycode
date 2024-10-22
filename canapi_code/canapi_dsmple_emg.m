@@ -6,20 +6,25 @@
 close all
 clear variables
 clc
-dataset = 'canapi_full_run_111024';
-mypath='/Volumes/hermes/canapi_full_run_111024/EMG/Export/';
+dataset = 'canapi_outside';
+mypath='/Volumes/hermes/canapi_outside/Export/';
 userName = char(java.lang.System.getProperty('user.name'));
-savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_full_run_111024/plots/'];
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_outside/plots/'];
 
-myfiles = {'1bar.dat','30prc.dat','50prc.dat',...
-    '1bar_LL.dat','30prc_LL.dat','50prc_LL.dat','70prc_LL.dat'};
+myfiles = {'1bar_raw.dat','1bar_corrected.dat','1bar_fMRI_raw.dat','1bar_fMRI_corrected.dat',...
+    '30prc_raw.dat','30prc_corrected.dat','30prc_fMRI_raw.dat','30prc_fMRI_corrected.dat',...
+    };
 
-% myfiles = {'70prc_LL.dat'};
+markerFiles = {'1bar_marker.txt','1bar_marker.txt','1bar_fMRI_marker.txt','1bar_fMRI_marker.txt',...
+    '30prc_marker.txt','30prc_marker.txt','30prc_fMRI_marker.txt','30prc_fMRI_marker.txt',...
+    };
+
 
 
 Fs = 2500;
 num_channels = 2;
-target_num_samples = 114; % this is how long the fMRI timeseries is
+%target_num_samples = 114; % this is how long the fMRI timeseries is
+target_num_samples = 100; % without rest at end
 TR = 1.5;
 firstMarker = 2;
 lastMarker = 11;
@@ -34,12 +39,17 @@ for ii = 1:length(myfiles)
 
     thisFile = load([mypath myfiles{ii}]);
 
-    thisMarker = readtable([mypath extractBefore(myfiles{ii},'.') '_marker.txt']);
+    %thisMarker = readtable([mypath extractBefore(myfiles{ii},'.') '_marker.txt']);
+    thisMarker = readtable([mypath markerFiles{ii}]);
+
     
     %figure out ending. We end on an ON, so need to add the OFF and the ON
     %to the last marker position
     startMark = thisMarker.Position(firstMarker);
-    endMark = thisMarker.Position(lastMarker)+(thisMarker.Position(lastMarker)-thisMarker.Position(twoBefore));
+    %endMark = thisMarker.Position(lastMarker)+(thisMarker.Position(lastMarker)-thisMarker.Position(twoBefore));
+    
+    % this is for the version where there was no rest at the end
+    endMark = thisMarker.Position(lastMarker)+(thisMarker.Position(lastMarker-1)-thisMarker.Position(twoBefore));
     
     % cut it to when the trials start, to when it ends
     ch1_clv = thisFile(1,startMark:endMark);
@@ -68,6 +78,39 @@ for ii = 1:length(myfiles)
     ch2_clv_dt_nrm_dsmpl_conv_clv = ch2_clv_dt_nrm_dsmpl_conv(1:target_num_samples);  % Trim to match original length
 
 
+
+%     figure('Position',[100 100 600 800])
+%     tiledlayout(5,1)
+%     nexttile
+%     plot(ch1_clv)
+%     title('signal')
+%     nexttile
+%     plot(ch1_clv_dt)
+%     title('signal+detrend')
+%     nexttile
+%     plot(ch1_clv_dt_nrm)
+%     title('signal+detrend+normalize')
+%     nexttile
+%     plot(ch1_clv_dt_nrm_dsmpl)
+%     title('signal+detrend+normalize+dsmple')
+%     nexttile
+%     plot(ch1_clv_dt_nrm_dsmpl_conv_clv)
+%     title('signal+detrend+normalize+dsmple+convolve')
+%     filename = [savedir 'emg-proc-steps' extractBefore(myfiles{ii},'.')];
+%     h = gcf;
+%     set(h, 'PaperOrientation', 'landscape');
+%     set(h, 'PaperUnits', 'inches');
+%     set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
+%     set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
+%     print(h, '-dpdf', filename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
+% 
+
+
+
+
+
+
+
 %     figure
 %     plot(ch1_clv_dt_nrm_dsmpl)
 %     hold on
@@ -78,6 +121,9 @@ for ii = 1:length(myfiles)
 
     saveMat_noconv{ii,1} = ch1_clv_dt_nrm_dsmpl;
     saveMat_noconv{ii,2} = ch2_clv_dt_nrm_dsmpl;
+
+    saveMat_raw{ii,1} = ch1_clv_dt_nrm;
+    saveMat_raw{ii,2} = ch2_clv_dt_nrm;
 
 
 end
@@ -108,11 +154,13 @@ for jj = 1:length(myfiles)
     plot(saveMat_noconv{jj,2},'linewidth',2)
     legend('ch1','ch2')
 
-    if jj<4
-        title([extractBefore(myfiles{jj},'.') ' right leg'])
-    elseif jj>3
-        title([extractBefore(myfiles{jj},'_') ' left leg'])
-    end
+%     if jj<5%4
+%         title([extractBefore(myfiles{jj},'.') ' 1 bar'])
+%     elseif jj>4%3
+%         title([extractBefore(myfiles{jj},'_') ' 30 prc'])
+%     end
+     title([extractBefore(myfiles{jj},'.')])
+
 end
 
 %[FILEPATH,NAME,EXT] = fileparts(myfile1);
@@ -127,8 +175,61 @@ set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper
 print(h, '-dpdf', filename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
 
 
+%% just check resampling
+figure('Position',[0 400 1600 800])
+tiledlayout(2,2)
+
+nexttile(1)
+plot(saveMat_raw{5,1},'linewidth',2)
+hold on
+plot(saveMat_raw{6,1},'linewidth',2)
+legend('raw','corrected')
+title('emg')
+
+nexttile(3)
+plot(saveMat_raw{7,1},'linewidth',2)
+hold on
+plot(saveMat_raw{8,1},'linewidth',2)
+legend('raw fMRI','corrected fMRI')
+
+a = saveMat_raw{5,1};
+b = saveMat_raw{6,1};
+c = saveMat_raw{7,1};
+d = saveMat_raw{8,1}; 
+arsmpl = resample(a, target_num_samples,length(a));
+brsmpl = resample(b, target_num_samples,length(b));
+crsmpl = resample(c, target_num_samples,length(c));
+drsmpl = resample(d, target_num_samples,length(d));
+
+nexttile(2)
+plot(arsmpl,'linewidth',1)
+hold on
+plot(brsmpl,'linewidth',2,'LineStyle','--')
+legend('raw','corrected')
+title('resampled')
+nexttile(4)
+plot(crsmpl,'linewidth',1)
+hold on
+plot(drsmpl,'linewidth',2,'LineStyle','--')
+legend('raw fMRI','corrected fMRI')
+
+%     if jj<5%4
+%         title([extractBefore(myfiles{jj},'.') ' 1 bar'])
+%     elseif jj>4%3
+%         title([extractBefore(myfiles{jj},'_') ' 30 prc'])
+%     end
 
 
+%[FILEPATH,NAME,EXT] = fileparts(myfile1);
+t = datetime('now','TimeZone','local','Format','dd-MM-yyyy-HH-mm-ss');
+filename = [savedir 'emg_raw_compare-' dataset '-' char(t)];
+
+h = gcf;
+set(h, 'PaperOrientation', 'landscape');
+set(h, 'PaperUnits', 'inches');
+set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
+set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
+print(h, '-dpdf', filename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
 
 
 
