@@ -52,10 +52,10 @@ for ii = 1:length(myfiles)
     %figure out ending. We end on an ON, so need to add the OFF and the ON
     %to the last marker position
     startMark = thisMarker.Position(firstMarker);
-    %endMark = thisMarker.Position(lastMarker)+(thisMarker.Position(lastMarker)-thisMarker.Position(twoBefore));
+    endMark = thisMarker.Position(lastMarker)+(thisMarker.Position(lastMarker)-thisMarker.Position(twoBefore));
     
     % this is for the version where there was no rest at the end
-    endMark = thisMarker.Position(lastMarker)+(thisMarker.Position(lastMarker-1)-thisMarker.Position(twoBefore));
+    %endMark = thisMarker.Position(lastMarker)+(thisMarker.Position(lastMarker-1)-thisMarker.Position(twoBefore));
     
     % cut it to when the trials start, to when it ends
     ch1_clv = thisFile(1,startMark:endMark);
@@ -73,8 +73,8 @@ for ii = 1:length(myfiles)
     [myupper, mylower] = envelope(ch1_clv,winLen,'rms');
     [myupper2, mylower2] = envelope(ch2_clv,winLen,'rms');
 
-    ch1_clv_dt_nrm = normalize(myupper,'scale');
-    ch2_clv_dt_nrm = normalize(myupper2,'scale');
+    ch1_clv_dt_nrm = normalize(myupper,'range');
+    ch2_clv_dt_nrm = normalize(myupper2,'range');
 
     % downsample the signal, to the desired target, here it is 114
     ch1_clv_dt_nrm_dsmpl = resample(ch1_clv_dt_nrm, target_num_samples,thisLen);
@@ -154,36 +154,83 @@ for kk = 1:length(myfiles)
 
 end
 
+%% get default sig
+
+[~,signal] = wavySignal(0,1);
+signal = signal./2;
+
+
 
 %% plot
-figure('Position',[0 400 1600 800])
-tiledlayout(2,4)
-for jj = 1:length(myfiles)
-    nexttile
-    plot(saveMat_noconv{jj,1},'linewidth',2)
-    hold on
-    plot(saveMat_noconv{jj,2},'linewidth',2)
-    legend('ch1','ch2')
-
-%     if jj<5%4
-%         title([extractBefore(myfiles{jj},'.') ' 1 bar'])
-%     elseif jj>4%3
-%         title([extractBefore(myfiles{jj},'_') ' 30 prc'])
-%     end
-     title([extractBefore(myfiles{jj},'.')])
-
-end
-
+% figure('Position',[0 400 1600 800])
+% tiledlayout(2,4)
+% for jj = 1:length(myfiles)
+%     nexttile
+%     plot(saveMat_noconv{jj,1},'linewidth',2)
+%     hold on
+%     plot(saveMat_noconv{jj,2},'linewidth',2)
+%     plot(signal)
+%     %legend('Trispect force','ideal block','Location','best')
+%     legend('ch1','ch2','ideal block')
+% 
+% %     if jj<5%4
+% %         title([extractBefore(myfiles{jj},'.') ' 1 bar'])
+% %     elseif jj>4%3
+% %         title([extractBefore(myfiles{jj},'_') ' 30 prc'])
+% %     end
+%      title([extractBefore(myfiles{jj},'.')],'Interpreter','none'))
+% 
+% end
 %[FILEPATH,NAME,EXT] = fileparts(myfile1);
 t = datetime('now','TimeZone','local','Format','dd-MM-yyyy-HH-mm-ss');
-filename = [savedir 'emg_dwnsmpl-' dataset '-' char(t)];
+filename1 = [savedir 'emg_dwnsmpl-LL' dataset '-' char(t)];
+filename2 = [savedir 'emg_dwnsmpl-RL' dataset '-' char(t)];
+
+figure('Position',[0 0 1000 800])
+flays = [2 5 4 6];
+for jj = flays
+    nexttile
+    % plot(saveMat_noconv{jj,1},'linewidth',2)
+    % hold on
+    plot(saveMat_noconv{jj,2},'linewidth',2)
+    hold on
+    plot(signal)
+    %legend('Trispect force','ideal block','Location','best')
+    legend('ch2','ideal block')
+    title([extractBefore(myfiles{jj},'.')],'Interpreter','none')
+    ylim([0 1])
+end
+
 
 h = gcf;
 set(h, 'PaperOrientation', 'landscape');
 set(h, 'PaperUnits', 'inches');
 set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
 set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
-print(h, '-dpdf', filename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
+print(h, '-dpdf', filename1, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
+
+
+figure('Position',[0 0 1000 800])
+flays = [1 3 7];
+for jj = flays
+    nexttile
+    plot(saveMat_noconv{jj,1},'linewidth',2)
+    hold on
+    %plot(saveMat_noconv{jj,2},'linewidth',2)
+    plot(signal)
+    %legend('Trispect force','ideal block','Location','best')
+    legend('ch1','ideal block')
+    title([extractBefore(myfiles{jj},'.')],'Interpreter','none')
+    ylim([0 1])
+end
+
+
+h = gcf;
+set(h, 'PaperOrientation', 'landscape');
+set(h, 'PaperUnits', 'inches');
+set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
+set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
+print(h, '-dpdf', filename2, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
 
 
 %% just check resampling
