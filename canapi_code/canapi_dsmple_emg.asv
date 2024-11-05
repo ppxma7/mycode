@@ -34,8 +34,6 @@ firstMarker = 2;
 lastMarker = 11;
 twoBefore = lastMarker-2;
 
-winLen = 10000;
-
 %saveMat = struct('ch1',[],'ch2',[]);
 saveMat = cell(length(myfiles),num_channels);
 hrf = spm_hrf(TR);
@@ -70,11 +68,9 @@ for ii = 1:length(myfiles)
     % % zero centre
     % ch1_clv_dt_nrm = ch1_clv_dt - mean(ch1_clv_dt);
     % ch2_clv_dt_nrm = ch2_clv_dt - mean(ch2_clv_dt);
-    [myupper, mylower] = envelope(ch1_clv,winLen,'rms');
-    [myupper2, mylower2] = envelope(ch2_clv,winLen,'rms');
+    
 
-    ch1_clv_dt_nrm = normalize(myupper,'scale');
-    ch2_clv_dt_nrm = normalize(myupper2,'scale');
+
 
     % downsample the signal, to the desired target, here it is 114
     ch1_clv_dt_nrm_dsmpl = resample(ch1_clv_dt_nrm, target_num_samples,thisLen);
@@ -145,11 +141,11 @@ disp('...done!')
 
 for kk = 1:length(myfiles)
     thisRow = saveMat{kk,1}';
-    thisRowName = [mypath extractBefore(myfiles{kk},'.') '_rectify_ch1_dsmpled.txt'];
+    thisRowName = [mypath extractBefore(myfiles{kk},'.') '_ch1_dsmpled.txt'];
     writematrix(thisRow,thisRowName,'Delimiter','\t');
 
     thisRow = saveMat{kk,2}';
-    thisRowName = [mypath extractBefore(myfiles{kk},'.') '_rectify_ch2_dsmpled.txt'];
+    thisRowName = [mypath extractBefore(myfiles{kk},'.') '_ch2_dsmpled.txt'];
     writematrix(thisRow,thisRowName,'Delimiter','\t');
 
 end
