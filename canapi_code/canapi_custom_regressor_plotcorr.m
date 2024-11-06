@@ -1,4 +1,4 @@
-mypath='/Volumes/hermes/canapi_full_run_111024/trispect/';
+mypath='/Volumes/hermes/canapi_full_run_111024/EMG/Export/';
 userName = char(java.lang.System.getProperty('user.name'));
 savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_full_run_111024/plots/'];
 dataset = 'canapi_full_run_111024';
@@ -25,7 +25,7 @@ X3_boxcar = SPM.xX.X(Xlen2+1:Xlen3,15);
  
 % motionParams = X(:,2:end);
 % meanMotionParams = mean(motionParams,2);
-titlename = 'Trispect-Boxcar';
+titlename = 'EMG-Boxcar';
 figure
 tiledlayout(3,2)
 nexttile(1)
