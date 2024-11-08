@@ -2,7 +2,7 @@ clear variables
 close all
 clc
 
-thisSub = 'prf2';
+thisSub = 'prf1';
 mypath = ['/Volumes/styx/' thisSub '/'];
 %fsavg_path = '/Volumes/styx/fsaverage_copy/surf/';
 % Load fsaverage surface
@@ -117,6 +117,33 @@ end
 
 % Display the total distance
 fprintf('Total Euclidean distance between CoGs: %.2f mm\n', total_distance);
+
+%% % Define file path for saving the CSV
+csv_filename = [savedir thisSub '_cog.csv'];  % Update with your desired path
+
+% Assuming cog_list contains CoG coordinates and total_distance contains the total distance
+% CoG coordinates (x, y, z) for each phase bin
+% Example structure: cog_list = [x1, y1, z1; x2, y2, z2; x3, y3, z3; x4, y4, z4];
+
+% Convert CoG coordinates to a table
+cog_table = array2table(cog_list, 'VariableNames', {'X', 'Y', 'Z'});
+cog_table.Properties.RowNames = {'Phase_Bin_1', 'Phase_Bin_2', 'Phase_Bin_3', 'Phase_Bin_4'};
+
+% Add a row for the total distance
+% Add a row for the total distance with empty values for X, Y, Z
+total_distance_row = {NaN, NaN, NaN, total_distance};  % Use empty cells for X, Y, Z and total distance in the 4th column
+total_distance_table = cell2table(total_distance_row, 'VariableNames', {'X', 'Y', 'Z', 'Total_Distance'}, 'RowNames', {'Total_Distance'});
+
+% Combine the tables
+combined_table = [cog_table, array2table(nan(height(cog_table), 1), 'VariableNames', {'Total_Distance'})]; % Add empty Total_Distance column to cog_table
+combined_table = [combined_table; total_distance_table]; % Append total distance row
+
+% Save to CSV
+writetable(combined_table, csv_filename, 'WriteRowNames', true);
+
+% Display a message to confirm the file was saved
+fprintf('CoG data with total distance saved to %s\n', csv_filename);
+
 
 
 
