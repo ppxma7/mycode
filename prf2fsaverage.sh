@@ -15,8 +15,8 @@ phases=(0 1.57 3.14 4.71 6.28)
 ### Now move everything to fsaverage
 
 # Define paths to raw fMRI and anatomical images
-raw_fmri=${MOUNT}/${subject}/fwd_15_nordic_toppedup_crop.nii.gz  # Replace with actual raw fMRI filename
-anat_img=${anatMOUNT}/${anatsub}/surfRelax/14359_mprage_pp.nii   # Assuming the anatomical image is in mgz format
+#raw_fmri=${MOUNT}/${subject}/fwd_15_nordic_toppedup_crop.nii.gz  # Replace with actual raw fMRI filename
+#anat_img=${anatMOUNT}/${anatsub}/surfRelax/14359_mprage_pp.nii   # Assuming the anatomical image is in mgz format
 
 # Define additional overlays and phase-binned thresholded images
 additional_overlays=("adjr2.nii" "rfx.nii" "rfy.nii" "prefPD.nii" "prefDigit.nii")
