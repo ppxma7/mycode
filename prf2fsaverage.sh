@@ -5,8 +5,8 @@ export SUBJECTS_DIR=/Volumes/DRS-Touchmap/ma_ares_backup/subs/
 # Define paths and file names
 MOUNT='/Volumes/styx/'
 anatMOUNT='/Volumes/DRS-Touchmap/ma_ares_backup/subs/'
-subject="prf1/"  # Adjust as needed
-anatsub="14359/"
+subject="prf2/"  # Adjust as needed
+anatsub="03677/"
 
 # Define phase bin ranges and names
 phase_bins=("0_1_57" "1_57_3_14" "3_14_4_71" "4_71_6_28")

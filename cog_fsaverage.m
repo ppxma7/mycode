@@ -2,13 +2,14 @@ clear variables
 close all
 clc
 
-mypath = '/Volumes/styx/prf1/';
+thisSub = 'prf2';
+mypath = ['/Volumes/styx/' thisSub '/'];
 %fsavg_path = '/Volumes/styx/fsaverage_copy/surf/';
 % Load fsaverage surface
 %[coords, faces] = read_surf([fsavg_path 'lh.inflated']);  % Replace with actual path
 % coords is Nx3 array of vertex coordinates, faces is Mx3 array of face indices
 userName = char(java.lang.System.getProperty('user.name'));
-savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Touch Remap - General/prfplots/'];
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Touch Remap - General/prfplots/' thisSub '/'];
 % Define paths
 subjects_dir = '/Volumes/DRS-Touchmap/ma_ares_backup/subs/';  % Update to actual path
 subject = 'fsaverage';
@@ -23,10 +24,10 @@ hemisphere = 'l';  % Change to 'r' for right hemisphere
 
 % Define thresholded phase-binned images and a list for CoG storage
 threshold_files = {
-    '/Volumes/styx/prf1/co_masked_0_1_57_co_thresh_fsaverage.mgh', ...
-    '/Volumes/styx/prf1/co_masked_1_57_3_14_co_thresh_fsaverage.mgh', ...
-    '/Volumes/styx/prf1/co_masked_3_14_4_71_co_thresh_fsaverage.mgh', ...
-    '/Volumes/styx/prf1/co_masked_4_71_6_28_co_thresh_fsaverage.mgh'
+    [mypath 'co_masked_0_1_57_co_thresh_fsaverage.mgh'], ...
+    [mypath 'co_masked_1_57_3_14_co_thresh_fsaverage.mgh'], ...
+    [mypath 'co_masked_3_14_4_71_co_thresh_fsaverage.mgh'], ...
+    [mypath 'co_masked_4_71_6_28_co_thresh_fsaverage.mgh']
 };
 cog_list = zeros(4, 3);  % Array to store each CoG's coordinates
 
