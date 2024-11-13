@@ -133,8 +133,8 @@ anatsubs=("00393"
 #   "13676"
 #   )
 
-subjects=("00393_LD_touchmap")
-anatsubs=("00393")
+# subjects=("00393_RD_touchmap")
+# anatsubs=("00393")
 
 
 

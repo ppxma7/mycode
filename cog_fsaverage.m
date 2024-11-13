@@ -14,21 +14,37 @@ subjects = {'00393_LD_touchmap','00393_RD_touchmap',...
     '10875_RD', '11120_LD', '11120_RD', '11240_LD', '11240_RD', '11251_LD', '11251_RD',...
     'HB2_LD', 'HB2_RD', 'HB3_LD', 'HB3_RD', 'HB4_LD', 'HB4_RD', 'HB5_LD', 'HB5_RD'};
 
+
+%subjects = {'00393_LD_touchmap','00393_RD_touchmap'};
+
 userName = char(java.lang.System.getProperty('user.name'));
+
+savedirUp = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Touch Remap - General/prfplots/'];
+
 
 % Define parameters for the sphere marker
 sphere_radius = 2;  % Adjust radius as needed for visibility
 [sphere_x, sphere_y, sphere_z] = sphere(20);  % Sphere resolution (20x20 grid)
 
-myspherecolors = {'r','g','b','m'};
+myspherecolors = {'r','g','c','b','m'};
 
+nDigs = 5;
+
+cog_list = zeros(nDigs, 3,length(subjects));  % Array to store each CoG's coordinates
 
 for thisSub = 1:length(subjects)
+
+    disp(['Running ' subjects{thisSub} ' now...'])
 
 
     mypath = ['/Volumes/styx/prf_fsaverage/' subjects{thisSub} '/'];
     %mypath = ['/Volumes/DRS-Touchmap/ma_ares_backup/prf_fsaverage/' subjects{thisSub} '/'];
-    savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Touch Remap - General/prfplots/' thisSub '/'];
+
+    savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Touch Remap - General/prfplots/' subjects{thisSub} '/'];
+
+    if ~isfolder(savedir)
+        mkdir(savedir)
+    end
     
     % Define paths
 
@@ -76,7 +92,7 @@ for thisSub = 1:length(subjects)
         };
 
 
-    cog_list = zeros(length(threshold_files), 3,length(subjects));  % Array to store each CoG's coordinates
+    
 
 
     % Plot the surface using go_paint_freesurfer function without any intensity data
@@ -109,7 +125,7 @@ for thisSub = 1:length(subjects)
         adjusted_cog = roi_vertices(nearest_idx, :);
 
         % Store the adjusted CoG coordinates
-        cog_list(ii, :) = adjusted_cog;
+        cog_list(ii, :, thisSub) = adjusted_cog;
 
         % Plot the thresholded image on the surface using go_paint_freesurfer
         figure;
@@ -137,9 +153,11 @@ for thisSub = 1:length(subjects)
         pdf_filename = fullfile(savedir, sprintf('CoG_Phase_Bin_%d.pdf', ii));
         exportgraphics(gcf, pdf_filename, 'ContentType', 'image', 'Resolution', 300);
 
-
+        
 
     end
+
+    close all
 
 end
 
@@ -148,46 +166,73 @@ end
 % hold off;
 
 %% Display calculated CoGs
-disp('Adjusted CoGs for each thresholded image:');
-disp(cog_list);
+%disp('Adjusted CoGs for each thresholded image:');
+%disp(cog_list);
 
 % Calculate the total Euclidean distance between each consecutive CoG
-total_distance = 0;
+%total_distance = 0;
 
-for jj = 1:size(cog_list, 1) - 1
-    % Calculate Euclidean distance between consecutive CoGs
-    dist = norm(cog_list(jj+1, :) - cog_list(jj, :));
-    total_distance = total_distance + dist;
+totalDistCogs = zeros(size(cog_list,3),1);
+%totalDistCogsNames = cell(size(cog_list,3),1);
+
+for loopSub = 1:size(cog_list,3)
+    
+    total_distance = 0;
+    thisCog = cog_list(:,:,loopSub);
+
+    for jj = 1:size(thisCog, 1) - 1
+        % Calculate Euclidean distance between consecutive CoGs
+        dist = norm(thisCog(jj+1, :) - thisCog(jj, :));
+        total_distance = total_distance + dist;
+    end
+
+    totalDistCogs(loopSub) = total_distance; % save each subject's D1-D5 distance here
+    %totalDistCogsNames{loopSub} = subjects{loopSub};
+
+    % Display the total distance
+    fprintf('Subject: %s \n', subjects{loopSub});
+    fprintf('Total Euclidean distance between CoGs: %.2f mm\n', total_distance);
+
+
 end
 
-% Display the total distance
-fprintf('Total Euclidean distance between CoGs: %.2f mm\n', total_distance);
 
-%% % Define file path for saving the CSV
-csv_filename = [savedir thisSub '_cog.csv'];  % Update with your desired path
 
-% Assuming cog_list contains CoG coordinates and total_distance contains the total distance
-% CoG coordinates (x, y, z) for each phase bin
-% Example structure: cog_list = [x1, y1, z1; x2, y2, z2; x3, y3, z3; x4, y4, z4];
 
-% Convert CoG coordinates to a table
-cog_table = array2table(cog_list, 'VariableNames', {'X', 'Y', 'Z'});
-cog_table.Properties.RowNames = {'Phase_Bin_1', 'Phase_Bin_2', 'Phase_Bin_3', 'Phase_Bin_4'};
+%%
+csv_filename = [savedirUp 'full_cog.csv'];  % Update with your desired path
 
-% Add a row for the total distance
-% Add a row for the total distance with empty values for X, Y, Z
-total_distance_row = {NaN, NaN, NaN, total_distance};  % Use empty cells for X, Y, Z and total distance in the 4th column
-total_distance_table = cell2table(total_distance_row, 'VariableNames', {'X', 'Y', 'Z', 'Total_Distance'}, 'RowNames', {'Total_Distance'});
+% Get the size of the array
+[numRows, numCols, numSubjects] = size(cog_list);
 
-% Combine the tables
-combined_table = [cog_table, array2table(nan(height(cog_table), 1), 'VariableNames', {'Total_Distance'})]; % Add empty Total_Distance column to cog_table
-combined_table = [combined_table; total_distance_table]; % Append total distance row
+% Preallocate a cell array for reshaping the data (for text and numeric data)
+csvData = cell(numRows * numSubjects, numCols + 1);
 
-% Save to CSV
-writetable(combined_table, csv_filename, 'WriteRowNames', true);
+% Populate the 2D cell array for CSV output
+for ix = 1:numSubjects
+    startIdx = (ix - 1) * numRows + 1;
+    endIdx = ix * numRows;
+    csvData(startIdx:endIdx, 1:numCols) = num2cell(cog_list(:, :, ix));  % Copy data as cells
+    csvData(startIdx:endIdx, numCols + 1) = subjects(ix);  % Add subject name
+end
 
-% Display a message to confirm the file was saved
-fprintf('CoG data with total distance saved to %s\n', csv_filename);
+% Convert to table and add column names
+csvTable = cell2table(csvData, 'VariableNames', {'X', 'Y', 'Z', 'Subject'});
+
+% Save as CSV
+writetable(csvTable, csv_filename);
+
+% also save out distances
+csv_filename2 = [savedirUp 'total_cog.csv'];  % Update with your desired path
+distanceTable = table(subjects', totalDistCogs, 'VariableNames', {'Subject', 'Distance'});
+writetable(distanceTable, csv_filename2);
+
+%% once this is all done, need to plot
+% plot LD and RD separately
+% and plot healthies (incl. atlas subs) vs touchmap BTX vs. touchmap NoBTX
+% Just plot total distance, so one number for each subject. 
+
+
 
 
 
