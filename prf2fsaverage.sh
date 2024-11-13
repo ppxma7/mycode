@@ -7,105 +7,105 @@ MOUNT='/Volumes/styx/prf_fsaverage/'
 anatMOUNT='/Volumes/DRS-Touchmap/ma_ares_backup/subs/'
 
 #anatMOUNT="/Volumes/DRS-7TfMRI/DigitAtlas/FreeSurferDigitAtlas/"
-# subjects=(
-#     "00393_LD_touchmap"
-#     "00393_RD_touchmap"
-#     "03677_LD"
-#     "03677_RD"
-#     "03942_LD"
-#     "03942_RD"
-#     "13172_LD"
-#     "13172_RD"
-#     "13493_Btx_LD"
-#     "13493_Btx_RD"
-#     "13493_NoBtx_LD"
-#     "13493_NoBtx_RD"
-#     "13658_Btx_LD"
-#     "13658_Btx_RD"
-#     "13658_NoBtx_LD"
-#     "13658_NoBtx_RD"
-#     "13695_Btx_LD"
-#     "13695_Btx_RD"
-#     "13695_NoBtx_LD"
-#     "13695_NoBtx_RD"
-#     "14001_Btx_LD"
-#     "14001_Btx_RD"
-#     "14001_NoBtx_LD"
-#     "14001_NoBtx_RD"
-#     )  # Adjust as needed
+subjects=(
+    "00393_LD_touchmap"
+    "00393_RD_touchmap"
+    "03677_LD"
+    "03677_RD"
+    "03942_LD"
+    "03942_RD"
+    "13172_LD"
+    "13172_RD"
+    "13493_Btx_LD"
+    "13493_Btx_RD"
+    "13493_NoBtx_LD"
+    "13493_NoBtx_RD"
+    "13658_Btx_LD"
+    "13658_Btx_RD"
+    "13658_NoBtx_LD"
+    "13658_NoBtx_RD"
+    "13695_Btx_LD"
+    "13695_Btx_RD"
+    "13695_NoBtx_LD"
+    "13695_NoBtx_RD"
+    "14001_Btx_LD"
+    "14001_Btx_RD"
+    "14001_NoBtx_LD"
+    "14001_NoBtx_RD"
+    )  # Adjust as needed
 
-# anatsubs=("00393"
-#     "00393"
-#     "03677"
-#     "03677"
-#     "03942"
-#     "03942"
-#     "13172"
-#     "13172"
-#     "13493"
-#     "13493"
-#     "13493"
-#     "13493"
-#     "13658"
-#     "13658"
-#     "13658"
-#     "13658"
-#     "13695"
-#     "13695"
-#     "13695"
-#     "13695"
-#     "14001"
-#     "14001"
-#     "14001"
-#     "14001"
-#   )
-
-
-subjects=("04217_LD"
-    "08740_RD"
-    "08966_RD"
-    "09621_RD"
-    "10301_LD"
-    "10301_RD"
-    "10875_RD"
-    "11120_LD"
-    "11120_RD"
-    "11240_LD"
-    "11240_RD"
-    "11251_LD"
-    "11251_RD"
-    "HB2_LD"
-    "HB2_RD"
-    "HB3_LD"
-    "HB3_RD"
-    "HB4_LD"
-    "HB4_RD"
-    "HB5_LD"
-    "HB5_RD"
-    )
-
-anatsubs=("04217_bis"
-  "08740"
-  "08966"
-  "09621"
-  "10301"
-  "10301"
-  "10875"
-  "11120"
-  "11120"
-  "11240"
-  "11240"
-  "11251"
-  "11251"
-  "HB2"
-  "HB2"
-  "HB3"
-  "HB3"
-  "HB4"
-  "HB4"
-  "HB5"
-  "HB5"
+anatsubs=("00393"
+    "00393"
+    "03677"
+    "03677"
+    "03942"
+    "03942"
+    "13172"
+    "13172"
+    "13493"
+    "13493"
+    "13493"
+    "13493"
+    "13658"
+    "13658"
+    "13658"
+    "13658"
+    "13695"
+    "13695"
+    "13695"
+    "13695"
+    "14001"
+    "14001"
+    "14001"
+    "14001"
   )
+
+
+# subjects=("04217_LD"
+#     "08740_RD"
+#     "08966_RD"
+#     "09621_RD"
+#     "10301_LD"
+#     "10301_RD"
+#     "10875_RD"
+#     "11120_LD"
+#     "11120_RD"
+#     "11240_LD"
+#     "11240_RD"
+#     "11251_LD"
+#     "11251_RD"
+#     "HB2_LD"
+#     "HB2_RD"
+#     "HB3_LD"
+#     "HB3_RD"
+#     "HB4_LD"
+#     "HB4_RD"
+#     "HB5_LD"
+#     "HB5_RD"
+#     )
+
+# anatsubs=("04217_bis"
+#   "08740"
+#   "08966"
+#   "09621"
+#   "10301"
+#   "10301"
+#   "10875"
+#   "11120"
+#   "11120"
+#   "11240"
+#   "11240"
+#   "11251"
+#   "11251"
+#   "HB2"
+#   "HB2"
+#   "HB3"
+#   "HB3"
+#   "HB4"
+#   "HB4"
+#   "HB5"
+#   "HB5"
+#   )
 
 # subjects=("prf1"
 #     "prf2"
@@ -133,7 +133,8 @@ anatsubs=("04217_bis"
 #   "13676"
 #   )
 
-
+subjects=("00393_LD_touchmap")
+anatsubs=("00393")
 
 
 
@@ -167,6 +168,18 @@ do
   subject="${subjects[i]}"
   anatsub="${anatsubs[i]}"
 
+
+
+  # Determine the hemisphere based on the subject string
+  if [[ "$subject" == *"_LD"* ]]; then
+    hemi="rh"
+  elif [[ "$subject" == *"_RD"* ]]; then
+    hemi="lh"
+  else
+    echo "Error: Subject name does not contain '_LD' or '_RD'."
+    exit 1
+  fi
+
   echo "Processing subject: $subject"
   # # Step 2: Process additional overlays using the registration
   for overlay in "${additional_overlays[@]}"
@@ -175,7 +188,7 @@ do
     fslmaths ${MOUNT}/${subject}/${overlay} -nan ${MOUNT}/${subject}/${overlay_base}_no_nan.nii.gz
 
     # Map volume to subject's surface in native space
-    mri_vol2surf --hemi lh \
+    mri_vol2surf --hemi ${hemi} \
                  --mov ${MOUNT}/${subject}/${overlay_base}_no_nan.nii.gz \
                  --regheader ${anatsub} \
                  --projfrac-avg 0.1 1 0.1 \
@@ -187,7 +200,7 @@ do
     # Map to fsaverage
     mri_surf2surf --srcsubject ${anatsub} \
                   --trgsubject fsaverage \
-                  --hemi lh \
+                  --hemi ${hemi} \
                   --sval ${MOUNT}/${subject}/${overlay_base}.mgh \
                   --tval ${MOUNT}/${subject}/${overlay_base}_fsaverage.mgh
 
@@ -203,6 +216,16 @@ do
   subject="${subjects[i]}"
   anatsub="${anatsubs[i]}"
 
+  # Determine the hemisphere based on the subject string
+  if [[ "$subject" == *"_LD"* ]]; then
+    hemi="rh"
+  elif [[ "$subject" == *"_RD"* ]]; then
+    hemi="lh"
+  else
+    echo "Error: Subject name does not contain '_LD' or '_RD'."
+    exit 1
+  fi
+
   for phase_bin in "${phase_bins[@]}"
   do
     input_file=${MOUNT}/${subject}/ph_binned_${phase_bin}_co_thresh.nii.gz
@@ -214,7 +237,7 @@ do
     fsaverage_mgh2=${MOUNT}/${subject}/co_masked_${phase_bin}_co_thresh_fsaverage.mgh
 
     # Map volume to subject's surface in native space
-    mri_vol2surf --hemi lh \
+    mri_vol2surf --hemi ${hemi} \
                  --mov $input_file \
                  --regheader ${anatsub} \
                  --projfrac-avg 0.1 1 0.1 \
@@ -226,12 +249,12 @@ do
     # Map to fsaverage
     mri_surf2surf --srcsubject $anatsub \
                   --trgsubject fsaverage \
-                  --hemi lh \
+                  --hemi ${hemi} \
                   --sval $output_mgh \
                   --tval $fsaverage_mgh
 
     # Map volume to subject's surface in native space
-    mri_vol2surf --hemi lh \
+    mri_vol2surf --hemi ${hemi} \
                  --mov $input_file2 \
                  --regheader ${anatsub} \
                  --projfrac-avg 0.1 1 0.1 \
@@ -243,7 +266,7 @@ do
     # Map to fsaverage
     mri_surf2surf --srcsubject $anatsub \
                   --trgsubject fsaverage \
-                  --hemi lh \
+                  --hemi ${hemi} \
                   --sval $output_mgh2 \
                   --tval $fsaverage_mgh2
   done

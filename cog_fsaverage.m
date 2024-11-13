@@ -26,8 +26,8 @@ myspherecolors = {'r','g','b','m'};
 for thisSub = 1:length(subjects)
 
 
-    %mypath = ['/Volumes/styx/prf_fsaverage/' subjects{thisSub} '/'];
-    mypath = ['/Volumes/DRS-Touchmap/ma_ares_backup/prf_fsaverage/' subjects{thisSub} '/'];
+    mypath = ['/Volumes/styx/prf_fsaverage/' subjects{thisSub} '/'];
+    %mypath = ['/Volumes/DRS-Touchmap/ma_ares_backup/prf_fsaverage/' subjects{thisSub} '/'];
     savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Touch Remap - General/prfplots/' thisSub '/'];
     
     % Define paths
