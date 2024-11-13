@@ -1,5 +1,5 @@
 %exportOverlays()
-savedir = '/Volumes/styx/04217_LD/';
+savedir = '/Volumes/styx/prf_fsaverage/prf2/';
 
 v = viewGet([],'view',1);
 mlrExportROI(v,[savedir 'mask.nii'])
@@ -21,29 +21,29 @@ viewNum = viewGet(v,'viewNum');
 pathstr = [savedir thisName];
 mrExport2SR_caitlin(viewNum,pathstr,[],3);
 
-% thisName = 'rfx';
-% v = viewGet([],'view',1);
-% viewNum = viewGet(v,'viewNum');
-% pathstr = [savedir thisName];
-% mrExport2SR_caitlin(viewNum,pathstr,[],4);
-% 
-% thisName = 'rfy';
-% v = viewGet([],'view',1);
-% viewNum = viewGet(v,'viewNum');
-% pathstr = [savedir thisName];
-% mrExport2SR_caitlin(viewNum,pathstr,[],5);
-
-thisName = 'rf';
+thisName = 'rfx';
 v = viewGet([],'view',1);
 viewNum = viewGet(v,'viewNum');
 pathstr = [savedir thisName];
 mrExport2SR_caitlin(viewNum,pathstr,[],4);
 
-thisName = 'adjr2';
+thisName = 'rfy';
 v = viewGet([],'view',1);
 viewNum = viewGet(v,'viewNum');
 pathstr = [savedir thisName];
 mrExport2SR_caitlin(viewNum,pathstr,[],5);
+
+% thisName = 'rf';
+% v = viewGet([],'view',1);
+% viewNum = viewGet(v,'viewNum');
+% pathstr = [savedir thisName];
+% mrExport2SR_caitlin(viewNum,pathstr,[],4);
+
+thisName = 'adjr2';
+v = viewGet([],'view',1);
+viewNum = viewGet(v,'viewNum');
+pathstr = [savedir thisName];
+mrExport2SR_caitlin(viewNum,pathstr,[],6);
 
 disp('complete')
 
