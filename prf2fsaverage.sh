@@ -3,14 +3,145 @@ source $FREESURFER_HOME/SetUpFreeSurfer.sh
 export SUBJECTS_DIR=/Volumes/DRS-Touchmap/ma_ares_backup/subs/
 
 # Define paths and file names
-MOUNT='/Volumes/styx/'
+MOUNT='/Volumes/styx/prf_fsaverage/'
 anatMOUNT='/Volumes/DRS-Touchmap/ma_ares_backup/subs/'
-subject="prf2/"  # Adjust as needed
-anatsub="03677/"
+anatMOUNT="/Volumes/DRS-7TfMRI/DigitAtlas/FreeSurferDigitAtlas/"
+subjects=(
+    "00393_LD_touchmap"
+    "00393_RD_touchmap"
+    "03677_LD"
+    "03677_RD"
+    "03942_LD"
+    "03942_RD"
+    "13172_LD"
+    "13172_RD"
+    "13493_Btx_LD"
+    "13493_Btx_RD"
+    "13493_NoBtx_LD"
+    "13493_NoBtx_RD"
+    "13658_Btx_LD"
+    "13658_Btx_RD"
+    "13658_NoBtx_LD"
+    "13658_NoBtx_RD"
+    "13695_Btx_LD"
+    "13695_Btx_RD"
+    "13695_NoBtx_LD"
+    "13695_NoBtx_RD"
+    "14001_Btx_LD"
+    "14001_Btx_RD"
+    "14001_NoBtx_LD"
+    "14001_NoBtx_RD"
+    )  # Adjust as needed
+
+anatsubs=("00393"
+    "00393"
+    "03677"
+    "03677"
+    "03942"
+    "03942"
+    "13172"
+    "13172"
+    "13493"
+    "13493"
+    "13493"
+    "13493"
+    "13658"
+    "13658"
+    "13658"
+    "13658"
+    "13695"
+    "13695"
+    "13695"
+    "13695"
+    "14001"
+    "14001"
+    "14001"
+    "14001"
+  )
+
+
+subjects=("04217_LD"
+    "08740_RD"
+    "08966_RD"
+    "09621_RD"
+    "10301_LD"
+    "10301_RD"
+    "10875_RD"
+    "11120_LD"
+    "11120_RD"
+    "11240_LD"
+    "11240_RD"
+    "11251_LD"
+    "11251_RD"
+    "HB2_LD"
+    "HB2_RD"
+    "HB3_LD"
+    "HB3_RD"
+    "HB4_LD"
+    "HB4_RD"
+    "HB5_LD"
+    "HB5_RD"
+    )
+
+anatsubs=("04217_bis"
+  "08740"
+  "08966"
+  "09621"
+  "10301"
+  "10301"
+  "10875"
+  "11120"
+  "11120"
+  "11240"
+  "11240"
+  "11251"
+  "11251"
+  "HB2"
+  "HB2"
+  "HB3"
+  "HB3"
+  "HB4"
+  "HB4"
+  "HB5"
+  "HB5"
+  )
+
+subjects=("prf1"
+    "prf2"
+    "prf3"
+    "prf4"
+    "prf6"
+    "prf7"
+    "prf8"
+    "prf9"
+    "prf10"
+    "prf11" 
+    "prf12"
+    )
+
+anatsubs=("14359"
+  "03677"
+  "12778_psir_1mm"
+  "10925"
+  "15435_psir_1mm"
+  "11251"
+  "15123"
+  "14446"
+  "15252_psir_1mm"
+  "11766"
+  "13676"
+  )
+
+
+
+
 
 # Define phase bin ranges and names
 phase_bins=("0_1_57" "1_57_3_14" "3_14_4_71" "4_71_6_28")
 phases=(0 1.57 3.14 4.71 6.28)
+
+phase_bins=("0_1_256" "1_256_2_512" "2_512_3_768" "3_768_5_024" "5_024_6_28")
+phases=(0 1.256 2.512 3.768 5.024 6.28)
 
 ### Now move everything to fsaverage
 
@@ -20,7 +151,10 @@ phases=(0 1.57 3.14 4.71 6.28)
 
 # Define additional overlays and phase-binned thresholded images
 additional_overlays=("adjr2.nii" "rfx.nii" "rfy.nii" "prefPD.nii" "prefDigit.nii")
-phase_bins=("0_1_57" "1_57_3_14" "3_14_4_71" "4_71_6_28")
+
+additional_overlays=("adjr2.nii" "rf.nii" "prefPD.nii" "prefDigit.nii")
+
+#phase_bins=("0_1_57" "1_57_3_14" "3_14_4_71" "4_71_6_28")
 
 # # Step 1: Register raw fMRI to anatomical image and create registration file
 # bbregister --s $anatsub --mov $raw_fmri --reg ${MOUNT}/${subject}/fmri2anat.dat --init-fsl --t2
