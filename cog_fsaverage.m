@@ -2,99 +2,144 @@ clear variables
 close all
 clc
 
-thisSub = 'prf1';
-mypath = ['/Volumes/styx/' thisSub '/'];
-%fsavg_path = '/Volumes/styx/fsaverage_copy/surf/';
-% Load fsaverage surface
-%[coords, faces] = read_surf([fsavg_path 'lh.inflated']);  % Replace with actual path
-% coords is Nx3 array of vertex coordinates, faces is Mx3 array of face indices
+%thisSub = 'prf1';
+
+subjects = {'00393_LD_touchmap','00393_RD_touchmap',...
+    '03677_LD', '03677_RD', '03942_LD', '03942_RD', '13172_LD', '13172_RD', ...
+    '13493_Btx_LD', '13493_Btx_RD', '13493_NoBtx_LD', '13493_NoBtx_RD', ...
+    '13658_Btx_LD', '13658_Btx_RD', '13658_NoBtx_LD', '13658_NoBtx_RD', ...
+    '13695_Btx_LD', '13695_Btx_RD', '13695_NoBtx_LD', '13695_NoBtx_RD', ...
+    '14001_Btx_LD', '14001_Btx_RD', '14001_NoBtx_LD', '14001_NoBtx_RD',...
+    '04217_LD', '08740_RD','08966_RD', '09621_RD', '10301_LD', '10301_RD', ...
+    '10875_RD', '11120_LD', '11120_RD', '11240_LD', '11240_RD', '11251_LD', '11251_RD',...
+    'HB2_LD', 'HB2_RD', 'HB3_LD', 'HB3_RD', 'HB4_LD', 'HB4_RD', 'HB5_LD', 'HB5_RD'};
+
 userName = char(java.lang.System.getProperty('user.name'));
-savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Touch Remap - General/prfplots/' thisSub '/'];
-% Define paths
-subjects_dir = '/Volumes/DRS-Touchmap/ma_ares_backup/subs/';  % Update to actual path
-subject = 'fsaverage';
-hemisphere = 'l';  % Change to 'r' for right hemisphere
-
-% Load the inflated surface vertices for visualization
-[vertices, faces] = read_surf(fullfile(subjects_dir, ...
-    subject, 'surf', strcat(hemisphere, 'h.inflated')));
-
-% Load your intensity data
-%mgh_file = [mypath 'co_masked_0_1_57_co_thresh_fsaverage.mgh'];
-
-% Define thresholded phase-binned images and a list for CoG storage
-threshold_files = {
-    [mypath 'co_masked_0_1_57_co_thresh_fsaverage.mgh'], ...
-    [mypath 'co_masked_1_57_3_14_co_thresh_fsaverage.mgh'], ...
-    [mypath 'co_masked_3_14_4_71_co_thresh_fsaverage.mgh'], ...
-    [mypath 'co_masked_4_71_6_28_co_thresh_fsaverage.mgh']
-};
-cog_list = zeros(4, 3);  % Array to store each CoG's coordinates
 
 % Define parameters for the sphere marker
 sphere_radius = 2;  % Adjust radius as needed for visibility
 [sphere_x, sphere_y, sphere_z] = sphere(20);  % Sphere resolution (20x20 grid)
 
 myspherecolors = {'r','g','b','m'};
-% Plot the surface using go_paint_freesurfer function without any intensity data
-% figure;
-% [h, cm] = go_paint_freesurfer(zeros(size(vertices, 1), 1), subject, hemisphere, ...
-%     'subjects_dir', subjects_dir, 'surface', ...
-%     'inflated', 'colormap', 'jet', 'range', [0.1 1], 'alpha', 1);
-% hold on;
 
-% Loop through each thresholded image and calculate the adjusted CoG
-for ii = 1:length(threshold_files)
-    % Load intensity data for the current thresholded ROI
-    intensity_data = load_mgh(threshold_files{ii});
+
+for thisSub = 1:length(subjects)
+
+
+    %mypath = ['/Volumes/styx/prf_fsaverage/' subjects{thisSub} '/'];
+    mypath = ['/Volumes/DRS-Touchmap/ma_ares_backup/prf_fsaverage/' subjects{thisSub} '/'];
+    savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Touch Remap - General/prfplots/' thisSub '/'];
     
-    % Define the ROI using a minimum intensity threshold
-    threshold = 0.3;  % Adjust as needed
-    roi_mask = intensity_data >= threshold;
+    % Define paths
 
-    % Apply the mask to exclude non-ROI vertices
-    roi_intensity_data = intensity_data .* roi_mask;
-
-    % Calculate the initial CoG based on intensity values
-    weighted_coords = bsxfun(@times, vertices, roi_intensity_data);
-    sum_weights = sum(roi_intensity_data);
-    initial_cog = sum(weighted_coords, 1) / sum_weights;
-
-    % Find the nearest vertex in the ROI to ensure CoG is within ROI bounds
-    roi_vertices = vertices(roi_mask, :);
-    nearest_idx = knnsearch(roi_vertices, initial_cog);
-    adjusted_cog = roi_vertices(nearest_idx, :);
-
-    % Store the adjusted CoG coordinates
-    cog_list(ii, :) = adjusted_cog;
-
-    % Plot the thresholded image on the surface using go_paint_freesurfer
-    figure;
-    go_paint_freesurfer(roi_intensity_data, subject, hemisphere, ...
-        'subjects_dir', subjects_dir, 'surface',...
-        'inflated', 'colormap',...
-        'jet', 'range', [0.1 max(intensity_data)], 'alpha', 1);
-
-    hold on;
-
-    % Plot the adjusted CoG as a green sphere on the surface
-    surf(sphere_radius * sphere_x + adjusted_cog(1), ...
-         sphere_radius * sphere_y + adjusted_cog(2), ...
-         sphere_radius * sphere_z + adjusted_cog(3), ...
-         'FaceColor', myspherecolors{ii}, 'EdgeColor', 'none', 'FaceAlpha', 0.8);  % Green sphere for each CoG
-
-
-    if length(intensity_data) ~= size(vertices, 1)
-        error('Mismatch between data points and surface vertices.');
+    if thisSub<25
+        subjects_dir = '/Volumes/DRS-Touchmap/ma_ares_backup/subs/';  % Update to actual path
+    else
+        subjects_dir = '/Volumes/DRS-7TfMRI/DigitAtlas/FreeSurferDigitAtlas/';
     end
-    title(sprintf('Center of Gravity for Phase Bin %d on Inflated Brain Surface', ii));
-    hold off;
 
-    % Save the figure as a PDF using exportgraphics
-    pdf_filename = fullfile(savedir, sprintf('CoG_Phase_Bin_%d.pdf', ii));
-    exportgraphics(gcf, pdf_filename, 'ContentType', 'image', 'Resolution', 300);
+    subject = 'fsaverage';
+
+    if contains(subjects(thisSub), '_LD')
+        hemisphere = 'r';  % Change to 'r' for right hemisphere
+    elseif contains(subjects(thisSub),'_RD')
+        hemisphere = 'l';
+    end
+
+    % Load the inflated surface vertices for visualization
+    [vertices, faces] = read_surf(fullfile(subjects_dir, ...
+        subject, 'surf', strcat(hemisphere, 'h.inflated')));
+
+    %fsavg_path = '/Volumes/styx/fsaverage_copy/surf/';
+    % Load fsaverage surface
+    %[coords, faces] = read_surf([fsavg_path 'lh.inflated']);  % Replace with actual path
+    % coords is Nx3 array of vertex coordinates, faces is Mx3 array of face indices
+    
+    % Load your intensity data
+    %mgh_file = [mypath 'co_masked_0_1_57_co_thresh_fsaverage.mgh'];
+
+    % Define thresholded phase-binned images and a list for CoG storage
+
+    % threshold_files = {
+    %     [mypath 'co_masked_0_1_57_co_thresh_fsaverage.mgh'], ...
+    %     [mypath 'co_masked_1_57_3_14_co_thresh_fsaverage.mgh'], ...
+    %     [mypath 'co_masked_3_14_4_71_co_thresh_fsaverage.mgh'], ...
+    %     [mypath 'co_masked_4_71_6_28_co_thresh_fsaverage.mgh']
+    %     };
+
+    threshold_files = {
+        [mypath 'co_masked_0_1_256_co_thresh_fsaverage.mgh'], ...
+        [mypath 'co_masked_1_256_2_512_co_thresh_fsaverage.mgh'], ...
+        [mypath 'co_masked_2_512_3_768_co_thresh_fsaverage.mgh'], ...
+        [mypath 'co_masked_3_768_5_024_co_thresh_fsaverage.mgh'],...
+        [mypath 'co_masked_5_024_6_28_co_thresh_fsaverage.mgh'],...
+        };
 
 
+    cog_list = zeros(length(threshold_files), 3,length(subjects));  % Array to store each CoG's coordinates
+
+
+    % Plot the surface using go_paint_freesurfer function without any intensity data
+    % figure;
+    % [h, cm] = go_paint_freesurfer(zeros(size(vertices, 1), 1), subject, hemisphere, ...
+    %     'subjects_dir', subjects_dir, 'surface', ...
+    %     'inflated', 'colormap', 'jet', 'range', [0.1 1], 'alpha', 1);
+    % hold on;
+
+    % Loop through each thresholded image and calculate the adjusted CoG
+    for ii = 1:length(threshold_files)
+        % Load intensity data for the current thresholded ROI
+        intensity_data = load_mgh(threshold_files{ii});
+
+        % Define the ROI using a minimum intensity threshold
+        threshold = 0.3;  % Adjust as needed
+        roi_mask = intensity_data >= threshold;
+
+        % Apply the mask to exclude non-ROI vertices
+        roi_intensity_data = intensity_data .* roi_mask;
+
+        % Calculate the initial CoG based on intensity values
+        weighted_coords = bsxfun(@times, vertices, roi_intensity_data);
+        sum_weights = sum(roi_intensity_data);
+        initial_cog = sum(weighted_coords, 1) / sum_weights;
+
+        % Find the nearest vertex in the ROI to ensure CoG is within ROI bounds
+        roi_vertices = vertices(roi_mask, :);
+        nearest_idx = knnsearch(roi_vertices, initial_cog);
+        adjusted_cog = roi_vertices(nearest_idx, :);
+
+        % Store the adjusted CoG coordinates
+        cog_list(ii, :) = adjusted_cog;
+
+        % Plot the thresholded image on the surface using go_paint_freesurfer
+        figure;
+        go_paint_freesurfer(roi_intensity_data, subject, hemisphere, ...
+            'subjects_dir', subjects_dir, 'surface',...
+            'inflated', 'colormap',...
+            'jet', 'range', [0.1 max(intensity_data)], 'alpha', 1);
+
+        hold on;
+
+        % Plot the adjusted CoG as a green sphere on the surface
+        surf(sphere_radius * sphere_x + adjusted_cog(1), ...
+            sphere_radius * sphere_y + adjusted_cog(2), ...
+            sphere_radius * sphere_z + adjusted_cog(3), ...
+            'FaceColor', myspherecolors{ii}, 'EdgeColor', 'none', 'FaceAlpha', 0.8);  % Green sphere for each CoG
+
+
+        if length(intensity_data) ~= size(vertices, 1)
+            error('Mismatch between data points and surface vertices.');
+        end
+        title(sprintf('Center of Gravity for Phase Bin %d on Inflated Brain Surface', ii));
+        hold off;
+
+        % Save the figure as a PDF using exportgraphics
+        pdf_filename = fullfile(savedir, sprintf('CoG_Phase_Bin_%d.pdf', ii));
+        exportgraphics(gcf, pdf_filename, 'ContentType', 'image', 'Resolution', 300);
+
+
+
+    end
 
 end
 
