@@ -1,7 +1,7 @@
 clear variables
 close all
 clc
-
+tic
 %thisSub = 'prf1';
 
 subjects = {'00393_LD_touchmap','00393_RD_touchmap',...
@@ -33,6 +33,7 @@ nDigs = 5;
 cog_list = zeros(nDigs, 3,length(subjects));  % Array to store each CoG's coordinates
 
 for thisSub = 1:length(subjects)
+    tstart = tic;
 
     disp(['Running ' subjects{thisSub} ' now...'])
 
@@ -159,7 +160,14 @@ for thisSub = 1:length(subjects)
 
     close all
 
+    telapsed = toc(tstart);
+    disp(['subject ' subjects{thisSub} ' completed in ' num2str(telapsed) ' seconds'])
+
+
+
 end
+
+toc
 
 % Finalize plot
 % title('Centers of Gravity for Thresholded ROIs on Inflated Brain Surface');
