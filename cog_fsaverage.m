@@ -10,12 +10,17 @@ subjects = {'00393_LD_touchmap','00393_RD_touchmap',...
     '13658_Btx_LD', '13658_Btx_RD', '13658_NoBtx_LD', '13658_NoBtx_RD', ...
     '13695_Btx_LD', '13695_Btx_RD', '13695_NoBtx_LD', '13695_NoBtx_RD', ...
     '14001_Btx_LD', '14001_Btx_RD', '14001_NoBtx_LD', '14001_NoBtx_RD',...
-    '04217_LD', '08740_RD','08966_RD', '09621_RD', '10301_LD', '10301_RD', ...
-    '10875_RD', '11120_LD', '11120_RD', '11240_LD', '11240_RD', '11251_LD', '11251_RD',...
+    '04217_LD', '08740_RD','08966_RD', ...
+    '10875_RD', '11120_LD', '11120_RD',...
     'HB2_LD', 'HB2_RD', 'HB3_LD', 'HB3_RD', 'HB4_LD', 'HB4_RD', 'HB5_LD', 'HB5_RD'};
 
+% These people need to rerun Freesurfer I think...
+% 09621 not good surf reg 
+% 10301 also bad LD and RD
+% 11240 LD bad
+% 11251 bad LD and RD
 
-%subjects = {'00393_LD_touchmap','00393_RD_touchmap'};
+% subjects = {'11251_LD'};
 
 userName = char(java.lang.System.getProperty('user.name'));
 
@@ -49,12 +54,14 @@ for thisSub = 1:length(subjects)
     
     % Define paths
 
-    if thisSub<25
-        subjects_dir = '/Volumes/DRS-Touchmap/ma_ares_backup/subs/';  % Update to actual path
-    else
-        subjects_dir = '/Volumes/DRS-7TfMRI/DigitAtlas/FreeSurferDigitAtlas/';
-    end
+%     if thisSub<25
+%         subjects_dir = '/Volumes/DRS-Touchmap/ma_ares_backup/subs/';  % Update to actual path
+%     else
+%         subjects_dir = '/Volumes/DRS-7TfMRI/DigitAtlas/FreeSurferDigitAtlas/';
+%     end
 
+    subjects_dir = '/Volumes/DRS-Touchmap/ma_ares_backup/subs/';  % Update to actual path
+    
     subject = 'fsaverage';
 
     if contains(subjects(thisSub), '_LD')
@@ -109,11 +116,20 @@ for thisSub = 1:length(subjects)
         intensity_data = load_mgh(threshold_files{ii});
 
         % Define the ROI using a minimum intensity threshold
-        threshold = 0.3;  % Adjust as needed
+
+        if sum(intensity_data)<0.3
+            threshold = 0.001;
+        else
+            threshold = 0.3;  % Adjust as needed
+        end
         roi_mask = intensity_data >= threshold;
 
         % Apply the mask to exclude non-ROI vertices
         roi_intensity_data = intensity_data .* roi_mask;
+
+        if length(find(roi_intensity_data))<10
+            roi_intensity_data = intensity_data;
+        end
 
         % Calculate the initial CoG based on intensity values
         weighted_coords = bsxfun(@times, vertices, roi_intensity_data);
@@ -133,7 +149,7 @@ for thisSub = 1:length(subjects)
         go_paint_freesurfer(roi_intensity_data, subject, hemisphere, ...
             'subjects_dir', subjects_dir, 'surface',...
             'inflated', 'colormap',...
-            'jet', 'range', [0.1 max(intensity_data)], 'alpha', 1);
+            'jet', 'range', [0.001 max(intensity_data)], 'alpha', 1);
 
         hold on;
 

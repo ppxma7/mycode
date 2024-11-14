@@ -1,7 +1,7 @@
 #!/bin/bash
 source $FREESURFER_HOME/SetUpFreeSurfer.sh 
-export SUBJECTS_DIR=/Volumes/DRS-Touchmap/ma_ares_backup/subs/
-#export SUBJECTS_DIR=/Volumes/DRS-7TfMRI/DigitAtlas/FreeSurferDigitAtlas/
+#export SUBJECTS_DIR=/Volumes/DRS-Touchmap/ma_ares_backup/subs/
+export SUBJECTS_DIR=/Volumes/DRS-7TfMRI/DigitAtlas/FreeSurferDigitAtlas/
 
 # Define paths and file names
 MOUNT='/Volumes/styx/prf_fsaverage/'
@@ -107,101 +107,102 @@ MOUNT='/Volumes/styx/prf_fsaverage/'
 #   "HB5"
 #   )
 
-subjects=("prf1"
-    "prf2"
-    "prf3"
-    "prf4"
-    "prf6"
-    "prf7"
-    "prf8"
-    "prf9"
-    "prf10"
-    "prf11" 
-    "prf12"
-    )
+# subjects=("prf1"
+#     "prf2"
+#     "prf3"
+#     "prf4"
+#     "prf6"
+#     "prf7"
+#     "prf8"
+#     "prf9"
+#     "prf10"
+#     "prf11" 
+#     "prf12"
+#     )
 
-anatsubs=("14359"
-  "03677"
-  "12778_psir_1mm"
-  "10925"
-  "15435_psir_1mm"
-  "11251"
-  "15123"
-  "14446"
-  "15252_psir_1mm"
-  "11766"
-  "13676"
-  )
+# anatsubs=("14359"
+#   "03677"
+#   "12778_psir_1mm"
+#   "10925"
+#   "15435_psir_1mm"
+#   "11251"
+#   "15123"
+#   "14446"
+#   "15252_psir_1mm"
+#   "11766"
+#   "13676"
+#   )
 
-# subjects=("00393_RD_touchmap")
-# anatsubs=("00393")
+subjects=("10301_LD")
+anatsubs=("10301")
 
 
 
 # Define phase bin ranges and names
-phase_bins=("0_1_57" "1_57_3_14" "3_14_4_71" "4_71_6_28")
-phases=(0 1.57 3.14 4.71 6.28)
+#phase_bins=("0_1_57" "1_57_3_14" "3_14_4_71" "4_71_6_28")
+#phases=(0 1.57 3.14 4.71 6.28)
 
-#phase_bins=("0_1_256" "1_256_2_512" "2_512_3_768" "3_768_5_024" "5_024_6_28")
-#phases=(0 1.256 2.512 3.768 5.024 6.28)
+phase_bins=("0_1_256" "1_256_2_512" "2_512_3_768" "3_768_5_024" "5_024_6_28")
+phases=(0 1.256 2.512 3.768 5.024 6.28)
 
 ### Now move everything to fsaverage
 
 # Define additional overlays and phase-binned thresholded images
-additional_overlays=("adjr2.nii" "rfx.nii" "rfy.nii" "prefPD.nii" "prefDigit.nii")
-#additional_overlays=("adjr2.nii" "rf.nii" "prefPD.nii" "prefDigit.nii")
+#additional_overlays=("adjr2.nii" "rfx.nii" "rfy.nii" "prefPD.nii" "prefDigit.nii")
+additional_overlays=("adjr2.nii" "rf.nii" "prefPD.nii" "prefDigit.nii")
 
 # # Step 1: Register raw fMRI to anatomical image and create registration file
 # bbregister --s $anatsub --mov $raw_fmri --reg ${MOUNT}/${subject}/fmri2anat.dat --init-fsl --t2
 
 
 # Loop through each subject and corresponding anatomical subject
-for ((i=0; i<${#subjects[@]}; i++))
-do
-  subject="${subjects[i]}"
-  anatsub="${anatsubs[i]}"
+# for ((i=0; i<${#subjects[@]}; i++))
+# do
+#   subject="${subjects[i]}"
+#   anatsub="${anatsubs[i]}"
 
 
-  # Determine the hemisphere based on the subject string for atlas/tocuchmap
-  # if [[ "$subject" == *"_LD"* ]]; then
-  #   hemi="rh"
-  # elif [[ "$subject" == *"_RD"* ]]; then
-  #   hemi="lh"
-  # else
-  #   echo "Error: Subject name does not contain '_LD' or '_RD'."
-  #   exit 1
-  # fi
+#   #Determine the hemisphere based on the subject string for atlas/tocuchmap
+#   if [[ "$subject" == *"_LD"* ]]; then
+#     hemi="rh"
+#   elif [[ "$subject" == *"_RD"* ]]; then
+#     hemi="lh"
+#   else
+#     echo "Error: Subject name does not contain '_LD' or '_RD'."
+#     exit 1
+#   fi
 
-  hemi="lh"
+  #hemi="lh"
 
-  echo "Processing subject: $subject"
-  # # Step 2: Process additional overlays using the registration
-  for overlay in "${additional_overlays[@]}"
-  do
-    overlay_base=$(basename "$overlay" .nii)
-    fslmaths ${MOUNT}/${subject}/${overlay} -nan ${MOUNT}/${subject}/${overlay_base}_no_nan.nii.gz
 
-    # Map volume to subject's surface in native space
-    mri_vol2surf --hemi ${hemi} \
-                 --mov ${MOUNT}/${subject}/${overlay_base}_no_nan.nii.gz \
-                 --regheader ${anatsub} \
-                 --projfrac-avg 0.1 1 0.1 \
-                 --surf-fwhm 1 \
-                 --out ${MOUNT}/${subject}/${overlay_base}.mgh \
-                 --surf white \
-                 --out_type mgh
+#   echo "Processing subject: $subject"
+#   # # Step 2: Process additional overlays using the registration
+#   for overlay in "${additional_overlays[@]}"
+#   do
+#     overlay_base=$(basename "$overlay" .nii)
+#     fslmaths ${MOUNT}/${subject}/${overlay} -nan ${MOUNT}/${subject}/${overlay_base}_no_nan.nii.gz
 
-    # Map to fsaverage
-    mri_surf2surf --srcsubject ${anatsub} \
-                  --trgsubject fsaverage \
-                  --hemi ${hemi} \
-                  --sval ${MOUNT}/${subject}/${overlay_base}.mgh \
-                  --tval ${MOUNT}/${subject}/${overlay_base}_fsaverage.mgh
+#     # Map volume to subject's surface in native space
+#     mri_vol2surf --hemi ${hemi} \
+#                  --mov ${MOUNT}/${subject}/${overlay_base}_no_nan.nii.gz \
+#                  --regheader ${anatsub} \
+#                  --projfrac-avg 0.1 1 0.1 \
+#                  --surf-fwhm 1 \
+#                  --out ${MOUNT}/${subject}/${overlay_base}.mgh \
+#                  --surf white \
+#                  --out_type mgh
 
-  done
-  echo "STAGE 1 Finished processing subject: $subject with anatomical subject: $anatsub"
+#     # Map to fsaverage
+#     mri_surf2surf --srcsubject ${anatsub} \
+#                   --trgsubject fsaverage \
+#                   --hemi ${hemi} \
+#                   --sval ${MOUNT}/${subject}/${overlay_base}.mgh \
+#                   --tval ${MOUNT}/${subject}/${overlay_base}_fsaverage.mgh
 
-done
+#   done
+#   echo "STAGE 1 Finished processing subject: $subject with anatomical subject: $anatsub"
+
+# done
 
 # # Step 3: Process phase-binned coherence-thresholded images
 
@@ -211,16 +212,23 @@ do
   anatsub="${anatsubs[i]}"
 
   # Determine the hemisphere based on the subject string
-  # if [[ "$subject" == *"_LD"* ]]; then
-  #   hemi="rh"
-  # elif [[ "$subject" == *"_RD"* ]]; then
-  #   hemi="lh"
-  # else
-  #   echo "Error: Subject name does not contain '_LD' or '_RD'."
-  #   exit 1
-  # fi
+  if [[ "$subject" == *"_LD"* ]]; then
+    hemi="rh"
+  elif [[ "$subject" == *"_RD"* ]]; then
+    hemi="lh"
+  else
+    echo "Error: Subject name does not contain '_LD' or '_RD'."
+    exit 1
+  fi
 
-  hemi="lh"
+
+  # bbregister --s ${anatsub} \
+  # --mov ${MOUNT}/${subject}/tseries-022817-155027_ch.nii \
+  # --reg ${MOUNT}/${subject}/fmri2anat_reg.dat \
+  # --init-fsl --t2
+
+
+  #hemi="lh"
 
   for phase_bin in "${phase_bins[@]}"
   do

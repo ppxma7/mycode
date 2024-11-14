@@ -1,10 +1,11 @@
 #!/bin/bash
 source $FREESURFER_HOME/SetUpFreeSurfer.sh 
-export SUBJECTS_DIR=/Volumes/DRS-Touchmap/ma_ares_backup/subs/
+#export SUBJECTS_DIR=/Volumes/DRS-Touchmap/ma_ares_backup/subs/
+export SUBJECTS_DIR=/Volumes/DRS-7TfMRI/DigitAtlas/FreeSurferDigitAtlas/
 
 # Define paths and file names
 MOUNT='/Volumes/styx/prf_fsaverage/'
-anatMOUNT='/Volumes/DRS-Touchmap/ma_ares_backup/subs/'
+#anatMOUNT='/Volumes/DRS-Touchmap/ma_ares_backup/subs/'
 # subjects=("00393_LD"
 #     "00393_LD_touchmap"
 #     "00393_RD"
@@ -54,17 +55,19 @@ anatMOUNT='/Volumes/DRS-Touchmap/ma_ares_backup/subs/'
 #     "HB5_RD"
 #     )  # Adjust as needed
 
-subjects=("prf1"
-    "prf2"
-    "prf3"
-    "prf4"
-    "prf6"
-    "prf7"
-    "prf8"
-    "prf9"
-    "prf10"
-    "prf11" 
-    "prf12")
+# subjects=("prf1"
+#     "prf2"
+#     "prf3"
+#     "prf4"
+#     "prf6"
+#     "prf7"
+#     "prf8"
+#     "prf9"
+#     "prf10"
+#     "prf11" 
+#     "prf12")
+
+subjects=("10301_LD")
 
 
 # Start overall timer
@@ -88,15 +91,15 @@ do
     fslmaths ${MOUNT}/${subject}/ph_masked.nii -nan ${MOUNT}/${subject}/ph_masked_no_nan.nii
 
     # Define 4 phase bin ranges and names
-    phase_bins=("0_1_57" "1_57_3_14" "3_14_4_71" "4_71_6_28")
-    phases=(0 1.57 3.14 4.71 6.28)
+    #phase_bins=("0_1_57" "1_57_3_14" "3_14_4_71" "4_71_6_28")
+    #phases=(0 1.57 3.14 4.71 6.28)
 
     # Define five equal phase bins and ranges
-    #phase_bins=("0_1_256" "1_256_2_512" "2_512_3_768" "3_768_5_024" "5_024_6_28")
-    #phases=(0 1.256 2.512 3.768 5.024 6.28)
+    phase_bins=("0_1_256" "1_256_2_512" "2_512_3_768" "3_768_5_024" "5_024_6_28")
+    phases=(0 1.256 2.512 3.768 5.024 6.28)
 
 
-    for ((i=0; i<4; i++))
+    for ((i=0; i<5; i++))
     do
         lower=${phases[$i]}
         upper=${phases[$i+1]}
