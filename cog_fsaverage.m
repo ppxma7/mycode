@@ -231,7 +231,104 @@ writetable(distanceTable, csv_filename2);
 % plot LD and RD separately
 % and plot healthies (incl. atlas subs) vs touchmap BTX vs. touchmap NoBTX
 % Just plot total distance, so one number for each subject. 
+close all
+subGrp = subjects(:);
 
+handGrp = cell(size(subGrp));
+LDx = contains(subGrp, '_LD');
+handGrp(LDx) = {'LD'};
+RDx = contains(subGrp, '_RD');
+handGrp(RDx) = {'RD'};
+
+patGrp = cell(size(subGrp));
+BTx = contains(subGrp,'_Btx_');
+patGrp(BTx) = {'BTX'};
+NBTx = contains(subGrp,'_NoBtx_');
+patGrp(NBTx) = {'NoBTX'};
+HVx = ~(BTx+NBTx);
+patGrp(HVx) = {'HV'};
+
+% testing
+a = 10;
+b = 30;
+totalDistCogs = (b-a).*rand(length(subGrp),1) + a;
+
+[p, tbl, stats] = anovan(totalDistCogs, {patGrp, handGrp}, 'model', 'interaction', 'varnames', {'PATIENT', 'HAND'});
+writecell(tbl,[savedirUp 'anova_cog'],'FileType','spreadsheet')
+
+% Display the results
+disp('ANOVA Table:');
+disp(tbl);
+[COMPARISON,~,~,GNAMES] = multcompare(stats,'Dimension',1);
+tbldom = array2table(COMPARISON,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A")=GNAMES(tbldom.("Group A"));
+tbldom.("Group B")=GNAMES(tbldom.("Group B"));
+writetable(tbldom,[savedirUp 'mult_anova_dim1_cog'],'FileType','spreadsheet')
+
+[COMPARISON,~,~,GNAMES] = multcompare(stats,'Dimension',2);
+tbldom = array2table(COMPARISON,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A")=GNAMES(tbldom.("Group A"));
+tbldom.("Group B")=GNAMES(tbldom.("Group B"));
+writetable(tbldom,[savedirUp 'mult_anova_dim2_cog'],'FileType','spreadsheet')
+
+%% yes but in each hand, is there a difference?
+totalDistCogs_LDonly = totalDistCogs(LDx);
+totalDistCogs_RDonly = totalDistCogs(RDx);
+
+patGrp_LDonly = patGrp(LDx);
+patGrp_RDonly = patGrp(RDx);
+
+[P, ANOVATAB, STATS_L] = anova1(totalDistCogs_LDonly,patGrp_LDonly);
+
+[COMPARISON_L,MEANS,H,GNAMES] = multcompare(STATS_L);
+tbldom = array2table(COMPARISON_L,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A")=GNAMES(tbldom.("Group A"));
+tbldom.("Group B")=GNAMES(tbldom.("Group B"));
+writetable(tbldom,[savedirUp 'mult_anova_LDonly_cog'],'FileType','spreadsheet')
+
+
+[P, ANOVATAB, STATS_R] = anova1(totalDistCogs_RDonly,patGrp_RDonly);
+
+[COMPARISON_R,MEANS,H,GNAMES] = multcompare(STATS_R);
+tbldom = array2table(COMPARISON_R,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A")=GNAMES(tbldom.("Group A"));
+tbldom.("Group B")=GNAMES(tbldom.("Group B"));
+writetable(tbldom,[savedirUp 'mult_anova_RDonly_cog'],'FileType','spreadsheet')
+
+
+
+
+%% now plot
+close all
+clear g
+thisFont='Helvetica';
+myfontsize=14;
+figure('Position',[100 100 700 600])
+%figure
+g = gramm('x',patGrp,'y',totalDistCogs,'color',handGrp);
+g.stat_boxplot2('alpha', 1,'linewidth', 1, 'drawoutlier',0)
+%g.stat_boxplot()
+g.set_text_options('font', thisFont, 'base_size', myfontsize)
+g.set_names('x','Group', 'y', 'Total distance D1-D5')
+g.set_order_options('x',0,'color',0)
+g.axe_property('XGrid','on','YGrid','on')
+g.draw()
+g.update('y',totalDistCogs) %,'color',subGrp)
+g.geom_jitter2('dodge',0.8,'alpha',1,'edgecolor',[0 0 0])
+%g.geom_jitter('dodge',0.8,'alpha',1)
+g.set_point_options('base_size',5)
+g.no_legend
+g.set_order_options('x',0,'color',0)
+g.draw()
+filename = 'cog_plot';
+g.export('file_name',filename, ...
+    'export_path',...
+    savedirUp,...
+    'file_type','pdf')
 
 
 
