@@ -133,6 +133,19 @@ MOUNT='/Volumes/styx/prf_fsaverage/'
 #   "13676"
 #   )
 
+# subjects=("10301_LD" 
+#   "10301_RD"
+#   "11240_LD"
+#   "11240_RD"
+#   "11251_LD"
+#   "11251_RD")
+# anatsubs=("10301"
+#   "10301"
+#   "11240"
+#   "11240"
+#   "11251"
+#   "11251")
+
 subjects=("10301_LD")
 anatsubs=("10301")
 
@@ -151,11 +164,13 @@ phases=(0 1.256 2.512 3.768 5.024 6.28)
 #additional_overlays=("adjr2.nii" "rfx.nii" "rfy.nii" "prefPD.nii" "prefDigit.nii")
 additional_overlays=("adjr2.nii" "rf.nii" "prefPD.nii" "prefDigit.nii")
 
+#additional_overlays=("LD1_manual.nii.gz")
+
 # # Step 1: Register raw fMRI to anatomical image and create registration file
 # bbregister --s $anatsub --mov $raw_fmri --reg ${MOUNT}/${subject}/fmri2anat.dat --init-fsl --t2
 
 
-# Loop through each subject and corresponding anatomical subject
+##Loop through each subject and corresponding anatomical subject
 # for ((i=0; i<${#subjects[@]}; i++))
 # do
 #   subject="${subjects[i]}"
@@ -172,14 +187,14 @@ additional_overlays=("adjr2.nii" "rf.nii" "prefPD.nii" "prefDigit.nii")
 #     exit 1
 #   fi
 
-  #hemi="lh"
+#   hemi="lh"
 
 
 #   echo "Processing subject: $subject"
 #   # # Step 2: Process additional overlays using the registration
 #   for overlay in "${additional_overlays[@]}"
 #   do
-#     overlay_base=$(basename "$overlay" .nii)
+#     overlay_base=$(basename "$overlay" .nii.gz)
 #     fslmaths ${MOUNT}/${subject}/${overlay} -nan ${MOUNT}/${subject}/${overlay_base}_no_nan.nii.gz
 
 #     # Map volume to subject's surface in native space
@@ -204,7 +219,7 @@ additional_overlays=("adjr2.nii" "rf.nii" "prefPD.nii" "prefDigit.nii")
 
 # done
 
-# # Step 3: Process phase-binned coherence-thresholded images
+# Step 3: Process phase-binned coherence-thresholded images
 
 for ((i=0; i<${#subjects[@]}; i++))
 do
@@ -212,23 +227,17 @@ do
   anatsub="${anatsubs[i]}"
 
   # Determine the hemisphere based on the subject string
-  if [[ "$subject" == *"_LD"* ]]; then
-    hemi="rh"
-  elif [[ "$subject" == *"_RD"* ]]; then
-    hemi="lh"
-  else
-    echo "Error: Subject name does not contain '_LD' or '_RD'."
-    exit 1
-  fi
+  # if [[ "$subject" == *"_LD"* ]]; then
+  #   hemi="rh"
+  # elif [[ "$subject" == *"_RD"* ]]; then
+  #   hemi="lh"
+  # else
+  #   echo "Error: Subject name does not contain '_LD' or '_RD'."
+  #   exit 1
+  # fi
+  
 
-
-  # bbregister --s ${anatsub} \
-  # --mov ${MOUNT}/${subject}/tseries-022817-155027_ch.nii \
-  # --reg ${MOUNT}/${subject}/fmri2anat_reg.dat \
-  # --init-fsl --t2
-
-
-  #hemi="lh"
+  hemi="rh"
 
   for phase_bin in "${phase_bins[@]}"
   do

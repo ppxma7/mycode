@@ -20,7 +20,7 @@ subjects = {'00393_LD_touchmap','00393_RD_touchmap',...
 % 11240 LD bad
 % 11251 bad LD and RD
 
-% subjects = {'11251_LD'};
+%subjects = {'10301_RD'};
 
 userName = char(java.lang.System.getProperty('user.name'));
 
@@ -54,13 +54,13 @@ for thisSub = 1:length(subjects)
     
     % Define paths
 
-%     if thisSub<25
-%         subjects_dir = '/Volumes/DRS-Touchmap/ma_ares_backup/subs/';  % Update to actual path
-%     else
-%         subjects_dir = '/Volumes/DRS-7TfMRI/DigitAtlas/FreeSurferDigitAtlas/';
-%     end
+    if thisSub<25
+        subjects_dir = '/Volumes/DRS-Touchmap/ma_ares_backup/subs/';  % Update to actual path
+    else
+        subjects_dir = '/Volumes/DRS-7TfMRI/DigitAtlas/FreeSurferDigitAtlas/';
+    end
 
-    subjects_dir = '/Volumes/DRS-Touchmap/ma_ares_backup/subs/';  % Update to actual path
+    %subjects_dir = '/Volumes/DRS-7TfMRI/DigitAtlas/FreeSurferDigitAtlas/';
     
     subject = 'fsaverage';
 
@@ -273,9 +273,9 @@ HVx = ~(BTx+NBTx);
 patGrp(HVx) = {'HV'};
 
 % testing
-a = 10;
-b = 30;
-totalDistCogs = (b-a).*rand(length(subGrp),1) + a;
+% a = 10;
+% b = 30;
+% totalDistCogs = (b-a).*rand(length(subGrp),1) + a;
 
 [p, tbl, stats] = anovan(totalDistCogs, {patGrp, handGrp}, 'model', 'interaction', 'varnames', {'PATIENT', 'HAND'});
 writecell(tbl,[savedirUp 'anova_cog'],'FileType','spreadsheet')
