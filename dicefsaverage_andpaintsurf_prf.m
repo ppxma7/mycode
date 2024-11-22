@@ -1,34 +1,51 @@
-clear variables
 close all
 clc
-subdir = '/Volumes/DRS-Touchmap/ma_ares_backup/patients_digits_2mm/';
-subs = {'14001','14001_pre'};
+clear variables
 
+subdir = '/Volumes/styx/prf_fsaverage/';
 
+subs = {'prf1','03677_RD_prf4x4'};
 
 userName = char(java.lang.System.getProperty('user.name'));
 
 savedirUp = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Touch Remap - General/reproducibility/'];
 
+subject = 'fsaverage';
+hemisphere = 'l';
+subjects_dir = '/Volumes/DRS-Touchmap/ma_ares_backup/subs/';  % Update to actual path
+
+
+nDigs = 4;
+magicVec = 163842;
+eachSubR_somato = zeros(magicVec,4,2);
+
+files = {'co_masked_0_1_57_co_thresh_fsaverage.mgh',...
+    'co_masked_1_57_3_14_co_thresh_fsaverage.mgh',...
+    'co_masked_3_14_4_71_co_thresh_fsaverage.mgh',...
+    'co_masked_4_71_6_28_co_thresh_fsaverage.mgh'};
 
 for iSubject = 1:length(subs)
 
-    RD_A = MRIread([subdir subs{iSubject} '_' 'RD' '.mgh']);
-    RD_A = RD_A.vol;
+    for ii = 1:nDigs
 
-    eachSubR_somato(:,:,iSubject) = RD_A;
+        RD_A = MRIread(fullfile(subdir,subs{iSubject},files{ii}));
+        RD_A = RD_A.vol';
+
+        eachSubR_somato(:,ii,iSubject) = RD_A;
+    end
 
 end
 
-sub14001a = eachSubR_somato(:,:,1);
-sub14001b = eachSubR_somato(:,:,2);
+%%
+visit1 = eachSubR_somato(:,:,1);
+visit2 = eachSubR_somato(:,:,2);
 
-for ii = 1:5
-    for jj = 1:5
-        thisDice(jj,ii) = dice(sub14001a(:,jj),sub14001b(:,ii));
-
+for ii = 1:nDigs
+    for jj = 1:nDigs
+        thisDice(jj,ii) = dice(visit1(:,jj),visit2(:,ii));
     end
 end
+
 
 close all
 figure
@@ -42,22 +59,16 @@ colorbar
 %clim([])
 xticks(1:5)
 yticks(1:5)
-yticklabels({'D1','D2','D3','D4','D5'});
-xticklabels({'D1','D2','D3','D4','D5'});
+yticklabels({'D1','D2','D3','D4'});
+xticklabels({'D1','D2','D3','D4'});
 axis square
 
-
-png_filename = fullfile(savedirUp, [subs{1} '_dice.png']);
+png_filename = fullfile(savedirUp, ['03677_dice.png']);
 exportgraphics(gcf, png_filename, 'Resolution', 300);
 
 
 %%
-
-subject = 'fsaverage';
-hemisphere = 'l';
-subjects_dir = '/Volumes/DRS-Touchmap/ma_ares_backup/subs/';  % Update to actual path
-%upThre = 1;
-
+clc
 visit1 = eachSubR_somato(:,:,1);
 visit2 = eachSubR_somato(:,:,2);
 
@@ -65,61 +76,31 @@ D1 = visit1(:,1);
 D2 = visit1(:,2)+1;
 D3 = visit1(:,3)+2;
 D4 = visit1(:,4)+3;
-D5 = visit1(:,5)+4;
 
 D2(D2==1)=0;
 D3(D3==2)=0;
 D4(D4==3)=0;
-D5(D5==4)=0;
+
 
 %visit1_digits = D1+D2+D3+D4+D5;
-visit1_digits = cat(2,D1,D2,D3,D4,D5);
+visit1_digits = cat(2,D1,D2,D3,D4);
 
 D1b = visit2(:,1);
 D2b = visit2(:,2)+1;
 D3b = visit2(:,3)+2;
 D4b = visit2(:,4)+3;
-D5b = visit2(:,5)+4;
+
 
 D2b(D2b==1)=0;
 D3b(D3b==2)=0;
 D4b(D4b==3)=0;
-D5b(D5b==4)=0;
 
 %visit2_digits = D1b+D2b+D3b+D4b+D5b;
-visit2_digits = cat(2,D1b,D2b,D3b,D4b,D5b);
-
-
-% %%
-% close all
-% figure;
-% go_paint_freesurfer(D1, subject, hemisphere, ...
-%     'subjects_dir', subjects_dir, ...
-%     'surface', 'inflated', ...
-%     'colormap', 'digits', ...
-%     'range', [0.001 5], ...
-%     'alpha', 1, 'cbar', true,...
-%     'nchips',5, 'OutlineOnly', true);
-% %%
-% 
-% figure;
-% go_paint_freesurfer(visit2_digits, subject, hemisphere, ...
-%     'subjects_dir', subjects_dir, ...
-%     'surface', 'inflated', ...
-%     'colormap', 'digits', ...
-%     'range', [0.001 5], ...
-%     'alpha', 1, 'cbar', true,...
-%     'nchips',5);
-
+visit2_digits = cat(2,D1b,D2b,D3b,D4b);
 %%
 close all
 
-% comp1 = D1;
-% comp2 = D1b;
-
-
-for jj = 1:5
-
+for jj = 1:4
     
     comp1 = visit1_digits(:,jj);
     comp2 = visit2_digits(:,jj);
@@ -129,9 +110,9 @@ for jj = 1:5
         'subjects_dir', subjects_dir, ...
         'surface', 'inflated', ...
         'colormap', 'digits', ...
-        'range', [0.001 5], ...
+        'range', [0.001 4], ...
         'alpha', 1, 'cbar', true,...
-        'nchips',5);
+        'nchips',4);
 
     % Compute edges for D1b
     threshold = 0; % Adjust threshold as needed
@@ -162,8 +143,7 @@ for jj = 1:5
     view([-90, 14]); % Left hemisphere default view
     axis equal;
 
-    png_filename = fullfile(savedirUp, [subs{1} '_D' num2str(jj) 'fsavg_surf.png']);
+    png_filename = fullfile(savedirUp, [subs{2} '_D' num2str(jj) 'fsavg_surf.png']);
     exportgraphics(gcf, png_filename, 'Resolution', 300);
 
 end
-

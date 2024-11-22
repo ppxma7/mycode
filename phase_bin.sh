@@ -67,7 +67,7 @@ MOUNT='/Volumes/styx/prf_fsaverage/'
 #     "prf11" 
 #     "prf12")
 
-subjects=("10301_LD")
+subjects=("03677_RD_prf4x4")
 
 
 # Start overall timer
@@ -91,15 +91,15 @@ do
     fslmaths ${MOUNT}/${subject}/ph_masked.nii -nan ${MOUNT}/${subject}/ph_masked_no_nan.nii
 
     # Define 4 phase bin ranges and names
-    #phase_bins=("0_1_57" "1_57_3_14" "3_14_4_71" "4_71_6_28")
-    #phases=(0 1.57 3.14 4.71 6.28)
+    phase_bins=("0_1_57" "1_57_3_14" "3_14_4_71" "4_71_6_28")
+    phases=(0 1.57 3.14 4.71 6.28)
 
     # Define five equal phase bins and ranges
-    phase_bins=("0_1_256" "1_256_2_512" "2_512_3_768" "3_768_5_024" "5_024_6_28")
-    phases=(0 1.256 2.512 3.768 5.024 6.28)
+    # phase_bins=("0_1_256" "1_256_2_512" "2_512_3_768" "3_768_5_024" "5_024_6_28")
+    # phases=(0 1.256 2.512 3.768 5.024 6.28)
 
 
-    for ((i=0; i<5; i++))
+    for ((i=0; i<4; i++))
     do
         lower=${phases[$i]}
         upper=${phases[$i+1]}

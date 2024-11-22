@@ -1,5 +1,5 @@
 %exportOverlays()
-savedir = '/Volumes/styx/prf_fsaverage/prf2/';
+savedir = '/Volumes/styx/prf_fsaverage/03677_RD_prf4x4/';
 
 v = viewGet([],'view',1);
 mlrExportROI(v,[savedir 'mask.nii'])
