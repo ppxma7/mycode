@@ -28,7 +28,9 @@ load(['/Users/' userName '/Documents/MATLAB/digitAtlas/sundries/digatlas_github.
 %subdir='/Users/ppzma/data/DigitAtlas/patients_digits/';
 %subdir = '/Volumes/styx/for_Michael/';
 subdir = '/Volumes/arianthe/exp016/231108_share/';
+subdir = '/Volumes/r15/DRS-TOUCHMAP/ma_ares_backup/TOUCH_REMAP/exp016/231108_share/';
 
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-TheUniversityofNottingham/touch_remap_figures/'];
 
 
 
@@ -137,6 +139,7 @@ for iSubject = 1:length(subs)
     % THIS DOES THE DICE TO THE MPM ATLAS
     
     %RD_A = MRIread([subdir subs{iSubject} '_' 'RD' '.mgh']);
+    disp(['Reading subject ' subs{iSubject}])
     LD_A = MRIread([subdir 'sub016_' subs{iSubject} '/resultsSummary/atlas/' subs{iSubject} '_' 'LD' '.mgh']);
     RD_A = MRIread([subdir 'sub016_' subs{iSubject} '/resultsSummary/atlas/' subs{iSubject} '_' 'RD' '.mgh']);
 
@@ -306,7 +309,7 @@ for ii = 1:lenHC%1:length(subs)
 
     clear buildMatL buildMatR MatLR
 end
-filename = fullfile(['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'], ...
+filename = fullfile(savedir, ...
     'HC_CT_z309_ALL');
 print(filename,'-dpng')
 
@@ -336,7 +339,7 @@ for ii = 31:50 %:length(subs)
 
     clear buildMatL buildMatR MatLR
 end
-filename = fullfile(['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'], ...
+filename = fullfile(savedir, ...
     'PA_CT_z309_ALL');
 print(filename,'-dpng')
 
@@ -372,7 +375,7 @@ for ii = 1:lenHC%1:length(subs)
     clim([a b])
     clear buildMatL buildMatR MatLR
 end
-filename = fullfile(['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'], ...
+filename = fullfile(savedir, ...
     'HC_DICE_z309_ALL');
 print(filename,'-dpng')
 
@@ -401,7 +404,7 @@ for ii = 31:50%1:length(subs)
     clim([a b])
     clear buildMatL buildMatR MatLR
 end
-filename = fullfile(['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'], ...
+filename = fullfile(savedir, ...
     'PA_DICE_z309_ALL');
 print(filename,'-dpng')
 
@@ -442,7 +445,7 @@ for ii = 1:30%1:length(subs)
     clim([a b])
     clear buildMatL buildMatR MatLR_dm
 end
-filename = fullfile(['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'], ...
+filename = fullfile(savedir, ...
     'HC_dicemultct_z309_ALL');
 print(filename,'-dpng')
 
@@ -471,7 +474,7 @@ for ii = 31:50%1:length(subs)
     clim([a b])
     clear buildMatL buildMatR MatLR_dm
 end
-filename = fullfile(['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'], ...
+filename = fullfile(savedir, ...
     'PA_dicemultct_z309_ALL');
 print(filename,'-dpng')
 
@@ -798,7 +801,7 @@ end
 
 set(gcf,'color', 'w');
 
-filename = fullfile(['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'], ...
+filename = fullfile(savedir, ...
     'group_means_ct_dice_dmct');
 print(filename,'-dpng')
 
@@ -894,7 +897,7 @@ axis square
 a = ['cutoff_' num2str(thisthresh) '_diags'];
 acl = [strrep(a,'.',''),'.png'];
 
-filename = fullfile(['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'], ...
+filename = fullfile(savedir, ...
     acl);
 print(filename,'-dpng')
 
@@ -974,7 +977,7 @@ set(gcf,'color', 'w');
 axis square
 
 
-filename = fullfile(['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'], ...
+filename = fullfile(savedir, ...
     [sprintf(subs{1},'%s') '_offdiags']);
 print(filename,'-dpng')
 
@@ -1080,7 +1083,7 @@ yticklabels({'LD1','LD2','LD3','LD4','LD5','RD1','RD2','RD3','RD4','RD5'});
 xtickangle(45)
 ytickangle(45)
 
-filename = fullfile(['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'], ...
+filename = fullfile(savedir, ...
     'minus_stds');
 print(filename,'-dpng')
 
@@ -1248,7 +1251,7 @@ colorbar(ax3)
 clim([-1 1])
 set(gcf,'color', 'w');
 
-filename = fullfile(['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'], ...
+filename = fullfile(savedir, ...
     [sprintf(subs{1},'%s') '_CT_diff_map']);
 print(filename,'-dpng')
 
@@ -1318,7 +1321,7 @@ g.draw()
 filename = 'correlateplots';
 g.export('file_name',filename, ...
     'export_path',...
-    ['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'],...
+    savedir,...
     'file_type','pdf')
 
 
@@ -1343,7 +1346,7 @@ g.draw()
 filename = 'fom_kv_z309_all';
 g.export('file_name',filename, ...
     'export_path',...
-    ['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'],...
+    savedir,...
     'file_type','pdf')
 
 figure('Position',[100 100 800 700])
@@ -1371,7 +1374,7 @@ filename = 'fom_kv_z309_all_mean';
 
 g.export('file_name',filename, ...
     'export_path',...
-    ['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'],...
+    savedir,...
     'file_type','pdf')
 
 
@@ -1404,7 +1407,7 @@ g.draw()
 filename = 'fom_allsubsdigsf';
 g.export('file_name',filename, ...
     'export_path',...
-    ['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'],...
+    savedir,...
     'file_type','pdf')
 
 
@@ -1499,7 +1502,7 @@ clim([a b])
 % filename = fullfile('/Users/spmic/The University of Nottingham/Somatosensory - General/results/', ...
 %     [sprintf(subs{1},'%s') '_DICE']);
 
-filename = fullfile('/Users/ppzma/The University of Nottingham/Touch ReMap - General/results/', ...
+filename = fullfile(savedir, ...
     [sprintf(subs{1},'%s') '_DICE_z309']);
 
 
@@ -1534,7 +1537,7 @@ filename = 'fom_kv_z309';
 
 g.export('file_name',filename, ...
     'export_path',...
-    '/Users/ppzma/The University of Nottingham/Touch ReMap - General/results/',...
+    savedir,...
     'file_type','pdf')
 
 
@@ -1603,7 +1606,7 @@ set(gcf,'color', 'w');
 axis square
 clim([a b])
 
-filename = fullfile('/Users/ppzma/The University of Nottingham/Touch ReMap - General/results/', ...
+filename = fullfile(savedir, ...
     'dice_s014_s021');
 print(filename,'-dpng')
 
@@ -1668,7 +1671,7 @@ g.draw
 filename = 'FOM_patients2atlas_box_digs';
 g.export('file_name',filename, ...
     'export_path',...
-    '/Users/ppzma/The University of Nottingham/Michael_Sue - Touchmap - Touchmap/results/',...
+    savedir,...
     'file_type','pdf')
 
 myempty = zeros(5,5);
@@ -1782,7 +1785,7 @@ ax.FontSize = 10;
 set(gcf,'color', 'w');
 axis square
 clim([a c])
-filename = fullfile('/Users/ppzma/The University of Nottingham/Michael_Sue - Touchmap - Touchmap/results/', ...
+filename = fullfile(savedir, ...
     'centend_all');
 print(filename,'-dpng')
 

@@ -1,5 +1,5 @@
 % try and replicate Ken's analysis
-
+% run compare2atlas_singlesub.m up to line 300
 mapcol = brewermap(128,'*RdBu');
 
 a = 0;
@@ -81,7 +81,7 @@ set(gcf,'color', 'w');
 axis square
 clim([a b])
 
-filename = fullfile(['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'], ...
+filename = fullfile(savedir, ...
     'kv_mats');
 print(filename,'-dpng')
 
@@ -197,7 +197,7 @@ g.draw()
 filename = 'kv_test_CTDIAG';
 g.export('file_name',filename, ...
     'export_path',...
-    ['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'],...
+    savedir,...
     'file_type','pdf')
 
 
@@ -244,7 +244,7 @@ g.draw()
 filename = 'kv_test_grp_CTDIAG';
 g.export('file_name',filename, ...
     'export_path',...
-    ['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'],...
+    savedir,...
     'file_type','pdf')
 
 
@@ -343,7 +343,7 @@ g.draw()
 filename = 'kv_test_grp_RZS_diffgroup_CTDIAG_LR';
 g.export('file_name',filename, ...
     'export_path',...
-    ['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'],...
+    savedir,...
     'file_type','pdf')
 
 
@@ -374,26 +374,62 @@ RHO = RHO(:);
 RHOr = RHOr(:);
 boog = subs(:);
 
+%grp = [repmat({'Controls'},30,1); repmat({'Patients'},20,1)];
 
-figure('Position',[100 100 1400 400])
+mycent_s1_repaired = cat(3,mycent_LD_inj, mycent_RD_inj);
+mycent_s1_controls = cat(3,mycent_LD_hc, mycent_RD_hc);
+mycent_s1_healthy = cat(3,mycent_LD_nj, mycent_RD_nj);
 
-g = gramm('x',[subs subs],'y',[RHO; RHOr],'color',[repmat({'LD'},50,1), repmat({'RD'},50,1)]);
-g.geom_point()
+mycent_s1_all = cat(3,mycent_s1_controls,mycent_s1_repaired,mycent_s1_healthy);
+for ii = 1:length(mycent_s1_all)
+    RHO_all(ii) = corr2(mycent_s1_all(:,:,ii),atlas_mean_CTLD);
+end
+grp = [repmat({'S1 Controls'},length(mycent_s1_controls),1); ...
+    repmat({'S1 Repaired'},length(mycent_s1_repaired),1);...
+    repmat({'S1 Healthy'},length(mycent_s1_healthy),1)];
+
+%figure('Position',[100 100 1400 400])
+figure
+%g = gramm('x',[subs subs],'y',[RHO; RHOr],'color',[repmat({'LD'},50,1), repmat({'RD'},50,1)]);
+g = gramm('x',grp, 'y', RHO_all,'color',grp);
+%g.geom_point()
+
+g.stat_boxplot2('alpha', 0,'linewidth', 2, 'drawoutlier',0)
+%g.stat_boxplot()
+
 g.set_text_options('Font','Helvetica', 'base_size', 16)
 g.set_point_options('base_size',10)
-g.axe_property('XGrid','on','YGrid','on')
+g.axe_property('XGrid','on','YGrid','on','YLim',[0 1])
 g.set_names('x', 'subject', 'y', '2D correlation')
 g.set_title('Correlation to atlas CT')
 g.set_order_options('x',0)
+g.no_legend()
+
 g.draw()
+
+g.update('y',RHO_all)
+g.geom_jitter2('width',1,'dodge',0.8,'alpha',1,'edgecolor',[0 0 0])
+
+
+% g.set_text_options('Font','Helvetica', 'base_size', 16)
+% g.set_point_options('base_size',10)
+% g.axe_property('XGrid','on','YGrid','on')
+% g.set_names('x', 'subject', 'y', '2D correlation')
+% g.set_title('Correlation to atlas CT')
+% g.set_order_options('x',0)
+g.no_legend()
+
+g.draw()
+
+
 filename = 'kv_typicality_atlas';
 g.export('file_name',filename, ...
     'export_path',...
-    ['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'],...
+    savedir,...
     'file_type','pdf')
 
 
-filename = fullfile(['/Users/' userName '/The University of Nottingham/Touch ReMap - General/results/'], ...
+filename = fullfile(savedir, ...
     'corr2atlas_text.txt');
 %print(filename,'-dpng')
 
@@ -404,6 +440,17 @@ T.corr_left = cellfun(@(x) sprintf(formatSpec, x), num2cell(T.corr_left), 'Unifo
 T.corr_right = cellfun(@(x) sprintf(formatSpec, x), num2cell(T.corr_right), 'UniformOutput', false);
 
 writetable(T, filename, 'Delimiter', ' ');  % Save as space-delimited text file
+
+%%
+
+[P, ANOVATAB, STATS] = anova1(RHO_all,grp);
+
+[COMPARISON,MEANS,H,GNAMES] = multcompare(STATS);
+tbldom = array2table(COMPARISON,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A")=GNAMES(tbldom.("Group A"));
+tbldom.("Group B")=GNAMES(tbldom.("Group B"));
+writetable(tbldom,[savedir 'mult_anova_rho_atlas_kv'],'FileType','spreadsheet')
 
 
 
