@@ -17,6 +17,13 @@ mycent_RD_nj = mycentR(:,:,LD_inj_idx);
 mycent_LD_hc = mycentL(:,:,1:lenHC);
 mycent_RD_hc = mycentR(:,:,1:lenHC);
 
+mycent_inj = cat(3,mycent_LD_inj,mycent_RD_inj );
+mycent_nj = cat(3,mycent_LD_nj,mycent_RD_nj );
+mycent_hc = cat(3,mycent_LD_hc,mycent_RD_hc );
+LD_injured_names = {'021','022','030','033','034','035','039','046','047','061'};
+RD_injured_names = {'025','026','031','032','036','038','040','042','057','063'};
+injuredSubs = [LD_injured_names RD_injured_names]';
+
 % mean groups
 inj_LD_mean = mean(mycent_LD_inj,3);
 inj_RD_mean = mean(mycent_RD_inj,3);
@@ -30,6 +37,9 @@ hc_LD_mean = mean(mycent_LD_hc,3);
 hc_RD_mean = mean(mycent_RD_hc,3);
 hc_mean = [hc_LD_mean myempty; myempty hc_RD_mean];
 
+
+
+%%
 figure('Position',[100 100 1000 400])
 tiledlayout(1,3)
 nexttile
@@ -362,6 +372,7 @@ load(['/Users/' userName '/Documents/MATLAB/digitAtlas/sundries/lv_surf_useful.m
 atlas_mean_CTLD = mean(LD_central_tendency,3);
 atlas_mean_CTRD = mean(RD_central_tendency,3);
 
+perfect_mean = eye(5);
 
 for ii = 1:length(mycentL)
     RHO(ii) = corr2(mycentL(:,:,ii),atlas_mean_CTLD);
@@ -383,11 +394,20 @@ mycent_s1_healthy = cat(3,mycent_LD_nj, mycent_RD_nj);
 mycent_s1_all = cat(3,mycent_s1_controls,mycent_s1_repaired,mycent_s1_healthy);
 for ii = 1:length(mycent_s1_all)
     RHO_all(ii) = corr2(mycent_s1_all(:,:,ii),atlas_mean_CTLD);
+    RHO_all_perfect(ii) = corr2(mycent_s1_all(:,:,ii),perfect_mean);
 end
+
+%
+
+
 grp = [repmat({'S1 Controls'},length(mycent_s1_controls),1); ...
     repmat({'S1 Repaired'},length(mycent_s1_repaired),1);...
     repmat({'S1 Healthy'},length(mycent_s1_healthy),1)];
 
+myDex = contains(grp,'S1 Repaired');
+injuredSubsRHO = RHO_all(myDex);
+
+%%
 %figure('Position',[100 100 1400 400])
 figure
 %g = gramm('x',[subs subs],'y',[RHO; RHOr],'color',[repmat({'LD'},50,1), repmat({'RD'},50,1)]);
@@ -428,7 +448,7 @@ g.export('file_name',filename, ...
     savedir,...
     'file_type','pdf')
 
-
+%%
 filename = fullfile(savedir, ...
     'corr2atlas_text.txt');
 %print(filename,'-dpng')
@@ -451,6 +471,42 @@ tbldom = array2table(COMPARISON,"VariableNames", ...
 tbldom.("Group A")=GNAMES(tbldom.("Group A"));
 tbldom.("Group B")=GNAMES(tbldom.("Group B"));
 writetable(tbldom,[savedir 'mult_anova_rho_atlas_kv'],'FileType','spreadsheet')
+
+
+%% very confused, can we just display out the INJ hand (this is S1 repaired in KV speak)
+
+
+
+figure('Position',[100 100 1400 1000])
+%figure
+tiledlayout(5,4)
+for ii = 1:length(injuredSubs)
+    thisMat = mycent_inj(:,:,ii);
+    nexttile
+    imagesc(thisMat)
+%    title(sprintf([injuredSubs{ii} injuredSubsRHO(ii)] ,'%s%.3f'))
+
+    title(sprintf('Subject %s = %.3f', injuredSubs{ii}, injuredSubsRHO(ii)), 'Interpreter', 'none')
+
+    colormap(mapcol)
+    colorbar
+    xticks(1:5)
+    yticks(1:5)
+    xticklabels({'D1','D2','D3','D4','D5'});
+    yticklabels({'D1','D2','D3','D4','D5'});
+    xtickangle(45)
+    ytickangle(45)
+    ax = gca;
+    ax.FontSize = 10;
+    set(gcf,'color', 'w');
+    axis square
+    clim([a b])
+
+    clear thisMat
+end
+
+filename = fullfile(savedir, 'kv_mats_injured.png');
+exportgraphics(gcf, filename, 'ContentType', 'image', 'Resolution', 300);
 
 
 
