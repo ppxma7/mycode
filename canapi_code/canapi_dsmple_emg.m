@@ -6,10 +6,10 @@
 close all
 clear variables
 clc
-dataset = 'canapi_full_run_111024';
-mypath='/Volumes/hermes/canapi_full_run_111024/EMG/Export/';
+dataset = 'canapi_051224';
+mypath='/Volumes/hermes/canapi_051224/emg/Export/';
 userName = char(java.lang.System.getProperty('user.name'));
-savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_full_run_111024/plots/'];
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_051224/plots/'];
 
 % myfiles = {'1bar_raw.dat','1bar_corrected.dat','1bar_fMRI_raw.dat','1bar_fMRI_corrected.dat',...
 %     '30prc_raw.dat','30prc_corrected.dat','30prc_fMRI_raw.dat','30prc_fMRI_corrected.dat',...
@@ -19,10 +19,12 @@ savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-Th
 %     '30prc_marker.txt','30prc_marker.txt','30prc_fMRI_marker.txt','30prc_fMRI_marker.txt',...
 %     };
 
-myfiles = {'1bar_rectify.dat','1bar_LL_rectify.dat','30prc_rectify.dat',...
-    '50prc_LL_rectify.dat','30prc_LL_rectify.dat','70prc_LL_rectify.dat','50prc_rectify.dat'};
-markerFiles = {'1bar_marker.txt','1bar_LL_marker.txt','30prc_marker.txt',...
-    '50prc_LL_marker.txt','30prc_LL_marker.txt','70prc_LL_marker.txt','50prc_marker.txt'};
+myfiles = {'CANAPI_1bar_Rectify.dat','CANAPI_30per_Rectify.dat','CANAPI_50per_Rectify.dat',...
+    'CANAPI_1bar_t2_Rectify.dat','CANAPI_30per_t2_Rectify.dat','CANAPI_50per_t2_Rectify.dat'};
+
+
+markerFiles = {'CANAPI_1bar_Rectify_marker.txt','CANAPI_30per_Rectify_marker.txt','CANAPI_50per_Rectify_marker.txt',...
+    'CANAPI_1bar_t2_Rectify_marker.txt','CANAPI_30per_t2_Rectify_marker.txt','CANAPI_50per_t2_Rectify_marker.txt'};
 
 
 Fs = 2500;
@@ -162,6 +164,7 @@ signal = signal./2;
 
 
 %% plot
+close all
 % figure('Position',[0 400 1600 800])
 % tiledlayout(2,4)
 % for jj = 1:length(myfiles)
@@ -185,18 +188,19 @@ signal = signal./2;
 t = datetime('now','TimeZone','local','Format','dd-MM-yyyy-HH-mm-ss');
 filename1 = [savedir 'emg_dwnsmpl-LL' dataset '-' char(t)];
 filename2 = [savedir 'emg_dwnsmpl-RL' dataset '-' char(t)];
+figure('Position',[0 0 1400 800])
+tiledlayout(2,3)
 
-figure('Position',[0 0 1000 800])
-flays = [2 5 4 6];
-for jj = flays
+flays = 6; %[2 5 4 6];
+for jj = 1:flays
     nexttile
-    % plot(saveMat_noconv{jj,1},'linewidth',2)
-    % hold on
-    plot(saveMat_noconv{jj,2},'linewidth',2)
+    plot(saveMat_noconv{jj,1},'linewidth',2,'Color','#1f78b4')
+    hold on
+    plot(saveMat_noconv{jj,2},'linewidth',1,'Color','#d95f02')
     hold on
     plot(signal)
     %legend('Trispect force','ideal block','Location','best')
-    legend('ch2','ideal block')
+    legend('ch1','ch2','ideal block')
     title([extractBefore(myfiles{jj},'.')],'Interpreter','none')
     ylim([0 1])
 end
@@ -209,28 +213,28 @@ set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
 set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
 print(h, '-dpdf', filename1, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
 
-
-figure('Position',[0 0 1000 800])
-flays = [1 3 7];
-for jj = flays
-    nexttile
-    plot(saveMat_noconv{jj,1},'linewidth',2)
-    hold on
-    %plot(saveMat_noconv{jj,2},'linewidth',2)
-    plot(signal)
-    %legend('Trispect force','ideal block','Location','best')
-    legend('ch1','ideal block')
-    title([extractBefore(myfiles{jj},'.')],'Interpreter','none')
-    ylim([0 1])
-end
-
-
-h = gcf;
-set(h, 'PaperOrientation', 'landscape');
-set(h, 'PaperUnits', 'inches');
-set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
-set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
-print(h, '-dpdf', filename2, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
+%%
+% figure('Position',[0 0 1000 800])
+% flays = [1 3 7];
+% for jj = flays
+%     nexttile
+%     plot(saveMat_noconv{jj,1},'linewidth',2)
+%     hold on
+%     %plot(saveMat_noconv{jj,2},'linewidth',2)
+%     plot(signal)
+%     %legend('Trispect force','ideal block','Location','best')
+%     legend('ch1','ideal block')
+%     title([extractBefore(myfiles{jj},'.')],'Interpreter','none')
+%     ylim([0 1])
+% end
+% 
+% 
+% h = gcf;
+% set(h, 'PaperOrientation', 'landscape');
+% set(h, 'PaperUnits', 'inches');
+% set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
+% set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
+% print(h, '-dpdf', filename2, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
 
 
 %% just check resampling
