@@ -4,10 +4,10 @@ import os
 # Define the root folder path and specify subfolders to search
 #root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Pain Relief Grant - General/PFP_results/spmexcelfiles_3t/'
 #root_folder_path = '/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - Touchmap - Touchmap/results/restingstate/'
-root_folder_path = '/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_full_run_111024/plots/'
+root_folder_path = '/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_051224/plots/'
 #subfolders_to_search = ['scan1_vs_scan2', 'kiwi_vs_mtx','red_vs_green','red_vs_mtx']  # List the specific subfolders you want to search
 #subfolders_to_search = ['cttouch']  # List the specific subfolders you want to search
-subfolders_to_search = ['leftleg','leftleg_normalboxcar','rightleg','rightleg_normalboxcar']
+subfolders_to_search = ['firstlevel','firstlevel_emgregressor','firstlevel_norealignparams','firlevel_emgregressor_norealignparams']
 
 # Create an empty DataFrame to store all data
 all_data = pd.DataFrame()
@@ -25,8 +25,8 @@ for subfolder in subfolders_to_search:
             # # Skip the 'labelsatlas.txt' file
             # if filename == 'labelsatlas.txt':
             #     continue
-            #print(f"Found file: {filename}")
-            #print(f"Looking into subfolder: {full_subfolder_path}")
+            print(f"Found file: {filename}")
+            print(f"Looking into subfolder: {full_subfolder_path}")
 
             if filename.endswith('.csv'):
                 file_path = os.path.join(dirpath, filename)
@@ -36,7 +36,7 @@ for subfolder in subfolders_to_search:
                 data = pd.read_csv(file_path)
                 #print(f"Data shape: {data.shape}")
                 
-                # # If it's the first file, read with header; otherwise, skip the header
+                # If it's the first file, read with header; otherwise, skip the header
                 # this is for when you have spaces in your headers
                 # if is_first_file:
                 #     data = pd.read_csv(file_path, delim_whitespace=False, sep=r'\s{2,}', engine='python')  # Adjust delimiter if necessary
