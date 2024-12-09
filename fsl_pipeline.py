@@ -12,18 +12,18 @@ structural_image = os.path.join(rootFold,"parrec_WIPMPRAGE_CS3_5_20241205082447_
 os.makedirs(output_folder, exist_ok=True)
 
 # List of input files
-# input_files = [
-#     "parrec_WIP1bar_20241205082447_6_nordic_clv.nii",
-#     "parrec_WIP1bar_20241205082447_10_nordic_clv.nii",
-#     "parrec_WIP30prc_20241205082447_5_nordic_clv.nii",
-#     "parrec_WIP30prc_20241205082447_9_nordic_clv.nii",
-#     "parrec_WIP50prc_20241205082447_4_nordic_clv.nii",
-#     "parrec_WIP50prc_20241205082447_8_nordic_clv.nii"
-# ]
-
 input_files = [
-    "parrec_WIP1bar_20241205082447_6_nordic_clv"
+    "parrec_WIP1bar_20241205082447_6_nordic_clv.nii",
+    "parrec_WIP1bar_20241205082447_10_nordic_clv.nii",
+    "parrec_WIP30prc_20241205082447_5_nordic_clv.nii",
+    "parrec_WIP30prc_20241205082447_9_nordic_clv.nii",
+    "parrec_WIP50prc_20241205082447_4_nordic_clv.nii",
+    "parrec_WIP50prc_20241205082447_8_nordic_clv.nii"
 ]
+
+# input_files = [
+#     "parrec_WIP1bar_20241205082447_6_nordic_clv"
+# ]
 
 # Step 1: Realignment (Motion Correction)
 for file in input_files:
@@ -87,11 +87,20 @@ for file in input_files:
     print(f"Functional to Structural alignment completed: {func2anat_mat}")
 
     # Step 3b: Align Structural to MNI
+    anat2mni_out = os.path.join(output_folder, base_name + "_anat2mni.nii.gz")
     subprocess.run([
-        "flirt", "-in", structural_image,
-        "-ref", os.path.join(os.environ["FSLDIR"], "data/standard/MNI152_T1_2mm.nii.gz"),
+        "/usr/local/fsl/bin/flirt",
+        "-in", structural_image,
+        "-ref", "/usr/local/fsl/data/standard/MNI152_T1_2mm_brain",
+        "-out", anat2mni_out,
         "-omat", anat2mni_mat,
-        "-out", os.path.join(output_folder, base_name + "_anat2mni.nii.gz")
+        "-bins", "256",
+        "-cost", "corratio",
+        "-searchrx", "-90", "90",
+        "-searchry", "-90", "90",
+        "-searchrz", "-90", "90",
+        "-dof", "12",
+        "-interp", "trilinear"
     ])
     print(f"Structural to MNI alignment completed: {anat2mni_mat}")
 
@@ -105,25 +114,25 @@ for file in input_files:
     # Step 3d: Apply Combined Transformation to Functional Data
     subprocess.run([
         "flirt", "-in", aroma_out,
-        "-ref", os.path.join(os.environ["FSLDIR"], "data/standard/MNI152_T1_2mm.nii.gz"),
+        "-ref", "/usr/local/fsl/data/standard/MNI152_T1_2mm_brain",
         "-out", normalized_out,
         "-applyxfm", "-init", func2mni_mat
     ])
     print(f"Normalized to MNI space: {normalized_out}")
 
-# Step 4: Smoothing
-for file in input_files:
-    base_name = os.path.splitext(file)[0]
-    normalized_out = os.path.join(output_folder, base_name + "_mni.nii.gz")
-    smoothed_out = os.path.join(output_folder, base_name + "_smoothed.nii.gz")
+# # Step 4: Smoothing
+# for file in input_files:
+#     base_name = os.path.splitext(file)[0]
+#     normalized_out = os.path.join(output_folder, base_name + "_mni.nii.gz")
+#     smoothed_out = os.path.join(output_folder, base_name + "_smoothed.nii.gz")
     
-    # Apply smoothing
-    subprocess.run([
-        "fslmaths", normalized_out,
-        "-s", "3",  # Smooth with 2.5mm FWHM
-        smoothed_out
-    ])
-    print(f"Smoothed file saved to: {smoothed_out}")
+#     # Apply smoothing
+#     subprocess.run([
+#         "fslmaths", normalized_out,
+#         "-s", "3",  # Smooth with 2.5mm FWHM
+#         smoothed_out
+#     ])
+#     print(f"Smoothed file saved to: {smoothed_out}")
 
 
 
