@@ -23,7 +23,9 @@ input_files = [
 # Step 3: Normalization to MNI152 Space
 for file in input_files:
     base_name = os.path.splitext(file)[0]
-    aroma_out = os.path.join(output_folder, base_name + "_aroma/denoised_func_data_nonaggr.nii.gz")
+    #aroma_out = os.path.join(output_folder, base_name + "_aroma/denoised_func_data_nonaggr.nii.gz")
+    aroma_out = os.path.join(output_folder, base_name + "_highpass.nii.gz")
+    
     func2anat_mat = os.path.join(output_folder, base_name + "_func2anat.mat")
     anat2mni_mat = os.path.join(output_folder, base_name + "_anat2mni.mat")
     func2mni_mat = os.path.join(output_folder, base_name + "_func2mni.mat")
