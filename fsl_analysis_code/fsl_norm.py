@@ -6,7 +6,7 @@ rootFold = "/Volumes/hermes/canapi_051224/fslanalysis/"
 input_folder = rootFold  # Replace with your input folder path
 output_folder = rootFold  # Replace with your output folder path
 ica_aroma_path = "/Users/ppzma/Documents/MATLAB/ICA-AROMA/ICA_AROMA.py"  # Path to ICA-AROMA script
-brain_mask = os.path.join(rootFold, "brain_mask.nii.gz")  # Optional brain mask
+#brain_mask = os.path.join(rootFold, "brain_mask.nii.gz")  # Optional brain mask
 structural_image = os.path.join(rootFold, "parrec_WIPMPRAGE_CS3_5_20241205082447_2_masked.nii")
 
 os.makedirs(output_folder, exist_ok=True)
@@ -24,8 +24,8 @@ input_files = [
 for file in input_files:
     base_name = os.path.splitext(file)[0]
     #aroma_out = os.path.join(output_folder, base_name + "_aroma/denoised_func_data_nonaggr.nii.gz")
-    aroma_out = os.path.join(output_folder, base_name + "_highpass.nii.gz")
-    
+    aroma_out = os.path.join(output_folder, base_name + "_nuisance_regressed.nii.gz")
+
     func2anat_mat = os.path.join(output_folder, base_name + "_func2anat.mat")
     anat2mni_mat = os.path.join(output_folder, base_name + "_anat2mni.mat")
     func2mni_mat = os.path.join(output_folder, base_name + "_func2mni.mat")

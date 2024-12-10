@@ -9,18 +9,18 @@ rootFold = "/Volumes/hermes/canapi_051224/fslanalysis/"
 
 
 
-# pre_files = [
-#     "parrec_WIP1bar_20241205082447_6_nordic_clv",
-#     "parrec_WIP1bar_20241205082447_10_nordic_clv",
-#     "parrec_WIP30prc_20241205082447_5_nordic_clv",
-#     "parrec_WIP30prc_20241205082447_9_nordic_clv",
-#     "parrec_WIP50prc_20241205082447_4_nordic_clv",
-#     "parrec_WIP50prc_20241205082447_8_nordic_clv"
-# ]
-
 pre_files = [
-    "parrec_WIP1bar_20241205082447_6_nordic_clv"
+    "parrec_WIP1bar_20241205082447_6_nordic_clv",
+    "parrec_WIP1bar_20241205082447_10_nordic_clv",
+    "parrec_WIP30prc_20241205082447_5_nordic_clv",
+    "parrec_WIP30prc_20241205082447_9_nordic_clv",
+    "parrec_WIP50prc_20241205082447_4_nordic_clv",
+    "parrec_WIP50prc_20241205082447_8_nordic_clv"
 ]
+
+# pre_files = [
+#     "parrec_WIP1bar_20241205082447_6_nordic_clv"
+# ]
 
 
 # post_file = "parrec_WIP1bar_20241205082447_6_nordic_clv_nuisance_regressed.nii.gz"

@@ -188,17 +188,17 @@ for file in input_files:
     print(f"Nuisance regression completed: {nuisance_reg_out}")
 
 
-    ## Perform linear detrending
-    data_detrended = detrend_vectorized(data_regressed.reshape(-1, data_regressed.shape[-1]))
-    data_detrended = data_detrended.reshape(data_regressed.shape)
-    nib.save(nib.Nifti1Image(data_detrended, affine), detrended_out)
-    print(f"Linear detrending completed: {detrended_out}")
+    # ## Perform linear detrending
+    # data_detrended = detrend_vectorized(data_regressed.reshape(-1, data_regressed.shape[-1]))
+    # data_detrended = data_detrended.reshape(data_regressed.shape)
+    # nib.save(nib.Nifti1Image(data_detrended, affine), detrended_out)
+    # print(f"Linear detrending completed: {detrended_out}")
 
 
-    ## Apply high-pass filter (0.01 Hz cutoff, TR=2s as an example)
-    TR = 1.5  # Replace with actual TR
-    cutoff = 0.01  # High-pass filter cutoff in Hz
-    fs = 1 / TR  # Sampling frequency in Hz
-    data_filtered = np.apply_along_axis(high_pass_filter, axis=-1, arr=data_detrended, cutoff=cutoff, fs=fs)
-    nib.save(nib.Nifti1Image(data_filtered, affine), highpass_out)
-    print(f"High-pass filtering completed: {highpass_out}")
+    # ## Apply high-pass filter (0.01 Hz cutoff, TR=2s as an example)
+    # TR = 1.5  # Replace with actual TR
+    # cutoff = 0.01  # High-pass filter cutoff in Hz
+    # fs = 1 / TR  # Sampling frequency in Hz
+    # data_filtered = np.apply_along_axis(high_pass_filter, axis=-1, arr=data_detrended, cutoff=cutoff, fs=fs)
+    # nib.save(nib.Nifti1Image(data_filtered, affine), highpass_out)
+    # print(f"High-pass filtering completed: {highpass_out}")
