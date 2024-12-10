@@ -82,7 +82,6 @@ for file in input_files:
         "--iout=" + fnirt_out,                              # Output warped image
         "--lambda=5",                                       # Regularization strength (more conservative)
         "--subsamp=4,2,2,1",                                # Subsampling levels for refinement
-        "--fwhm=8,6,4,2",                                   # Smoothing during alignment
         "--biasres=50",                                     # Bias field regularization
         "--intmod=global_non_linear",                       # Intensity mapping model
         "--jacrange=0.5,2"                                  # Restrict deformation Jacobian range
