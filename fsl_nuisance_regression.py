@@ -4,6 +4,7 @@ import numpy as np
 import nibabel as nib
 from scipy.stats import linregress
 from scipy.signal import butter, filtfilt
+from sklearn.linear_model import LinearRegression
 
 # Paths to input and output folders
 rootFold = "/Volumes/hermes/canapi_051224/fslanalysis/"
@@ -23,6 +24,9 @@ input_files = [
     "parrec_WIP50prc_20241205082447_4_nordic_clv.nii",
     "parrec_WIP50prc_20241205082447_8_nordic_clv.nii"
 ]
+
+# input_files = ["parrec_WIP1bar_20241205082447_6_nordic_clv.nii",
+# ]
 
 # Define paths for FAST outputs
 fast_output_prefix = os.path.join(output_folder, "fast_out")
@@ -67,6 +71,18 @@ def regress_nuisance(data, nuisance):
     betas = np.linalg.lstsq(nuisance, data.T, rcond=None)[0]  # Transpose data for regression
     residuals = data - (nuisance @ betas).T  # Transpose back
     return residuals
+
+def regress_nuisance2(data, nuisance):
+    """Robust nuisance regression."""
+    residuals = np.zeros_like(data)
+    model = LinearRegression()  # Ordinary least squares regression
+    for i in range(data.shape[0]):  # Loop through voxels
+        model.fit(nuisance, data[i, :])
+        predicted = model.predict(nuisance)
+        residuals[i, :] = data[i, :] - predicted
+    return residuals
+
+
 
 
 def detrend(data):
@@ -122,43 +138,64 @@ for file in input_files:
     csf_timeseries = data[csf_data > 0.9, :].mean(axis=0)
 
     print(f"Shape of WM timeseries: {wm_timeseries.shape}, CSF timeseries: {csf_timeseries.shape}")
+    print(f"WM timeseries mean: {wm_timeseries.mean()}, std: {wm_timeseries.std()}")
+    print(f"CSF timeseries mean: {csf_timeseries.mean()}, std: {csf_timeseries.std()}")
 
     # Ensure nuisance signals and data_flat have compatible dimensions
     nuisance_signals = np.column_stack([wm_timeseries, csf_timeseries])
+    
+    # centers each regressor to have a mean of 0
+    nuisance_signals -= nuisance_signals.mean(axis=0)
+    # scales each regressor to have a standard deviation of 1, avoiding division by zero
+    nuisance_signals /= nuisance_signals.std(axis=0) + 1e-8  # Standardize
     print(f"Shape of nuisance_signals: {nuisance_signals.shape}")
 
+    #Many operations (e.g., linear regression, detrending) expect the data to be in a 2D matrix form:
+    #Rows: Observations (voxels).
+    #Columns: Features (timepoints).
+    # (-1,...) tells numpy to infer size of the flattened spatial dim
+    # (..., data.shape[-1]) keeps time dim unchanged
     data_flat = data.reshape(-1, data.shape[-1])  # (num_voxels, num_timepoints)
     print(f"Shape of data_flat: {data_flat.shape}")
+    print(f"Original data mean: {data_flat.mean()}, Original data std: {data_flat.std()}")
 
     # Transpose nuisance_signals if needed
     if nuisance_signals.shape[0] != data_flat.shape[1]:
         raise ValueError(f"Mismatch in timepoints: data ({data_flat.shape[1]}) and nuisance ({nuisance_signals.shape[0]})")
 
 
+    # This step scales the fMRI data (optional, must undo before saving)
+    original_mean = np.mean(data_flat, axis=-1, keepdims=True)  # Voxel-wise mean
+    original_std = np.std(data_flat, axis=-1, keepdims=True) + 1e-8  # Voxel-wise std
+    data_flat -= original_mean  # Demean the data
+    data_flat /= original_std  # Normalize to unit variance
+
+
     # Perform nuisance regression
-    data_regressed = regress_nuisance(data_flat, nuisance_signals)
+    #data_regressed = regress_nuisance(data_flat, nuisance_signals)
+    data_regressed = regress_nuisance2(data_flat, nuisance_signals) #try ridge regression
     data_regressed = data_regressed.reshape(data.shape)
 
+    # Restore original scaling to the regressed data
+    data_regressed = data_regressed.reshape(-1, data_regressed.shape[-1])  # Flatten again
+    data_regressed *= original_std  # Restore original standard deviation
+    data_regressed += original_mean  # Restore original mean
+    data_regressed = data_regressed.reshape(data.shape)  # Reshape back to 4D
 
+    print(f"Data regressed mean: {data_regressed.mean()}, std: {data_regressed.std()}")
 
-    #data_regressed = regress_nuisance(data_flat, nuisance_signals)
-    #data_regressed = data_regressed.reshape(data.shape)
     nib.save(nib.Nifti1Image(data_regressed, affine), nuisance_reg_out)
     print(f"Nuisance regression completed: {nuisance_reg_out}")
 
 
-    # Perform linear detrending
-    #data_detrended = np.apply_along_axis(detrend, axis=-1, arr=data_regressed)
-    #nib.save(nib.Nifti1Image(data_detrended, affine), detrended_out)
-    #print(f"Linear detrending completed: {detrended_out}")
-
+    ## Perform linear detrending
     data_detrended = detrend_vectorized(data_regressed.reshape(-1, data_regressed.shape[-1]))
     data_detrended = data_detrended.reshape(data_regressed.shape)
     nib.save(nib.Nifti1Image(data_detrended, affine), detrended_out)
     print(f"Linear detrending completed: {detrended_out}")
 
 
-    # Apply high-pass filter (0.01 Hz cutoff, TR=2s as an example)
+    ## Apply high-pass filter (0.01 Hz cutoff, TR=2s as an example)
     TR = 1.5  # Replace with actual TR
     cutoff = 0.01  # High-pass filter cutoff in Hz
     fs = 1 / TR  # Sampling frequency in Hz
