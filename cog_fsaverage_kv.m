@@ -40,6 +40,17 @@ subjects = {'00393_RD_touchmap',...
     'sub016_061','sub016_063','sub016_064'};
 
 
+subjects = {'00393','03677','04217','06447','08740','08966','09621','10289','10301','10320','10329','10654',...
+    '10875','11120','11240','11251','11753','HB1','HB2','HB3','HB4','HB5'};
+
+
+% subjects = {'sub016_026','sub016_028','sub016_029','sub016_030','sub016_031','sub016_032',...
+%     'sub016_033','sub016_034','sub016_035','sub016_036','sub016_037','sub016_038','sub016_039','sub016_040',...
+%     'sub016_041','sub016_042','sub016_043','sub016_045','sub016_046','sub016_047','sub016_049','sub016_050',...
+%     'sub016_051','sub016_052','sub016_054','sub016_055','sub016_056','sub016_057','sub016_059','sub016_060',...
+%     'sub016_061','sub016_063','sub016_064'};
+
+
 
 % These people need to rerun Freesurfer I think...
 % 09621 not good surf reg 
@@ -72,7 +83,8 @@ for thisSub = 1:length(subjects)
     if contains(subjects{thisSub},'sub016')
         mypath = ['/Volumes/r15/DRS-TOUCHMAP/ma_ares_backup/TOUCH_REMAP/exp016/231108_share/' subjects{thisSub} '/resultsSummary/atlas/'];
     else
-        mypath = ['/Volumes/styx/prf_fsaverage/' subjects{thisSub} '/'];
+        %mypath = ['/Volumes/styx/prf_fsaverage/' subjects{thisSub} '/'];
+        mypath = ['/Volumes/r15/DRS-7TfMRI/DigitAtlas/maps_uncorrected/' subjects{thisSub} '/'];
     end
     %mypath = ['/Volumes/DRS-Touchmap/ma_ares_backup/prf_fsaverage/' subjects{thisSub} '/'];
 
@@ -83,12 +95,15 @@ for thisSub = 1:length(subjects)
     end
     
     % Define paths
-
-    if thisSub<13
-        subjects_dir = '/Volumes/r15/DRS-Touchmap/ma_ares_backup/subs/';  % Update to actual path
-    elseif thisSub>12 && thisSub<21
-        subjects_dir = '/Volumes/r15/DRS-7TfMRI/DigitAtlas/FreeSurferDigitAtlas/';
-    elseif thisSub > 20
+    
+    if ~contains(subjects{thisSub},'sub016')
+        if thisSub<13
+            subjects_dir = '/Volumes/r15/DRS-Touchmap/ma_ares_backup/subs/';  % Update to actual path
+        elseif thisSub>12 && thisSub<21
+            subjects_dir = '/Volumes/r15/DRS-7TfMRI/DigitAtlas/FreeSurferDigitAtlas/';
+        end
+        %elseif thisSub > 20
+    else
         subjects_dir = '/Volumes/r15/DRS-TOUCHMAP/ma_ares_backup/TOUCH_REMAP/exp016/freesurfer';
     end
     disp(subjects_dir)
@@ -109,24 +124,18 @@ for thisSub = 1:length(subjects)
     [vertices, faces] = read_surf(fullfile(subjects_dir, ...
         subject, 'surf', strcat(hemisphere, 'h.inflated')));
 
-    %fsavg_path = '/Volumes/styx/fsaverage_copy/surf/';
-    % Load fsaverage surface
-    %[coords, faces] = read_surf([fsavg_path 'lh.inflated']);  % Replace with actual path
-    % coords is Nx3 array of vertex coordinates, faces is Mx3 array of face indices
-    
-    % Load your intensity data
-    %mgh_file = [mypath 'co_masked_0_1_57_co_thresh_fsaverage.mgh'];
 
     % Define thresholded phase-binned images and a list for CoG storage
 
-    % threshold_files = {
-    %     [mypath 'co_masked_0_1_57_co_thresh_fsaverage.mgh'], ...
-    %     [mypath 'co_masked_1_57_3_14_co_thresh_fsaverage.mgh'], ...
-    %     [mypath 'co_masked_3_14_4_71_co_thresh_fsaverage.mgh'], ...
-    %     [mypath 'co_masked_4_71_6_28_co_thresh_fsaverage.mgh']
-    %     };
 
     if ~contains(subjects{thisSub},'sub016')
+%         threshold_files = {
+%             [mypath 'co_masked_0_1_256_co_thresh_fsaverage.mgh'], ...
+%             [mypath 'co_masked_1_256_2_512_co_thresh_fsaverage.mgh'], ...
+%             [mypath 'co_masked_2_512_3_768_co_thresh_fsaverage.mgh'], ...
+%             [mypath 'co_masked_3_768_5_024_co_thresh_fsaverage.mgh'],...
+%             [mypath 'co_masked_5_024_6_28_co_thresh_fsaverage.mgh'],...
+%             };
         threshold_files = {
             [mypath 'co_masked_0_1_256_co_thresh_fsaverage.mgh'], ...
             [mypath 'co_masked_1_256_2_512_co_thresh_fsaverage.mgh'], ...
@@ -264,6 +273,56 @@ for loopSub = 1:size(cog_list,3)
 
 
 end
+
+%% Get 5x5 matrix of distances
+
+% Initialize a 5x5x70 matrix to store distances for all subjects
+% Output explanation
+% distMatrix(:,:,n) contains the 5x5 distance matrix for subject n
+% distMatrix(ii,jj,n) is the distance between digit ii and digit jj for subject n
+distMatrix = zeros(5, 5, size(cog_list, 3));
+for loopSub = 1:size(cog_list,3)
+    thisCog = cog_list(:,:,loopSub);
+    for ii = 1:5
+        for jj = 1:5
+            distMatrix(ii,jj,loopSub) = norm(thisCog(ii,:) - thisCog(jj,:));
+        end
+    end
+end
+
+%% plot matrices
+close all
+
+subsAtlas = [1 3 4 13 14 15 17 18 19 20];
+subsKV = 21:70;
+subsPat = [5 6 7 8 9 10 11 12];
+
+subsAtlasDists = distMatrix(:,:,subsAtlas);
+subsKVDists = distMatrix(:,:,subsKV);
+subsPatDists = distMatrix(:,:,subsPat);
+
+mapCol = 'plasma';
+figure('Position', [100 100 1000 400])
+tiledlayout(2,5)
+for ii = 1:length(subsAtlasDists)
+    nexttile
+    imagesc(subsAtlasDists(:,:,ii))
+    title('Digit distances (COG) mm')
+    colormap(mapCol)
+    colorbar
+    xticks(1:5)
+    yticks(1:5)
+    xticklabels({'RD1','RD2','RD3','RD4','RD5'});
+    yticklabels({'RD1','RD2','RD3','RD4','RD5'});
+    xtickangle(45)
+    ytickangle(45)
+    ax = gca;
+    ax.FontSize = 10;
+    set(gcf,'color', 'w');
+    axis square
+end
+filename = fullfile(savedirUp, 'subsAtlasDists');
+print(filename,'-dpng')
 
 
 
