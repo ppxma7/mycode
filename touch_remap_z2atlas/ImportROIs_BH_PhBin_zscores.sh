@@ -1,8 +1,8 @@
 #!/bin/bash
 cd ~
 source $FREESURFER_HOME/SetUpFreeSurfer.sh 
-MOUNT='/Volumes/arianthe/exp016/231108_share/'
-export SUBJECTS_DIR=/Volumes/arianthe/exp016/freesurfer/
+MOUNT='/Volumes/r15/DRS-TOUCHMAP/ma_ares_backup/TOUCH_REMAP/exp016/231108_share/'
+export SUBJECTS_DIR=/Volumes/r15/DRS-TOUCHMAP/ma_ares_backup/TOUCH_REMAP/exp016/freesurfer/
 #subjectlist="00393 00791_1mm_psir 03677 03942 13287 13172 13945 13382 13493 13654 13658 13695"
 #subjectlist="00393 00791_1mm_psir 03677 03942 13172 13287 13382 13382_pre 13447 13493 13493_pre 13654 13654_pre 13658 13658_pre 13695 13695_pre 13945 14001_pre"
 #subjectlist="13382_pre 13493_pre 13654_pre 13658_pre 13695_pre 14001_pre"
