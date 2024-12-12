@@ -2,24 +2,31 @@ import os
 import subprocess
 
 # Paths to input and output folders
-rootFold = "/Volumes/hermes/canapi_051224/fslanalysis/"
+rootFold = "/Volumes/hermes/canapi_111224/fslanalysis/"
+strucFold = "/Volumes/hermes/canapi_111224/structural/"
 input_folder = rootFold  # Replace with your input folder path
 output_folder = rootFold  # Replace with your output folder path
 ica_aroma_path = "/Users/ppzma/Documents/MATLAB/ICA-AROMA/ICA_AROMA.py"  # Path to ICA-AROMA script
 #brain_mask = os.path.join(rootFold, "brain_mask.nii.gz")  # Optional brain mask
-structural_image = os.path.join(rootFold, "parrec_WIPMPRAGE_CS3_5_20241205082447_2_masked.nii")
+structural_image = os.path.join(strucFold, "canapi_111224_WIPMPRAGE_CS3_5_20241211155413_4_masked.nii")
 
 os.makedirs(output_folder, exist_ok=True)
 
 # List of input files
+# input_files = [
+#     "parrec_WIP1bar_20241205082447_6_nordic_clv.nii",
+#     "parrec_WIP1bar_20241205082447_10_nordic_clv.nii",
+#     "parrec_WIP30prc_20241205082447_5_nordic_clv.nii",
+#     "parrec_WIP30prc_20241205082447_9_nordic_clv.nii",
+#     "parrec_WIP50prc_20241205082447_4_nordic_clv.nii",
+#     "parrec_WIP50prc_20241205082447_8_nordic_clv.nii"
+# ]
+
 input_files = [
-    "parrec_WIP1bar_20241205082447_6_nordic_clv.nii",
-    "parrec_WIP1bar_20241205082447_10_nordic_clv.nii",
-    "parrec_WIP30prc_20241205082447_5_nordic_clv.nii",
-    "parrec_WIP30prc_20241205082447_9_nordic_clv.nii",
-    "parrec_WIP50prc_20241205082447_4_nordic_clv.nii",
-    "parrec_WIP50prc_20241205082447_8_nordic_clv.nii"
+    "canapi_111224_WIP1bar_20241211155413_3_nordic_clv"
 ]
+
+
 # Step 3: Normalization to MNI152 Space
 for file in input_files:
     base_name = os.path.splitext(file)[0]

@@ -7,23 +7,30 @@ from scipy.signal import butter, filtfilt
 from sklearn.linear_model import LinearRegression
 
 # Paths to input and output folders
-rootFold = "/Volumes/hermes/canapi_051224/fslanalysis/"
+rootFold = "/Volumes/hermes/canapi_111224/fslanalysis/"
+strucFold = "/Volumes/hermes/canapi_111224/structural/"
 input_folder = rootFold
 output_folder = rootFold
 ica_aroma_path = "/Users/ppzma/Documents/MATLAB/ICA-AROMA/ICA_AROMA.py"
-brain_mask = os.path.join(rootFold, "brain_mask.nii.gz")
-structural_image = os.path.join(rootFold, "parrec_WIPMPRAGE_CS3_5_20241205082447_2_masked.nii")
+brain_mask = os.path.join(rootFold, "brainmask_mask.nii.gz")
+structural_image = os.path.join(strucFold,"canapi_111224_WIPMPRAGE_CS3_5_20241211155413_4_masked.nii")
 
 os.makedirs(output_folder, exist_ok=True)
 
+# input_files = [
+#     "parrec_WIP1bar_20241205082447_6_nordic_clv.nii",
+#     "parrec_WIP1bar_20241205082447_10_nordic_clv.nii",
+#     "parrec_WIP30prc_20241205082447_5_nordic_clv.nii",
+#     "parrec_WIP30prc_20241205082447_9_nordic_clv.nii",
+#     "parrec_WIP50prc_20241205082447_4_nordic_clv.nii",
+#     "parrec_WIP50prc_20241205082447_8_nordic_clv.nii"
+# ]
+
 input_files = [
-    "parrec_WIP1bar_20241205082447_6_nordic_clv.nii",
-    "parrec_WIP1bar_20241205082447_10_nordic_clv.nii",
-    "parrec_WIP30prc_20241205082447_5_nordic_clv.nii",
-    "parrec_WIP30prc_20241205082447_9_nordic_clv.nii",
-    "parrec_WIP50prc_20241205082447_4_nordic_clv.nii",
-    "parrec_WIP50prc_20241205082447_8_nordic_clv.nii"
+    "canapi_111224_WIP1bar_20241211155413_3_nordic_clv.nii"
 ]
+
+firstFile = "canapi_111224_WIP1bar_20241211155413_3_nordic_clv.nii"
 
 # input_files = ["parrec_WIP1bar_20241205082447_6_nordic_clv.nii",
 # ]
@@ -56,7 +63,7 @@ if not all(os.path.exists(f) for f in [wm_mask_func, csf_mask_func]):
     for file, output in zip([wm_mask_struct, csf_mask_struct], [wm_mask_func, csf_mask_func]):
         subprocess.run([
             "flirt", "-in", file,
-            "-ref", os.path.join(output_folder, "parrec_WIP1bar_20241205082447_6_nordic_clv.nii.gz"),
+            "-ref", os.path.join(output_folder, firstFile),
             "-applyxfm", "-usesqform",
             "-out", output
         ])
@@ -116,8 +123,8 @@ for file in input_files:
     base_name = os.path.splitext(file)[0]
     aroma_out = os.path.join(output_folder, base_name + "_aroma/denoised_func_data_nonaggr.nii.gz")
     nuisance_reg_out = os.path.join(output_folder, base_name + "_nuisance_regressed.nii.gz")
-    detrended_out = os.path.join(output_folder, base_name + "_detrended.nii.gz")
-    highpass_out = os.path.join(output_folder, base_name + "_highpass.nii.gz")
+    #detrended_out = os.path.join(output_folder, base_name + "_detrended.nii.gz")
+    #highpass_out = os.path.join(output_folder, base_name + "_highpass.nii.gz")
 
     # Load fMRI data
     img = nib.load(aroma_out)
