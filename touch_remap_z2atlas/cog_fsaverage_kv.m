@@ -399,18 +399,23 @@ for ii = 1:length(distMatrix_cutSubs)
 end
 filename = fullfile(savedirUp, 'Dists');
 print(filename,'-dpng')
-%% I STOPPED HER
-meanDistMat = mean(distMatrix_cutSubs(:,:,1:13),3);
-meanDistPat = mean(distMatrix_cutSubs(:,:,14:end),3);
-meanDistKV = mean(distMatrix_cutSubs(:,:,),3);
+%% I STOPPED HERE
 
-bloop = cat(3,meanDistMat,meanDistPat);
-groups = {'Atlas','BTX Patients'};
+patDex = find(contains(shortened_subjects_cutSubs,'Btx'));
+atlasDex = 1:patDex(1)-1;
+kvDex = find(contains(shortened_subjects_cutSubs,'sub016'));
+
+meanDistMat = mean(distMatrix_cutSubs(:,:,atlasDex),3);
+meanDistPat = mean(distMatrix_cutSubs(:,:,patDex),3);
+meanDistKV = mean(distMatrix_cutSubs(:,:,kvDex),3);
+
+bloop = cat(3,meanDistMat,meanDistPat, meanDistKV);
+groups = {'Atlas','BTX Patients','sub016 Patients'};
 
 mapCol = 'plasma';
 figure('Position', [100 100 800 400])
-tiledlayout(1,2)
-for ii = 1:2
+tiledlayout(1,3)
+for ii = 1:3
     nexttile
     imagesc(bloop(:,:,ii))
     % Replace underscores with spaces
