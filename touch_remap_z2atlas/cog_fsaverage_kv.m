@@ -44,6 +44,8 @@ subjects = {'00393_RD_extra', '03677_RD_extra',...
     'sub016_061','sub016_063','sub016_064'
     };
 
+%subjects = {'sub016_005','sub016_006'};
+
 
 %subjects = {'09621_RD_extra'};
 
@@ -80,7 +82,7 @@ for thisSub = 1:length(subjects)
         %mypath = ['/Volumes/r15/DRS-TOUCHMAP/ma_ares_backup/TOUCH_REMAP/exp016/231108_share/' subjects{thisSub} '/resultsSummary/atlas/'];
         %mypath = ['/Volumes/DRS-Touchmap/ma_ares_backup/prf_fsaverage/' subjects{thisSub} '/'];
         mypath = ['/Volumes/styx/prf_fsaverage/' subjects{thisSub} '/'];
-    elseif ~contains(subjects{thisSub},'Btx')
+    elseif ~contains(subjects{thisSub},'Btx') && ~contains(subjects{thisSub},'sub016')
         %mypath = ['/Volumes/styx/prf_fsaverage/' subjects{thisSub} '/'];
         mypath = ['/Volumes/r15/DRS-7TfMRI/DigitAtlas/TWmaps_masks/' subjects{thisSub} '/'];
     elseif contains(subjects{thisSub},'sub016')
@@ -108,7 +110,7 @@ for thisSub = 1:length(subjects)
     %     end
     if contains(subjects{thisSub},'Btx')
         subjects_dir = '/Volumes/DRS-Touchmap/ma_ares_backup/subs/';
-    elseif ~contains(subjects{thisSub},'Btx')
+    elseif ~contains(subjects{thisSub},'Btx') && ~contains(subjects{thisSub},'sub016')
         subjects_dir = '/Volumes/DRS-7TfMRI/DigitAtlas/FreeSurferDigitAtlas/';
     elseif contains(subjects{thisSub},'sub016')
         subjects_dir = '/Volumes/DRS-TOUCHMAP/ma_ares_backup/TOUCH_REMAP/exp016/freesurfer/';
@@ -154,7 +156,7 @@ for thisSub = 1:length(subjects)
             [mypath 'co_masked_3_768_5_024_co_thresh_fsaverage.mgh'],...
             [mypath 'co_masked_5_024_6_28_co_thresh_fsaverage.mgh'],...
             };
-    elseif ~contains(subjects{thisSub},'Btx')
+    elseif ~contains(subjects{thisSub},'Btx') && ~contains(subjects{thisSub},'sub016')
         threshold_files = {
             [mypath 'co_masked_bin1_co_thresh_fsaverage.mgh'],...
             [mypath 'co_masked_bin2_co_thresh_fsaverage.mgh'],...
@@ -364,15 +366,19 @@ distMatrix_cutSubs = distMatrix(:,:,cutSubs);
 shortened_subjects_cutSubs = shortened_subjects(cutSubs);
 
 mapCol = 'plasma';
-figure('Position', [100 100 1400 600])
+figure('Position', [100 100 1600 1000])
 %figure
-tiledlayout(3,8)
+tiledlayout(7,10)
 for ii = 1:length(distMatrix_cutSubs)
     nexttile
     imagesc(distMatrix_cutSubs(:,:,ii))
     % Replace underscores with spaces
     % Remove the last 5 characters and replace underscores
-    trimmed_name = shortened_subjects_cutSubs{ii}(1:end-5); % Remove last 5 characters
+    if ~contains(shortened_subjects_cutSubs{ii},'sub016')
+        trimmed_name = shortened_subjects_cutSubs{ii}(1:end-5); % Remove last 5 characters
+    elseif contains(shortened_subjects_cutSubs{ii},'sub016')
+        trimmed_name = shortened_subjects_cutSubs{ii}(8:end);
+    end
     cleaned_name = strrep(trimmed_name, '_', ' '); % Replace underscore
     title(cleaned_name)
     colormap(mapCol)
@@ -393,9 +399,10 @@ for ii = 1:length(distMatrix_cutSubs)
 end
 filename = fullfile(savedirUp, 'Dists');
 print(filename,'-dpng')
-%%
+%% I STOPPED HER
 meanDistMat = mean(distMatrix_cutSubs(:,:,1:13),3);
 meanDistPat = mean(distMatrix_cutSubs(:,:,14:end),3);
+meanDistKV = mean(distMatrix_cutSubs(:,:,),3);
 
 bloop = cat(3,meanDistMat,meanDistPat);
 groups = {'Atlas','BTX Patients'};
