@@ -2,7 +2,7 @@ import os
 import subprocess
 
 # Paths to input and output folders
-rootFold = "/Volumes/hermes/canapi_111224/fslanalysis/"
+rootFold = "/Volumes/hermes/canapi_111224/tryaroma_mni_space/"
 strucFold = "/Volumes/hermes/canapi_111224/structural/"
 input_folder = rootFold  # Replace with your input folder path
 output_folder = rootFold  # Replace with your output folder path
@@ -23,14 +23,15 @@ os.makedirs(output_folder, exist_ok=True)
 # ]
 
 input_files = [
-    "canapi_111224_WIP1bar_20241211155413_3_nordic_clv"
+    "wrcanapi_111224_WIP1bar_20241211155413_3_nordic_clv"
 ]
 
 
 # Step 3: Normalization to MNI152 Space
 for file in input_files:
     base_name = os.path.splitext(file)[0]
-    aroma_out = os.path.join(output_folder, base_name + "_nuisance_regressed.nii.gz")
+    #aroma_out = os.path.join(output_folder, base_name + "_mc.nii.gz")
+    aroma_out = os.path.join(output_folder, base_name)
 
     func2anat_mat = os.path.join(output_folder, base_name + "_func2anat.mat")
     anat2mni_mat = os.path.join(output_folder, base_name + "_anat2mni.mat")

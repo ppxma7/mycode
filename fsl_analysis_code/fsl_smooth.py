@@ -2,12 +2,12 @@ import os
 import subprocess
 
 # Paths to input and output folders
-rootFold = "/Volumes/hermes/canapi_051224/fslanalysis/"
+rootFold = "/Volumes/hermes/canapi_111224/fslanalysis/"
 input_folder = rootFold  # Replace with your input folder path
 output_folder = rootFold  # Replace with your output folder path
 ica_aroma_path = "/Users/ppzma/Documents/MATLAB/ICA-AROMA/ICA_AROMA.py"  # Path to ICA-AROMA script
-brain_mask = os.path.join(rootFold,"brain_mask.nii.gz")  # Optional brain mask
-structural_image = os.path.join(rootFold,"parrec_WIPMPRAGE_CS3_5_20241205082447_2_masked.nii")
+#brain_mask = os.path.join(rootFold,"brain_mask.nii.gz")  # Optional brain mask
+#structural_image = os.path.join(rootFold,"parrec_WIPMPRAGE_CS3_5_20241205082447_2_masked.nii")
 
 os.makedirs(output_folder, exist_ok=True)
 
@@ -22,7 +22,7 @@ os.makedirs(output_folder, exist_ok=True)
 # ]
 
 input_files = [
-    "parrec_WIP1bar_20241205082447_6_nordic_clv"
+    "canapi_111224_WIP1bar_20241211155413_3_nordic_clv.nii"
 ]
 # Step 4: Smoothing
 for file in input_files:
@@ -33,7 +33,7 @@ for file in input_files:
     # Apply smoothing
     subprocess.run([
         "fslmaths", normalized_out,
-        "-s", "3",  # Smooth with 2.5mm FWHM
+        "-s", "1.273",  # Smooth with 2.5mm FWHM
         smoothed_out
     ])
     print(f"Smoothed file saved to: {smoothed_out}")
