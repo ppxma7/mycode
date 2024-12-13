@@ -7,7 +7,7 @@ strucFold = "/Volumes/hermes/canapi_051224/structural/"
 input_folder = rootFold  # Replace with your input folder path
 output_folder = rootFold  # Replace with your output folder path
 ica_aroma_path = "/Users/ppzma/Documents/MATLAB/ICA-AROMA/ICA_AROMA.py"  # Path to ICA-AROMA script
-brain_mask = os.path.join(rootFold,"brain_mask.nii.gz")  # Optional brain mask
+brain_mask = os.path.join(rootFold,"brain_mask.nii")  # Optional brain mask
 structural_image = os.path.join(strucFold,"parrec_WIPMPRAGE_CS3_5_20241205082447_2_masked.nii")
 
 os.makedirs(output_folder, exist_ok=True)
