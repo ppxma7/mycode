@@ -13,30 +13,38 @@ structural_image = os.path.join(strucFold,"parrec_WIPMPRAGE_CS3_5_20241205082447
 os.makedirs(output_folder, exist_ok=True)
 
 
+# input_files = [
+#     "rwrparrec_WIP50prc_20241205082447_4_nordic_clv.nii",
+#     "rwrparrec_WIP30prc_20241205082447_5_nordic_clv.nii",
+#     "rwrparrec_WIP1bar_20241205082447_6_nordic_clv.nii",
+#     "rwrparrec_WIP50prc_20241205082447_8_nordic_clv.nii",
+#     "rwrparrec_WIP30prc_20241205082447_9_nordic_clv.nii",
+#     "rwrparrec_WIP1bar_20241205082447_10_nordic_clv.nii"
+# ]
+
+# motion_files = [
+#     "rp_parrec_WIP50prc_20241205082447_4_nordic_clv.txt",
+#     "rp_parrec_WIP30prc_20241205082447_5_nordic_clv.txt",
+#     "rp_parrec_WIP1bar_20241205082447_6_nordic_clv.txt",
+#     "rp_parrec_WIP50prc_20241205082447_8_nordic_clv.txt",
+#     "rp_parrec_WIP30prc_20241205082447_9_nordic_clv.txt",
+#     "rp_parrec_WIP1bar_20241205082447_10_nordic_clv.txt"
+# ]
+
 input_files = [
-    "rwrparrec_WIP50prc_20241205082447_4_nordic_clv.nii",
-    "rwrparrec_WIP30prc_20241205082447_5_nordic_clv.nii",
-    "rwrparrec_WIP1bar_20241205082447_6_nordic_clv.nii",
-    "rwrparrec_WIP50prc_20241205082447_8_nordic_clv.nii",
-    "rwrparrec_WIP30prc_20241205082447_9_nordic_clv.nii",
-    "rwrparrec_WIP1bar_20241205082447_10_nordic_clv.nii"
+    "rwrparrec_WIP50prc_20241205082447_4_nordic_clv.nii"
 ]
 
 motion_files = [
-    "rp_parrec_WIP50prc_20241205082447_4_nordic_clv.txt",
-    "rp_parrec_WIP30prc_20241205082447_5_nordic_clv.txt",
-    "rp_parrec_WIP1bar_20241205082447_6_nordic_clv.txt",
-    "rp_parrec_WIP50prc_20241205082447_8_nordic_clv.txt",
-    "rp_parrec_WIP30prc_20241205082447_9_nordic_clv.txt",
-    "rp_parrec_WIP1bar_20241205082447_10_nordic_clv.txt"
+    "rp_parrec_WIP50prc_20241205082447_4_nordic_clv.txt"
 ]
-
-
 
 # Step 2: Coregistration and ICA-AROMA
 for file in input_files:
     base_name = os.path.splitext(file)[0]
     input_file_path = os.path.join(input_folder, base_name)
+
+    print(input_file_path)
 
     motion_params_file = motion_files[input_files.index(file)]
     motion_params_file_input = os.path.join(rootFold,motion_params_file)
@@ -45,6 +53,8 @@ for file in input_files:
 
     #mc_output = os.path.join(output_folder, base_name + "_mc")
     aroma_out = os.path.join(output_folder, base_name + "_aroma")
+
+    print(aroma_out)
 
     # Check if the motion correction file exists
     if not os.path.exists(motion_params_file_input):

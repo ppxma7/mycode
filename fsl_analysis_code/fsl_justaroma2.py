@@ -11,29 +11,46 @@ structural_image = os.path.join(strucFold, "parrec_WIPMPRAGE_CS3_5_2024120508244
 os.makedirs(rootFold, exist_ok=True)
 
 # Input files and corresponding motion parameter files
+# input_files = [
+#     "rwrparrec_WIP50prc_20241205082447_4_nordic_clv.nii",
+#     "rwrparrec_WIP30prc_20241205082447_5_nordic_clv.nii",
+#     "rwrparrec_WIP1bar_20241205082447_6_nordic_clv.nii",
+#     "rwrparrec_WIP50prc_20241205082447_8_nordic_clv.nii",
+#     "rwrparrec_WIP30prc_20241205082447_9_nordic_clv.nii",
+#     "rwrparrec_WIP1bar_20241205082447_10_nordic_clv.nii"
+# ]
+
+# motion_files = [
+#     "rp_parrec_WIP50prc_20241205082447_4_nordic_clv.txt",
+#     "rp_parrec_WIP30prc_20241205082447_5_nordic_clv.txt",
+#     "rp_parrec_WIP1bar_20241205082447_6_nordic_clv.txt",
+#     "rp_parrec_WIP50prc_20241205082447_8_nordic_clv.txt",
+#     "rp_parrec_WIP30prc_20241205082447_9_nordic_clv.txt",
+#     "rp_parrec_WIP1bar_20241205082447_10_nordic_clv.txt"
+# ]
 input_files = [
-    "rwrparrec_WIP50prc_20241205082447_4_nordic_clv.nii",
-    "rwrparrec_WIP30prc_20241205082447_5_nordic_clv.nii",
-    "rwrparrec_WIP1bar_20241205082447_6_nordic_clv.nii",
-    "rwrparrec_WIP50prc_20241205082447_8_nordic_clv.nii",
-    "rwrparrec_WIP30prc_20241205082447_9_nordic_clv.nii",
-    "rwrparrec_WIP1bar_20241205082447_10_nordic_clv.nii"
+    "rwrparrec_WIP50prc_20241205082447_4_nordic_clv.nii"
 ]
 
 motion_files = [
-    "rp_parrec_WIP50prc_20241205082447_4_nordic_clv.txt",
-    "rp_parrec_WIP30prc_20241205082447_5_nordic_clv.txt",
-    "rp_parrec_WIP1bar_20241205082447_6_nordic_clv.txt",
-    "rp_parrec_WIP50prc_20241205082447_8_nordic_clv.txt",
-    "rp_parrec_WIP30prc_20241205082447_9_nordic_clv.txt",
-    "rp_parrec_WIP1bar_20241205082447_10_nordic_clv.txt"
+    "rp_parrec_WIP50prc_20241205082447_4_nordic_clv.txt"
 ]
+
 
 # ICA-AROMA processing loop
 for input_file, motion_file in zip(input_files, motion_files):
     input_file_path = os.path.join(rootFold, input_file)
+
+    print(input_file_path)
+
     motion_params_file_path = os.path.join(rootFold, motion_file)
-    aroma_out = os.path.join(rootFold, os.path.splitext(input_file)[0] + "_aroma")
+    
+    print(motion_params_file_path)
+
+    aroma_out = os.path.join(rootFold, os.path.splitext(input_file)[0] + "_aroma/")
+
+    print(aroma_out)
+    print(brain_mask)
 
     # Check if the input file and motion file exist
     if not os.path.exists(input_file_path):
@@ -56,3 +73,7 @@ for input_file, motion_file in zip(input_files, motion_files):
         print(f"ICA-AROMA completed for {input_file}")
     except subprocess.CalledProcessError as e:
         print(f"Error running ICA-AROMA for {input_file}: {e}")
+
+
+
+
