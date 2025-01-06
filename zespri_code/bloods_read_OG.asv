@@ -67,15 +67,14 @@ visitStack_cut = {'Gold','Gold','Green','Green','Mtxdrn','Mtxdrn',...
     'Gold','Gold','Green','Green','Mtxdrn','Mtxdrn',...
     'Gold','Gold','Mtxdrn','Mtxdrn'}';
 
-sub_cut = [repmat({'Sub07'},6,1); repmat({'Sub10'},6,1);...
-    repmat({'Sub11'},4,1)];
-
 %% now stick them together
-meanValuesZ = [meanValuesZ; meanValues_cut_Z];
-meanValues = [meanValues; meanValues_cut];
-regimeStack = [regimeStack; regimeStack_cut];
-visitStack = [visitStack; visitStack_cut];
-sub = [sub; sub_cut];
+meanValues_[meanValuesZ; meanValues_cut_Z];
+[regimeStack; regimeStack_cut];
+[visitStack; visitStack_cut];
+
+
+
+
 
 %% print
 
