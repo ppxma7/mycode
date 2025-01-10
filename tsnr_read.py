@@ -1,9 +1,11 @@
 import os
 import numpy as np
+import fnmatch
 import nibabel as nib
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 import seaborn as sns
+import re
 
 # Confidence interval critical value for 95% (z = 1.96 for a normal distribution)
 z = norm.ppf(0.975)  # 95% confidence
@@ -16,36 +18,34 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 
 # Define the root path and subfolder names
 root_path = "/Users/spmic/data/preDUST_FUNSTAR_MBSENSE_090125/"
+#subfolders = []
+# Define the pattern for subfolder names
+folder_pattern = "qa_output_preDUST_FUNSTAR*"
+
+# Dynamically find subfolders matching the pattern
 subfolders = [
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB1_SENSE1_24slc_2p5mm_20250109162844_7_clv",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB1_SENSE1p5_30slc_2p5mm_20250109162844_8_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB1_SENSE2_30slc_2p5mm_20250109162844_9_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB1_SENSE2p5_30slc_2p5mm_20250109162844_10_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB1_SENSE3_30slc_2p5mm_20250109162844_11_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB2_SENSE1_36slc_2p5mm_20250109162844_12_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB2_SENSE1p5_36slc_2p5mm_20250109162844_13_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB2_SENSE2_36slc_2p5mm_20250109162844_14_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB2_SENSE2p5_36slc_2p5mm_20250109162844_15_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB2_SENSE3_36slc_2p5mm_20250109162844_16_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB3_SENSE1_36slc_2mm_20250109162844_17_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB3_SENSE1p5_36slc_2p5mm_20250109162844_18_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB3_SENSE2_36slc_2p5mm_20250109162844_19_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB3_SENSE2p5_36slc_2p5mm_20250109162844_20_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB3_SENSE3_36slc_2p5mm_20250109162844_21_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB4_SENSE1_36slc_2mm_20250109162844_22_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB4_SENSE1p5_36slc_2mm_20250109162844_23_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB4_SENSE2_36slc_2mm_20250109162844_24_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB4_SENSE2p5_36slc_2mm_20250109162844_25_clv_clipped",
-    "qa_output_preDUST_FUNSTAR_MBSENSE_090125_2DEPI_MB4_SENSE3_36slc_2mm_20250109162844_26_clv_clipped",
+    folder for folder in os.listdir(root_path) 
+    if os.path.isdir(os.path.join(root_path, folder)) and fnmatch.fnmatch(folder, folder_pattern)
 ]
+
+# Function to extract the numeric suffix from folder names
+def extract_numeric_suffix(folder_name):
+    match = re.search(r"_(\d+)_clv_clipped$", folder_name)
+    return int(match.group(1)) if match else float('inf')  # Use inf for folders without a match
+
+# Sort the folders by the numeric suffix
+subfolders.sort(key=extract_numeric_suffix)
 
 # Initialize lists to store mean and STD for each folder
 means = []
 stds = []
 folder_labels = []
 
+print(f"Found {len(subfolders)} subfolders matching the pattern:")
+
 # Process each folder
 for folder in subfolders:
+    print(folder)
     nii_path = os.path.join(root_path, folder, "classic_tsnr_tsnr_map.nii.gz")
     
     if os.path.exists(nii_path):
@@ -156,6 +156,7 @@ ax.set_xticks(x)
 ax.set_xticklabels(labels)
 ax.legend(title='SENSE factor', loc='best')
 ax.grid(axis='y', linestyle='--', alpha=0.6)
+ax.set_ylim(0, 500) 
 
 # Save the plot
 #output_plot_path = "tSNR_bar_chart.png"
