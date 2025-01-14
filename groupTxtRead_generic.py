@@ -4,10 +4,11 @@ import os
 # Define the root folder path and specify subfolders to search
 #root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Pain Relief Grant - General/PFP_results/spmexcelfiles_3t/'
 #root_folder_path = '/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - Touchmap - Touchmap/results/restingstate/'
-root_folder_path = '/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_051224/plots/'
+#root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_111224/'
+root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/Claire_fmrs/090125_fmrs_AB/'
 #subfolders_to_search = ['scan1_vs_scan2', 'kiwi_vs_mtx','red_vs_green','red_vs_mtx']  # List the specific subfolders you want to search
 #subfolders_to_search = ['cttouch']  # List the specific subfolders you want to search
-subfolders_to_search = ['firstlevel','firstlevel_emgregressor','firstlevel_norealignparams','firlevel_emgregressor_norealignparams']
+subfolders_to_search = ['scan7','scan8']
 
 # Create an empty DataFrame to store all data
 all_data = pd.DataFrame()

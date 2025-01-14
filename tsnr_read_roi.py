@@ -6,6 +6,10 @@ import matplotlib.pyplot as plt
 from scipy.stats import norm
 import seaborn as sns
 import re
+import sys
+from matplotlib.patches import Rectangle
+from matplotlib import colormaps
+
 
 # This is python3 code that serves to plot tSNR barcharts, based on the output of qa_run_fmrs2.ipynb 
 # (here: /Users/spmic/Documents/MATLAB/qa/fMRI_report_python/tutorials/)
@@ -20,10 +24,12 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 
 
 # Define the root path and subfolder names
-root_path = "/Users/spmic/data/preDUST_FUNSTAR_MBSENSE_090125/"
+#root_path = "/Users/spmic/data/preDUST_FUNSTAR_MBSENSE_090125/"
+root_path = "/Users/spmic/data/preDUST_QUAD_MBSENSE/"
+
 #subfolders = []
 # Define the pattern for subfolder names
-folder_pattern = "qa_output_preDUST_FUNSTAR*"
+folder_pattern = "qa_output_preDUST*"
 
 # Dynamically find subfolders matching the pattern
 subfolders = [
@@ -57,13 +63,41 @@ for folder in subfolders:
             nii = nib.load(nii_path)
             data = nii.get_fdata()
 
+            data_shape = data.shape
+
+            # Print the shape
+            print("Data shape:", data_shape)
+
+
+            # Define the 2D ROI
+            # Example: Center at (48, 48) on slice 12 with size 20x20 (in-plane ROI dimensions)
+            slice_index = 12  # The z-slice where the 2D ROI is located
+            roi_center = (48, 48)  # (x, y) center of the ROI
+            roi_size = (20, 20)  # (width, height) of the ROI
+
+            # Calculate ROI bounds in 2D
+            x_start = max(roi_center[0] - roi_size[0] // 2, 0)
+            x_end = min(roi_center[0] + roi_size[0] // 2, data_shape[0])
+            y_start = max(roi_center[1] - roi_size[1] // 2, 0)
+            y_end = min(roi_center[1] + roi_size[1] // 2, data_shape[1])
+
+            # Extract the 2D ROI data
+            slice_data = data[:, :, slice_index]
+            roi_data = slice_data[x_start:x_end, y_start:y_end]
+
+            # Print ROI shape
+            print("2D ROI shape:", roi_data.shape)
+
+
+
             # Flatten the data to 1D array
-            flat_data = data.flatten()
+            flat_data = roi_data.flatten()
 
             # Remove the bottom 1% of max
             max_val = np.max(flat_data)
-            threshold = 0.01 * max_val
-            filtered_data = flat_data[flat_data >= threshold]
+            #threshold = 0.01 * max_val
+            #filtered_data = flat_data[flat_data >= threshold]
+            filtered_data = flat_data # dont threshold ROI data
 
             # Calculate mean and standard deviation
 
@@ -90,16 +124,61 @@ for folder in subfolders:
 
             # Store results
             means.append(mean_val)
-            stds.append(iqr_error)
+            stds.append(std_val)
             folder_labels.append(folder)
 
             print(f"Processed {folder}: Mean = {mean_val}, STD = {std_val}, SEM = {sem_val}, CI = {ci_error}, IQR = {iqr_error}")
+
+
+
+            # Visualize the slice with the ROI as a rectangle
+            fig, ax = plt.subplots(figsize=(8, 8))
+            img = ax.imshow(slice_data.T, cmap='plasma', origin='lower', vmin=0, vmax=500)  # Transpose for correct orientation
+            ax.add_patch(Rectangle(
+                (x_start, y_start),  # Rectangle bottom-left corner
+                roi_size[0],         # Width of the rectangle
+                roi_size[1],         # Height of the rectangle
+                edgecolor='red',
+                facecolor='none',
+                linewidth=2
+            ))
+            ax.set_title(f"Slice {slice_index} with 2D ROI")
+            ax.set_xlabel("X-axis (voxels)")
+            ax.set_ylabel("Y-axis (voxels)")
+
+
+            # Add tSNR value as text on the figure
+            ax.text(
+                5, 5,  # Coordinates for text placement (in axes units or pixel coordinates)
+                f"ROI tSNR: {mean_val:.2f}",
+                color='white',
+                fontsize=12,
+                backgroundcolor='black'
+            )
+            cbar = fig.colorbar(img, ax=ax, orientation="vertical", shrink=0.8)
+            cbar.set_label("tSNR")
+
+            # Save the figure to a file
+            output_path = os.path.join(root_path, folder, "slice_with_tsnr.png")
+            #output_path = "/path/to/save/figure_with_tsnr.png"
+            plt.savefig(output_path, dpi=300, bbox_inches='tight')
+            print(f"Figure saved at {output_path}")
+            # Suppress plot display
+            plt.close(fig)
+            #plt.show()
+
+
+
+           
+            #sys.exit()
+
         except Exception as e:
             print(f"Error processing {nii_path}: {e}")
     else:
         print(f"File not found: {nii_path}")
 
 
+#sys.exit()
 
 
 # Define the data structure (adjust with actual computed means and stds)
@@ -136,13 +215,13 @@ colors = ['#FFEDA0', '#FD8D3C', '#E31A1C', '#BD0026', '#800026']
 fig, ax = plt.subplots(figsize=(10, 6))
 for i in range(means_big.shape[1]):  # Loop over SENSE factors
 
-    upper_error = stds_big[:, i, 0]  # Q3 - mean
-    lower_error = stds_big[:, i, 1]  # mean - Q1
+    #upper_error = stds_big[:, i, 0]  # Q3 - mean
+    #lower_error = stds_big[:, i, 1]  # mean - Q1
 
     ax.bar(
         x + (i - 2) * width,  # Adjust x position for each SENSE factor
         means_big[:, i],
-        yerr=[lower_error, upper_error],  # Asymmetrical IQR error bars
+        yerr=stds_big[:, i],  # Asymmetrical IQR error bars
         width=width,
         label=f'SENSE {sense_factors[i]}',
         color=colors[i],
@@ -150,6 +229,8 @@ for i in range(means_big.shape[1]):  # Loop over SENSE factors
     )
 
     #yerr=stds_big[:, i],
+
+#yerr=[lower_error, upper_error],
 
 # Add labels, title, and legend
 ax.set_xlabel('Multiband factor')
@@ -163,7 +244,7 @@ ax.set_ylim(0, 500)
 
 # Save the plot
 #output_plot_path = "tSNR_bar_chart.png"
-output_plot_path = root_path + "tSNR_bar_chart.png"
+output_plot_path = root_path + "tSNR_bar_chart_ROI.png"
 
 plt.tight_layout()
 plt.savefig(output_plot_path, dpi=300)
@@ -172,32 +253,5 @@ print(f"Bar chart saved as {output_plot_path}")
 
 
 
-# # Plot the results
-# plt.figure(figsize=(12, 6))
 
-# # Plot mean values
-# plt.subplot(2, 1, 1)
-# plt.plot(folder_labels, means, marker='o', label='Mean')
-# plt.title('Mean of Filtered tSNR Map')
-# plt.xticks(rotation=90, fontsize=8)
-# plt.ylabel('Mean')
-# plt.grid()
-
-# # Plot STD values
-# plt.subplot(2, 1, 2)
-# plt.plot(folder_labels, stds, marker='o', label='STD', color='orange')
-# plt.title('STD of Filtered tSNR Map')
-# plt.xticks(rotation=90, fontsize=8)
-# plt.ylabel('Standard Deviation')
-# plt.xlabel('Folders')
-# plt.grid()
-
-# #plt.tight_layout()
-# #plt.show()
-
-# # Save the plot as a PNG
-# output_plot_path = root_path + "tSNR_mean_std_plot.png"
-# plt.tight_layout()
-# plt.savefig(output_plot_path, dpi=300)
-# print(f"Plot saved as {output_plot_path}")
 

@@ -84,6 +84,9 @@ g(1,2).set_point_options('markers',{'o'},'base_size',10)
 g(1,2).set_order_options('x',0)
 g(1,2).set_names('x','Mean motion (mm)', 'y', 'Mean Euler (rads)','color','Scan');
 
+
+g.set_color_options('map',thismap)
+
 %g.axe_property('YLim', [0 100])
 %g.set_text_options('base_size',8)
 g.draw()
