@@ -20,7 +20,7 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 
 
 # Define the root path and subfolder names
-root_path = "/Users/spmic/data/preDUST_HEAD_MBSENSE/"
+root_path = "/Users/spmic/data/preDUST_HEAD_MBSENSE/qa_outputs/raw/"
 #subfolders = []
 # Define the pattern for subfolder names
 folder_pattern = "qa_output_preDUST*"
@@ -33,7 +33,7 @@ subfolders = [
 
 # Function to extract the numeric suffix from folder names
 def extract_numeric_suffix(folder_name):
-    match = re.search(r"_(\d+)_nordic_clv$", folder_name)
+    match = re.search(r"_(\d+)_clv_clipped$", folder_name)
     return int(match.group(1)) if match else float('inf')  # Use inf for folders without a match
 
 # Sort the folders by the numeric suffix

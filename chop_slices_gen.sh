@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Iterate over all NIfTI files in the current directory
-for full_file_path in *.nii; do
+for full_file_path in *.nii.gz; do
 
     # Extract the base name without the extension
-    base_name=$(basename "$full_file_path" .nii)
+    base_name=$(basename "$full_file_path" .nii.gz)
     
     # Define the output file name
-    output_file="${base_name}_clipped.nii"
+    output_file="${base_name}_clipped.nii.gz"
     
     # Get the number of slices (dim3) using fslhd
     dim3=$(fslhd "$full_file_path" | grep ^dim3 | awk '{print $2}')

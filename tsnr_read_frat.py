@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import sys
 
 # Directory containing JSON files
-json_dir = "/Users/spmic/data/preDUST_HEAD_MBSENSE/magnitude/nordic_clv/fRAT_analysis/forplotting_summarised"
+json_dir = "/Users/spmic/data/preDUST_HEAD_MBSENSE/magnitude/raw_clv/fRAT_analysis/forplotting_summarised"
 root_path = "/Users/spmic/data/preDUST_HEAD_MBSENSE/"
 # Parse JSON files and extract data
 data = []
