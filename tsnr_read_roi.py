@@ -25,7 +25,7 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 
 # Define the root path and subfolder names
 #root_path = "/Users/spmic/data/preDUST_FUNSTAR_MBSENSE_090125/"
-root_path = "/Users/spmic/data/preDUST_QUAD_MBSENSE/"
+root_path = "/Users/spmic/data/preDUST_HEAD_MBSENSE/"
 
 #subfolders = []
 # Define the pattern for subfolder names
@@ -39,7 +39,7 @@ subfolders = [
 
 # Function to extract the numeric suffix from folder names
 def extract_numeric_suffix(folder_name):
-    match = re.search(r"_(\d+)_clv_clipped$", folder_name)
+    match = re.search(r"_(\d+)_nordic_clv$", folder_name)
     return int(match.group(1)) if match else float('inf')  # Use inf for folders without a match
 
 # Sort the folders by the numeric suffix
@@ -240,7 +240,7 @@ ax.set_xticks(x)
 ax.set_xticklabels(labels)
 ax.legend(title='SENSE factor', loc='best')
 ax.grid(axis='y', linestyle='--', alpha=0.6)
-ax.set_ylim(0, 500) 
+ax.set_ylim(0, 125) 
 
 # Save the plot
 #output_plot_path = "tSNR_bar_chart.png"

@@ -20,10 +20,10 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 
 
 # Define the root path and subfolder names
-root_path = "/Users/spmic/data/preDUST_FUNSTAR_MBSENSE_090125/"
+root_path = "/Users/spmic/data/preDUST_HEAD_MBSENSE/"
 #subfolders = []
 # Define the pattern for subfolder names
-folder_pattern = "qa_output_preDUST_FUNSTAR*"
+folder_pattern = "qa_output_preDUST*"
 
 # Dynamically find subfolders matching the pattern
 subfolders = [
@@ -33,7 +33,7 @@ subfolders = [
 
 # Function to extract the numeric suffix from folder names
 def extract_numeric_suffix(folder_name):
-    match = re.search(r"_(\d+)_clv_clipped$", folder_name)
+    match = re.search(r"_(\d+)_nordic_clv$", folder_name)
     return int(match.group(1)) if match else float('inf')  # Use inf for folders without a match
 
 # Sort the folders by the numeric suffix
@@ -90,7 +90,7 @@ for folder in subfolders:
 
             # Store results
             means.append(mean_val)
-            stds.append(iqr_error)
+            stds.append(std_val)
             folder_labels.append(folder)
 
             print(f"Processed {folder}: Mean = {mean_val}, STD = {std_val}, SEM = {sem_val}, CI = {ci_error}, IQR = {iqr_error}")
@@ -136,13 +136,13 @@ colors = ['#FFEDA0', '#FD8D3C', '#E31A1C', '#BD0026', '#800026']
 fig, ax = plt.subplots(figsize=(10, 6))
 for i in range(means_big.shape[1]):  # Loop over SENSE factors
 
-    upper_error = stds_big[:, i, 0]  # Q3 - mean
-    lower_error = stds_big[:, i, 1]  # mean - Q1
+    #upper_error = stds_big[:, i, 0]  # Q3 - mean
+    #lower_error = stds_big[:, i, 1]  # mean - Q1
 
     ax.bar(
         x + (i - 2) * width,  # Adjust x position for each SENSE factor
         means_big[:, i],
-        yerr=[lower_error, upper_error],  # Asymmetrical IQR error bars
+        yerr=stds_big[:, i],  # Asymmetrical IQR error bars
         width=width,
         label=f'SENSE {sense_factors[i]}',
         color=colors[i],
@@ -150,7 +150,7 @@ for i in range(means_big.shape[1]):  # Loop over SENSE factors
     )
 
     #yerr=stds_big[:, i],
-
+    #yerr=[lower_error, upper_error],  # Asymmetrical IQR error bars
 # Add labels, title, and legend
 ax.set_xlabel('Multiband factor')
 ax.set_ylabel('Temporal Signal to Noise')
@@ -159,11 +159,11 @@ ax.set_xticks(x)
 ax.set_xticklabels(labels)
 ax.legend(title='SENSE factor', loc='best')
 ax.grid(axis='y', linestyle='--', alpha=0.6)
-ax.set_ylim(0, 500) 
+ax.set_ylim(0, 125) 
 
 # Save the plot
 #output_plot_path = "tSNR_bar_chart.png"
-output_plot_path = root_path + "tSNR_bar_chart.png"
+output_plot_path = root_path + "tSNR_bar_chart_qa_report.png"
 
 plt.tight_layout()
 plt.savefig(output_plot_path, dpi=300)
