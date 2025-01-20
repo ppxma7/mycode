@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import sys
 
 # Directory containing JSON files
-json_dir = "/Users/spmic/data/preDUST_HEAD_MBSENSE/magnitude/raw_clv/fRAT_analysis/forplotting_summarised"
+json_dir = "/Users/spmic/data/preDUST_HEAD_MBSENSE/magnitude/raw_clv/fRAT_analysis_withnoisescan/forplotting_summarised"
 root_path = "/Users/spmic/data/preDUST_HEAD_MBSENSE/"
 # Parse JSON files and extract data
 data = []
@@ -94,19 +94,19 @@ for i, sense in enumerate(sense_factors):
 
 # Add labels, title, and legend
 ax.set_xlabel("Multiband factor")
-ax.set_ylabel("Temporal Signal to Noise (Mean)")
-ax.set_title("tSNR by Multiband and SENSE Factors")
+ax.set_ylabel("Image Signal to Noise (Mean)")
+ax.set_title("iSNR by Multiband and SENSE Factors")
 ax.set_xticks(x + width * (len(sense_factors) - 1) / 2)
 ax.set_xticklabels(mb_factors)
 ax.grid(axis='y', linestyle='--', alpha=0.6)
 ax.legend(title="SENSE factor")
-ax.set_ylim(0, 125) 
+ax.set_ylim(0, 400) 
 
 # Show the plot
 plt.tight_layout()
 #plt.show()
 
-output_plot_path = root_path + "tSNR_bar_chart_frat.png"
+output_plot_path = root_path + "iSNR_bar_chart_frat.png"
 
 plt.tight_layout()
 plt.savefig(output_plot_path, dpi=300)
