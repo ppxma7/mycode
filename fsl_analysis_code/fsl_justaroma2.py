@@ -3,30 +3,30 @@ import subprocess
 
 # Paths to input and output folders
 #rootFold = "/Volumes/hermes/canapi_051224/aroma_mni_space/"
-rootFold = "/Volumes/hermes/canapi_051224/aroma_mni_space/"
+rootFold = "/Volumes/nemosine/CANAPI_210125/spmanalysis/"
 
-strucFold = "/Volumes/hermes/canapi_051224/structural/"
+strucFold = "/Volumes/nemosine/CANAPI_210125/structs/"
 ica_aroma_path = "/Users/ppzma/Documents/MATLAB/ICA-AROMA/ICA_AROMA.py"  # Path to ICA-AROMA script
+
 brain_mask = os.path.join(rootFold, "brain_mask.nii.gz")  # Optional brain mask
-structural_image = os.path.join(strucFold, "parrec_WIPMPRAGE_CS3_5_20241205082447_2_masked.nii")
+
+structural_image = os.path.join(strucFold, "parrec_WIPMPRAGE_CS3_5_20241205082447_2.nii")
 
 os.makedirs(rootFold, exist_ok=True)
 
 # Input files and corresponding motion parameter files
 input_files = [
-    "rwrparrec_WIP30prc_20241205082447_5_nordic_clv.nii",
-    "rwrparrec_WIP1bar_20241205082447_6_nordic_clv.nii",
-    "rwrparrec_WIP50prc_20241205082447_8_nordic_clv.nii",
-    "rwrparrec_WIP30prc_20241205082447_9_nordic_clv.nii",
-    "rwrparrec_WIP1bar_20241205082447_10_nordic_clv.nii"
+    "rwrCANAPI_210125_WIP1bar_PUSH_20250121121208_3_nordic_clv.nii",
+    "rwrCANAPI_210125_WIP1bar_TAP_20250121121208_4_nordic_clv.nii",
+    "rwrCANAPI_210125_WIPlow_PUSH_20250121121208_5_nordic_clv.nii",
+    "rwrCANAPI_210125_WIPlow_TAP_20250121121208_6_nordic_clv.nii"
 ]
 
 motion_files = [
-    "rp_parrec_WIP30prc_20241205082447_5_nordic_clv.txt",
-    "rp_parrec_WIP1bar_20241205082447_6_nordic_clv.txt",
-    "rp_parrec_WIP50prc_20241205082447_8_nordic_clv.txt",
-    "rp_parrec_WIP30prc_20241205082447_9_nordic_clv.txt",
-    "rp_parrec_WIP1bar_20241205082447_10_nordic_clv.txt"
+    "rp_CANAPI_210125_WIP1bar_PUSH_20250121121208_3_nordic_clv.txt",
+    "rp_CANAPI_210125_WIP1bar_TAP_20250121121208_4_nordic_clv.txt",
+    "rp_CANAPI_210125_WIPlow_PUSH_20250121121208_5_nordic_clv.txt",
+    "rp_CANAPI_210125_WIPlow_TAP_20250121121208_6_nordic_clv.txt"
 ]
 
 # input_files = [
@@ -62,7 +62,7 @@ for input_file, motion_file in zip(input_files, motion_files):
         subprocess.run([
             "bet",
             input_file_path_nonan,
-            "brain",
+            rootFold + "brain",
             "-R","-F","-m",
             ], check=True)
 
