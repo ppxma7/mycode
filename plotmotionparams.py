@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 import os
 
 # Input and output folders
-input_folder = "/Volumes/nemosine/CANAPI_210125/spmanalysis/"  # Replace with your input folder path
+#input_folder = "/Volumes/nemosine/CANAPI_210125/spmanalysis/"  # Replace with your input folder path
+input_folder = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_210125/'
 output_folder = os.path.join(input_folder, "motion_plots")  # Output folder for saving plots
 os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exist
 
@@ -41,6 +42,11 @@ for file in input_files:
     lower_limit = -2
     upper_limit = 2
 
+    # Convert times in seconds to dynamics
+    #timepoints_seconds = [21, 51, 81, 111, 141] #PUSH
+    timepoints_seconds = [21, 61, 101, 141, 181, 221, 261, 301, 341, 381] #TAP
+    timepoints_dynamics = [int(t / 1.5) for t in timepoints_seconds]
+
     # Plot translations and rotations
     fig, axes = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
 
@@ -53,6 +59,11 @@ for file in input_files:
     axes[0].set_ylabel('Translation (mm)')
     axes[0].legend()
     axes[0].grid(True)
+    # Add vertical lines at the calculated dynamics
+    for x in timepoints_dynamics:
+        axes[0].axvline(x=x, color='k', linestyle='--', linewidth=0.8)
+
+
     #axes[0].set_ylim(lower_limit, upper_limit)
 
         # Plot rotations (columns 0-2)
@@ -67,7 +78,7 @@ for file in input_files:
 
 
     # Save the plot as PNG
-    plot_file = os.path.join(output_folder, f"{file}_motion_plot.png")
+    plot_file = os.path.join(output_folder, f"{file}_motion_plot_tap.png")
     plt.tight_layout()
     plt.savefig(plot_file, dpi=300)
     plt.close()  # Close the plot to free memory
