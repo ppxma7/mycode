@@ -1,4 +1,3 @@
-gitignore update
 # OS generated files #
 ######################
 .DS_Store
@@ -6,6 +5,5 @@ gitignore update
 ._*
 .Spotlight-V100
 .Trashes
-.DS_Store
 .DS_Store
 .DS_Store
