@@ -25,8 +25,8 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 
 # Define the root path and subfolder names
 # Root path for QA outputs
-root_path = "/Volumes/nemosine/CANAPI_210125/qa/"
-folder_pattern = "qa_output_CANAPI*"
+root_path = "/Users/spmic/data/preDUST_FUNSTAR/FUNSTAR_QA_240125_MTX/"
+folder_pattern = "qa_output_FUNSTAR*"
 
 
 # Dynamically find subfolders matching the pattern
@@ -63,7 +63,7 @@ for folder in subfolders:
 means = []
 stds = []
 folder_labels = []
-
+tSNRmax = 200
 
 # Process each folder
 for folder in subfolders:
@@ -94,6 +94,9 @@ for folder in subfolders:
             y_end = min(roi_center[1] + roi_size[1] // 2, data_shape[1])
 
             # Extract the 2D ROI data
+            slice_index = round(data_shape[2] * 2 / 3)
+            print(f"Slice index: {slice_index}")
+
             slice_data = data[:, :, slice_index]
             roi_data = slice_data[x_start:x_end, y_start:y_end]
 
@@ -144,7 +147,7 @@ for folder in subfolders:
 
             # Visualize the slice with the ROI as a rectangle
             fig, ax = plt.subplots(figsize=(8, 8))
-            img = ax.imshow(slice_data.T, cmap='plasma', origin='lower', vmin=0, vmax=125)  # Transpose for correct orientation
+            img = ax.imshow(slice_data.T, cmap='plasma', origin='lower', vmin=0, vmax=tSNRmax)  # Transpose for correct orientation
             ax.add_patch(Rectangle(
                 (x_start, y_start),  # Rectangle bottom-left corner
                 roi_size[0],         # Width of the rectangle
@@ -203,7 +206,7 @@ stds_big = np.array([
 
 # Bar settings
 # Bar settings
-labels = ['Scan 1', 'Scan 2', 'Scan 3', 'Scan 4']  # X-axis labels for scans
+labels = ['Scan 11', 'Scan 13', 'Scan 14','Scan 16']  # X-axis labels for scans
 group_labels = ['Raw', 'Nordic']                  # Group labels
 width = 0.2   
 
@@ -244,7 +247,7 @@ ax.set_xticks(x)
 ax.set_xticklabels(labels, fontsize=10)
 ax.legend(title='Group', loc='best')
 ax.grid(axis='y', linestyle='--', alpha=0.6)
-ax.set_ylim(0, 200)  # Adjust the Y-axis limit to fit your data
+ax.set_ylim(0, tSNRmax)  # Adjust the Y-axis limit to fit your data
 
 # Save the plot
 output_plot_path = root_path + "tSNR_bar_chart_qa_report.png"
