@@ -112,13 +112,13 @@ def register_t1_to_mni(sub_dir, subject, data_dir):
     # Define paths
 
     # Define paths
-    FSLDIR = "/software/imaging/fsl/6.0.6.3"
-    MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_2mm.nii.gz"
-    BRC_GLOBAL_DIR = "/software/imaging/BRC_pipeline/1.6.6//global"  # Change this to actual path
-
-    #FSLDIR = "/Users/spmic/fsl/"
+    #FSLDIR = "/software/imaging/fsl/6.0.6.3"
     #MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_2mm.nii.gz"
-    #BRC_GLOBAL_DIR = "/Users/spmic/data/"
+    #BRC_GLOBAL_DIR = "/software/imaging/BRC_pipeline/1.6.6//global"  # Change this to actual path
+
+    FSLDIR = "/Users/spmic/fsl/"
+    MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_2mm.nii.gz"
+    BRC_GLOBAL_DIR = "/Users/spmic/data/"
 
     # Subject's MPRAGE path
     mprage_dir = os.path.join(data_dir, subject, "MPRAGE")
@@ -346,11 +346,11 @@ def main(data_dir, output_dir, subject):
     modSlice=np.zeros((nX,nY,nS))
     modSlice2=np.zeros((int(nX)*int(nY),nS))
 
-    #for iSlice in range(82,83):#(0,nS) (82,83)
-    for iSlice in range(115,116):#(0,nS) (82,83)
+    #for iSlice in range(115,116):#(0,nS) (82,83)
+    for iSlice in range(0,nS):#(0,nS) (82,83)
         start_time = time.time()
     #     if maskDatab[:,:,iSlice]:  
-        print('Computing slice '+str(iSlice))
+        print('Computing slice '+str(iSlice), flush=True)
         modSlice= modData[:,:,iSlice,:]
         phSlice = phData[:,:,iSlice,:]
         maskSlice = maskDatai[:,:,iSlice]
@@ -401,7 +401,7 @@ def main(data_dir, output_dir, subject):
         #alphafit[:,:,iSlice]=np.reshape(alpha,(nX,nY))
         r2fit[:,:,iSlice]=np.reshape(r2,(nX,nY))
         e2fit[:,:,iSlice]=np.reshape(e2,(nX,nY))
-        print("--- %s seconds ---" % (time.time() - start_time))
+        print("--- %s seconds ---" % (time.time() - start_time), flush=True)
   
     # save out data
     t1img=nib.nifti1.Nifti1Image(T1fit, imgm.affine)
