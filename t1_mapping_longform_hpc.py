@@ -106,6 +106,97 @@ def fitT1_try(sortTIi, modSlice, maskSlice2):
     return t1, m0, r2, e2
 
 
+def register_t1_to_mni(sub_dir, subject, data_dir):
+    """Register T1 map to MPRAGE, move MPRAGE to MNI space, then apply transformation to T1."""
+
+    # Define paths
+
+    # Define paths
+    FSLDIR = "/software/imaging/fsl/6.0.6.3"
+    MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_2mm.nii.gz"
+    BRC_GLOBAL_DIR = "/software/imaging/BRC_pipeline/1.6.6//global"  # Change this to actual path
+
+    #FSLDIR = "/Users/spmic/fsl/"
+    #MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_2mm.nii.gz"
+    #BRC_GLOBAL_DIR = "/Users/spmic/data/"
+
+    # Subject's MPRAGE path
+    mprage_dir = os.path.join(data_dir, subject, "MPRAGE")
+    #mprage_file = os.path.join(mprage_dir, "WIP_MPRAGE_CS3p5_201.nii")
+    mprage_files = glob.glob(os.path.join(mprage_dir, "*MPRAGE*.nii"))
+    mprage_file = mprage_files[0]  # Use the first match
+
+    if not os.path.exists(mprage_file):
+        print(f"Missing MPRAGE file for {subject}, skipping MNI registration.")
+        return
+    
+    print(f"✅ Found MPRAGE file for {subject}: {mprage_file}")
+
+    # Paths for output files
+    t1_input = os.path.join(sub_dir, f"{subject}_T1.nii.gz")
+    t1_to_mprage = os.path.join(sub_dir, f"{subject}_T1_to_MPRAGE.nii.gz")
+    affine_t1_to_mprage = os.path.join(sub_dir, f"{subject}_T1_to_MPRAGE.mat")
+
+    mprage_to_mni = os.path.join(sub_dir, f"{subject}_MPRAGE_to_MNI_linear.nii.gz")
+    affine_mprage_to_mni = os.path.join(sub_dir, f"{subject}_MPRAGE_to_MNI.mat")
+
+    mprage_to_mni_nonlin = os.path.join(sub_dir, f"{subject}_MPRAGE_to_MNI_nonlin.nii.gz")
+    fnirt_coeff = os.path.join(sub_dir, f"{subject}_MPRAGE_to_MNI_nonlin_coeff.nii.gz")
+
+    t1_mni_output = os.path.join(sub_dir, f"{subject}_T1_MNI.nii.gz")
+
+    # 1. **Align T1 to MPRAGE (subject space)**
+    flirt_t1_to_mprage = [
+        f"{FSLDIR}/bin/flirt",
+        "-in", t1_input,
+        "-ref", mprage_file,
+        "-omat", affine_t1_to_mprage,
+        "-out", t1_to_mprage,
+        "-dof", "12"  # Rigid-body transformation
+    ]
+    subprocess.run(flirt_t1_to_mprage, check=True)
+
+    # 2. **Move MPRAGE to MNI152 space (linear)**
+    flirt_mprage_to_mni = [
+        f"{FSLDIR}/bin/flirt",
+        "-in", mprage_file,
+        "-ref", MNI_TEMPLATE,
+        "-omat", affine_mprage_to_mni,
+        "-out", mprage_to_mni,
+        "-dof", "12"
+    ]
+    subprocess.run(flirt_mprage_to_mni, check=True)
+
+    # 3. **Refine MPRAGE to MNI using FNIRT (nonlinear)**
+    fnirt_mprage_to_mni = [
+        f"{FSLDIR}/bin/fnirt",
+        f"--in={mprage_file}",
+        f"--ref={MNI_TEMPLATE}",
+        f"--aff={affine_mprage_to_mni}",
+        f"--config={BRC_GLOBAL_DIR}/config/bb_fnirt.cnf",
+        f"--cout={fnirt_coeff}",
+        f"--iout={mprage_to_mni_nonlin}",
+        "--interp=spline"
+    ]
+    subprocess.run(fnirt_mprage_to_mni, check=True)
+
+    # 4. **Apply the same transformation to the T1 map**
+    applywarp_t1_to_mni = [
+        f"{FSLDIR}/bin/applywarp",
+        f"--in={t1_input}",
+        f"--ref={MNI_TEMPLATE}",
+        f"--warp={fnirt_coeff}",
+        f"--premat={affine_t1_to_mprage}",
+        f"--out={t1_mni_output}",
+        "--interp=spline"
+    ]
+    subprocess.run(applywarp_t1_to_mni, check=True)
+
+    print(f"✅ {subject} T1 map successfully registered to MNI space.")
+
+
+
+
 def main(data_dir, output_dir, subject):
     os.makedirs(output_dir, exist_ok=True)
 
@@ -329,6 +420,11 @@ def main(data_dir, output_dir, subject):
     e2img=nib.nifti1.Nifti1Image(e2fit, imgm.affine)
     #e2img.to_filename(sub_dir+'_E2.nii.gz') 
     e2img.to_filename(os.path.join(sub_dir,subject+"_E2.nii.gz"))
+
+
+    register_t1_to_mni(sub_dir, subject, data_dir)
+
+
 
 
 if __name__ == "__main__":
