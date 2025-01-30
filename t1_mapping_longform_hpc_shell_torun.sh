@@ -16,10 +16,10 @@ export DATA_DIR="/spmstore/project/AFIRMBRAIN/AFIRM/inputs"  # Change to your ac
 export OUTPUT_DIR="/spmstore/project/AFIRMBRAIN/AFIRM/t1mapping_out"
 
 # List of subjects (update as necessary)
-# SUBJECT=("16469-002A" "16500-002B" "16501-002b" \
-#           "16521-001b3" "16523_002b")
+SUBJECT=("16469-002A" "16500-002B" "16501-002b" \
+          "16521-001b3" "16523_002b")
 
-SUBJECT=("16469-002A")
+# SUBJECT=("16469-002A")
 
 # Loop through each subject
 for subject in "${SUBJECT[@]}"; do
