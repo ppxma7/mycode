@@ -246,6 +246,18 @@ def main(data_dir, output_dir, subject):
     imgp = nib.load(ph_trimmed)
     imgp_img = imgp.get_fdata()
 
+    # 🔥 Fix for DICOM phase values (divide by 1000)
+    imgp_img = imgp_img / 1000.0
+
+    # Save the corrected phase image back
+    imgp_corrected = nib.Nifti1Image(imgp_img, affine=imgp.affine, header=imgp.header)
+    nib.save(imgp_corrected, ph_trimmed)  # Overwrite the original file
+
+    # ✅ Print min/max phase values
+    print(f"Min phase value: {np.min(imgp_img)}")
+    print(f"Max phase value: {np.max(imgp_img)}")
+
+    print(f"Fixed phase NIfTI saved to: {ph_trimmed}")
 
     imgm_header=imgm.header
     dimensions=imgm_header['dim']
@@ -347,7 +359,7 @@ def main(data_dir, output_dir, subject):
     modSlice2=np.zeros((int(nX)*int(nY),nS))
 
     #for iSlice in range(115,116):#(0,nS) (82,83)
-    for iSlice in range(0,nS):#(0,nS) (82,83)
+    for iSlice in range(105,126):#(0,nS) (82,83)
         start_time = time.time()
     #     if maskDatab[:,:,iSlice]:  
         print('Computing slice '+str(iSlice), flush=True)
