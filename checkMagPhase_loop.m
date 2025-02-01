@@ -16,10 +16,27 @@ for ii = 1:length(folderNames)
     %disp(folderPath)
     fprintf('Processing folder: %s\n', folderPath);
 
-    thisFile = dir(fullfile(folderPath,'*01.nii'));
-    thisFileName = thisFile.name;
+    
 
-    checkMagPhase_noprompt(folderPath, thisFileName)
+    thisFile = dir(fullfile(folderPath,'*01.nii'));
+
+   
+        
+
+    %thisFileName = thisFile.name;
+    
+    if ~isDirEmpty(folderPath)
+        if any(contains({thisFile.name}, 'fixed'))
+            disp('already processed this folder')
+        else
+            thisFileName = thisFile.name;
+            checkMagPhase_noprompt(folderPath, thisFileName)
+        end
+    elseif isDirEmpty(folderPath)
+        disp('skipping this folder as T1 mapping is empty')
+    end
+
+    clc
 
 
 

@@ -4,6 +4,8 @@ function[] = checkMagPhase_noprompt(mypath, magData, varargin)
 % Prequisites: Need nifti tools https://uk.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image
 % Michael Asghar May 2023
 %
+
+
 if nargin<2
     error('Need path, need magnitude data')
 end
@@ -94,14 +96,26 @@ data_ph_vec = ph_data(:);
 
 if ~ignoreJson
     if ~isempty(dir('*.json'))
-        RS = json_ph.PhilipsRescaleSlope;
-        RI = json_ph.PhilipsRescaleIntercept;
-        SS = json_ph.PhilipsScaleSlope;
-        %
-        % %magnitude
-        RSm = json.PhilipsRescaleSlope;
-        RIm = json.PhilipsRescaleIntercept;
-        SSm = json.PhilipsScaleSlope;
+
+        if isfield(json_ph,'PhilipsRescaleSlope')
+
+            RS = json_ph.PhilipsRescaleSlope;
+            RI = json_ph.PhilipsRescaleIntercept;
+            SS = json_ph.PhilipsScaleSlope;
+
+            RSm = json.PhilipsRescaleSlope;
+            RIm = json.PhilipsRescaleIntercept;
+            SSm = json.PhilipsScaleSlope;
+        else
+            RS = 1.53455;
+            RI = -3142;
+            SS = 651.74;
+            %
+            % %magnitude
+            RSm = 19.5802;
+            RIm = 0;
+            SSm = 0.0245663;
+        end
 
     end
 else % just some default values from a t1 map
@@ -122,7 +136,7 @@ end
 % histogram(nonzeros(data_mag_vec),edges);
 % title(sprintf('min=%d max=%d',min(data_mag_vec),max(data_mag_vec)))
 % axis square
-clc
+
 
 disp(min(data_mag_vec))
 disp(max(data_mag_vec))
@@ -162,7 +176,8 @@ disp(class(data_ph_vec))
 %
 %
 % elseif strcmpi(x,'2')
-disp('correct phase and magnitude using philips rescale values from json')
+
+
 % run everything
 mag_data_d = single(mag_data);
 mag_data_d_vec = mag_data_d(:);
@@ -171,47 +186,50 @@ ph_data_d = single(ph_data);
 ph_data_d_vec = ph_data_d(:);
 
 
-D = ph_data_d_vec.*RS+RI;
-%D = D./RS.*SS;
-ph_data_d_vec_resh = reshape(D,[nX nY nS nT]);
-ph_data_d_div = ph_data_d_vec_resh./1000;
+if isfield(json_ph,'PhilipsRescaleSlope')
+
+    disp('correct phase and magnitude using philips rescale values from json')
 
 
-Dm = mag_data_d_vec.*RSm+RIm;
-%D = D./RSm.*SSm;
-mag_data_d_vec_resh = reshape(Dm,[nX nY nS nT]);
-mag_data_d_div = mag_data_d_vec_resh;
-
-disp(min(mag_data_d_div(:)));
-disp(max(mag_data_d_div(:)));
-
-disp(min(ph_data_d_div(:)));
-disp(max(ph_data_d_div(:)));
+    D = ph_data_d_vec.*RS+RI;
+    %D = D./RS.*SS;
+    ph_data_d_vec_resh = reshape(D,[nX nY nS nT]);
+    ph_data_d_div = ph_data_d_vec_resh./1000;
 
 
+    Dm = mag_data_d_vec.*RSm+RIm;
+    %D = D./RSm.*SSm;
+    mag_data_d_vec_resh = reshape(Dm,[nX nY nS nT]);
+    mag_data_d_div = mag_data_d_vec_resh;
 
-% 
-% elseif strcmpi(x,'3')
-%     disp('bailing out...')
-%     return
-% 
-% else
-%     % do nothing
-%     mag_data_d_div = mag_data;
-%     ph_data_d_div = ph_data;    
-%     
-%     disp(min(mag_data_d_div(:)));
-%     disp(max(mag_data_d_div(:)));
-% 
-%     disp(min(ph_data_d_div(:)));
-%     disp(max(ph_data_d_div(:)));
-% end
+    disp(min(mag_data_d_div(:)));
+    disp(max(mag_data_d_div(:)));
 
+    disp(min(ph_data_d_div(:)));
+    disp(max(ph_data_d_div(:)));
 
-% info_mag = make_ana(mag_data_d_div);
-% save_untouch_nii(info_mag,outname)
-% info_ph = make_ana(ph_data_d_div);
-% save_untouch_nii(info_ph,outname_ph)
+elseif ~isfield(json_ph,'PhilipsRescaleSlope')
+
+    disp('no json file, just doing divide')
+
+    mag_data_d = mag_data;
+    ph_data_d = ph_data;
+
+    mag_data_d_div = mag_data_d;
+    ph_data_d_div = ph_data_d./1000;
+
+    disp(min(mag_data_d_div(:)));
+    disp(max(mag_data_d_div(:)));
+
+    disp(min(ph_data_d_div(:)));
+    disp(max(ph_data_d_div(:)));
+
+else
+    keyboard
+
+end
+
+%saving
 info_mag = make_nii(mag_data_d_div);
 save_nii(info_mag,outname)
 info_ph = make_nii(ph_data_d_div);

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the root output directory where MPRAGE folders are located
-OUTPUT_DIR="/Users/spmic/data/SASHB/outputs"
+OUTPUT_DIR="/Volumes/nemosine/NEXPO/outputs"
 
 # Find all MPRAGE folders and process files inside
 find "$OUTPUT_DIR" -type d -name "MPRAGE" | while read mprage_folder; do
