@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #SBATCH --partition=defq
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
@@ -11,12 +10,11 @@ echo "Running on `hostname`"
 module load extension/imaging/
 module load brc-pipelines-img/1.6.6
 
-# Directory
 export DATA_DIR="/spmstore/project/SASHB/NEXPO/inputs"  # Change to your actual data path
-export OUTPUT_DIR="/spmstore/project/SASHB/NEXPO/t1mapping_out"
+export OUTPUT_DIR="/spmstore/project/SASHB/NEXPO/outputs"
 
 # List of subjects (update as necessary)
-SUBJECT=("03143_174" "05017_014" "06398_005" "09376_062" "10760_130" "12162_005" "12181_004" "12185_004" "12219_006" "12305_004" \
+subjects=("03143_174" "05017_014" "06398_005" "09376_062" "10760_130" "12162_005" "12181_004" "12185_004" "12219_006" "12305_004" \
          "12411_004" "12422_004" "12428_005" "12487_003" "12578_004" "12608_004" "12838_004" "12869_013" "12869_016" "12929_004" \
          "12967_004" "12969_004" "13006_004" "13673_015" "14007_003" "15721_009" "15951_002" "15955_002" "15999_003" "16014_002" \
          "16043_002" "16044_002" "16046_002" "16058_002" "16101_002" "16102_002" "16103_002" "16121_002" "16122_002" "16133_002" \
@@ -34,12 +32,30 @@ SUBJECT=("03143_174" "05017_014" "06398_005" "09376_062" "10760_130" "12162_005"
          "17243_002" "17275_002" "17293_002" "17305_002" "17324_002" "17341_002" "17342_002" "17348_002" "17364_002" "17394_002" \
          "17395_002" "17449_002" "17453_002" "17456_002" "17491_002" "17492_002" "17532_002" "17577_002" "17580_002" "17581_002" \
          "17589_002" "17594_002" "17596_002" "17606_002" "17607_002" "17610_002" "17617_002" "17698_002" "17704_002" "17706_002" \
-         "17723_002" "17765_002" "17769_002")
-
+         "17723_002" "17765_002" "17769_002" "16911_002" "10469_101" "17207_002" "12294_004" "17292_002" "16279_002" "16544_002" \
+         "09849_006")
 
 # Loop through each subject
-for subject in "${SUBJECT[@]}"; do
-    python3 t1_mapping_longform_hpc.py -d "$DATA_DIR" -o "$OUTPUT_DIR" -s "$subject"
+for subject in "${subjects[@]}"; do
+    # Define expected file paths
+    T1_FILE=$(find "${DATA_DIR}/${subject}/MPRAGE/" -type f -iname "*MPRAGE*.nii" | head -n 1)
+    #T2_FILE=$(find "${DATA_DIR}/${subject}/FLAIR/" -type f -iname "*FLAIR*.nii" | head -n 1)
+    
+    # Check if both T1 and T2 files exist
+    if [[ -f $T1_FILE ]]; then
+        echo "Processing subject: $subject"
+        echo "T1: $T1_FILE"
+        #echo "T2: $T2_FILE"
+
+        # Run structural pipeline
+        struc_preproc.sh --subject "$subject" --path "$OUTPUT_DIR" \
+                         --input "$T1_FILE" \
+                         --subseg --nodefacing --regtype 3 --freesurfer --fastsurfer
+    else
+        echo "Skipping $subject: Missing required files."
+        [[ ! -f $T1_FILE ]] && echo "  - Missing MPRAGE (T1) file."
+        #[[ ! -f $T2_FILE ]] && echo "  - Missing FLAIR (T2) file."
+    fi
 done
 
 echo "Processing complete!"

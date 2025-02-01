@@ -214,11 +214,17 @@ def main(data_dir, output_dir, subject):
     print(f"Processing subject: {subject}")
 
     # Get all matching .nii files
-    all_nifti_files = glob.glob(os.path.join(subject_path, "*T1mapping*.nii"))
+    #all_nifti_files = glob.glob(os.path.join(subject_path, "*T1mapping*.nii"))
+    all_nifti_files = glob.glob(os.path.join(subject_path, "fixed_wh_1mm*.nii"))
 
     # Enforce correct pattern with regex
-    t1_files = [f for f in all_nifti_files if re.search(r"(?<!_ph)\.nii$", f) and "real" not in f and "imaginary" not in f]
-    ph_files = [f for f in all_nifti_files if re.search(r"_ph\.nii$", f) and "real" not in f and "imaginary" not in f]
+    #t1_files = [f for f in all_nifti_files if re.search(r"(?<!_ph)\.nii$", f) and "real" not in f and "imaginary" not in f]
+    #ph_files = [f for f in all_nifti_files if re.search(r"_ph\.nii$", f) and "real" not in f and "imaginary" not in f]
+
+    # Enforce correct pattern using regex
+    t1_files = [f for f in all_nifti_files if re.search(r"fixed_wh_1mm.*01\.nii$", f)]
+    ph_files = [f for f in all_nifti_files if re.search(r"fixed_wh_1mm.*01_ph\.nii$", f)]
+
 
     # Locate required files
     #t1_files = [f for f in glob.glob(os.path.join(subject_path, "*T1mapping*.nii")) if "real" not in f and "imaginary" not in f]
@@ -247,17 +253,17 @@ def main(data_dir, output_dir, subject):
     imgp_img = imgp.get_fdata()
 
     # 🔥 Fix for DICOM phase values (divide by 1000)
-    imgp_img = imgp_img / 1000.0
+    #imgp_img = imgp_img / 1000.0
 
     # Save the corrected phase image back
-    imgp_corrected = nib.Nifti1Image(imgp_img, affine=imgp.affine, header=imgp.header)
-    nib.save(imgp_corrected, ph_trimmed)  # Overwrite the original file
+    #imgp_corrected = nib.Nifti1Image(imgp_img, affine=imgp.affine, header=imgp.header)
+    #nib.save(imgp_corrected, ph_trimmed)  # Overwrite the original file
 
     # ✅ Print min/max phase values
-    print(f"Min phase value: {np.min(imgp_img)}")
-    print(f"Max phase value: {np.max(imgp_img)}")
+    #print(f"Min phase value: {np.min(imgp_img)}")
+    #print(f"Max phase value: {np.max(imgp_img)}")
 
-    print(f"Fixed phase NIfTI saved to: {ph_trimmed}")
+    #print(f"Fixed phase NIfTI saved to: {ph_trimmed}")
 
     imgm_header=imgm.header
     dimensions=imgm_header['dim']
