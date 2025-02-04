@@ -6,34 +6,26 @@
 close all
 clear variables
 clc
-dataset = 'canapi_051224';
-mypath='/Volumes/hermes/canapi_051224/emg/Export/';
+dataset = 'canapi_030225';
+mypath='/Users/spmic/data/canapi_030225/EMG/Export/';
 userName = char(java.lang.System.getProperty('user.name'));
-savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_051224/plots/'];
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_030225/plots/'];
 
-% myfiles = {'1bar_raw.dat','1bar_corrected.dat','1bar_fMRI_raw.dat','1bar_fMRI_corrected.dat',...
-%     '30prc_raw.dat','30prc_corrected.dat','30prc_fMRI_raw.dat','30prc_fMRI_corrected.dat',...
-%     };
-% 
-% markerFiles = {'1bar_marker.txt','1bar_marker.txt','1bar_fMRI_marker.txt','1bar_fMRI_marker.txt',...
-%     '30prc_marker.txt','30prc_marker.txt','30prc_fMRI_marker.txt','30prc_fMRI_marker.txt',...
-%     };
-
-myfiles = {'CANAPI_1bar_Rectify.dat','CANAPI_30per_Rectify.dat','CANAPI_50per_Rectify.dat',...
-    'CANAPI_1bar_t2_Rectify.dat','CANAPI_30per_t2_Rectify.dat','CANAPI_50per_t2_Rectify.dat'};
+myfiles = {'CANAPI01_RL_1BAR_Rectify.dat','CANAPI01_RL_15per_Rectify.dat',...
+    'CANAPI01_LL_1BAR_Rectify.dat','CANAPI01_LL_15per_Rectify.dat'};
 
 
-markerFiles = {'CANAPI_1bar_Rectify_marker.txt','CANAPI_30per_Rectify_marker.txt','CANAPI_50per_Rectify_marker.txt',...
-    'CANAPI_1bar_t2_Rectify_marker.txt','CANAPI_30per_t2_Rectify_marker.txt','CANAPI_50per_t2_Rectify_marker.txt'};
+markerFiles = {'CANAPI01_RL_1BAR_Rectify_marker.txt','CANAPI01_RL_15per_Rectify_marker.txt',...
+    'CANAPI01_LL_1BAR_Rectify_marker.txt','CANAPI01_LL_15per_Rectify_marker.txt'};
 
 
 Fs = 2500;
 num_channels = 2;
-target_num_samples = 114; % this is how long the fMRI timeseries is
+target_num_samples = 228; % this is how long the fMRI timeseries is
 %target_num_samples = 100; % without rest at end
 TR = 1.5;
 firstMarker = 2;
-lastMarker = 11;
+lastMarker = 17;
 twoBefore = lastMarker-2;
 
 winLen = 10000;
@@ -50,7 +42,11 @@ for ii = 1:length(myfiles)
     %thisMarker = readtable([mypath extractBefore(myfiles{ii},'.') '_marker.txt']);
     thisMarker = readtable([mypath markerFiles{ii}]);
 
-    
+    r128 = contains(thisMarker.Description,'R128');
+    if sum(r128) ~= 0
+        thisMarker(r128,:) = [];
+    end
+
     %figure out ending. We end on an ON, so need to add the OFF and the ON
     %to the last marker position
     startMark = thisMarker.Position(firstMarker);
@@ -189,9 +185,9 @@ t = datetime('now','TimeZone','local','Format','dd-MM-yyyy-HH-mm-ss');
 filename1 = [savedir 'emg_dwnsmpl-LL' dataset '-' char(t)];
 filename2 = [savedir 'emg_dwnsmpl-RL' dataset '-' char(t)];
 figure('Position',[0 0 1400 800])
-tiledlayout(2,3)
+tiledlayout(2,2)
 
-flays = 6; %[2 5 4 6];
+flays = 4; %[2 5 4 6];
 for jj = 1:flays
     nexttile
     plot(saveMat_noconv{jj,1},'linewidth',2,'Color','#1f78b4')

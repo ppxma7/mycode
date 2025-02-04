@@ -9,13 +9,14 @@ elseif nargin==0
     no_wave = 0;
 end
 % Define parameters
-n_timepoints = 114;  % Total number of timepoints
+n_timepoints = 228;  % Total number of timepoints
 TR = 1.5;            % Time resolution in seconds
 time = (1:n_timepoints) * TR;  % Time vector from 1 to 150 seconds
 
 % Define ON periods (in seconds)
-on_times = [21, 51, 81, 111, 141];  % Onset times of the blocks
-block_duration = 9;  % Each block lasts 9 seconds
+%on_times = [21, 51, 81, 111, 141];  % Onset times of the blocks
+on_times = [21, 61, 101, 141, 181, 221, 261, 301];
+block_duration = 20;  % Each block lasts 9 seconds
 
 % Create a signal of zeros
 signal = zeros(n_timepoints, 1);
