@@ -21,7 +21,7 @@ markerFiles = {'CANAPI01_RL_1BAR_Rectify_marker.txt','CANAPI01_RL_15per_Rectify_
 
 Fs = 2500;
 num_channels = 2;
-target_num_samples = 228; % this is how long the fMRI timeseries is
+target_num_samples = 227; % this is how long the fMRI timeseries is
 %target_num_samples = 100; % without rest at end
 TR = 1.5;
 firstMarker = 2;
@@ -232,7 +232,7 @@ print(h, '-dpdf', filename1, '-fillpage', '-r300');  % -r300 sets the resolution
 % set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
 % print(h, '-dpdf', filename2, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
 
-
+keyboard
 %% just check resampling
 figure('Position',[0 400 1600 800])
 tiledlayout(2,2)

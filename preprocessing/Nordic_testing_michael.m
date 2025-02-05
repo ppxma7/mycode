@@ -3,16 +3,15 @@ clc
 
 %dirname = '/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/T1 mapping - General/040822_dan/t1_nordicdiffnoise/';
 %dirname = '/Volumes/ares/ZESPRI/zespri_180523/zespri_1A/nback/';
-dirname = '/Users/spmic/data/preDUST_FUNSTAR/FUNSTAR_QA_240125_MTX/';
+dirname = '/Users/spmic/data/canapi_030225/';
 %dirname = '/Volumes/ares/test/';
 %dirname = '/Volumes/hermes/tgi_sub_05_15874_230622/';
 % 
 
 
-files ={'FUNSTAR_QA_240125_MTX_2DEPI_MB0_17slc_1p25mm_iso_TR2_20250124152641_11.nii.gz',...
-    'FUNSTAR_QA_240125_MTX_2DEPI_MB0_17slc_1p25mm_iso_TR2_20250124152641_16.nii.gz',...
-    'FUNSTAR_QA_240125_MTX_2DEPI_MB2_50slc_rsfMRI_2mm_iso_TR1p5_20250124152641_13.nii.gz',...
-    'FUNSTAR_QA_240125_MTX_2DEPI_MB2_50slc_rsfMRI_2mm_iso_TR1p5_20250124152641_14.nii.gz',...
+files ={
+    'parrec_WIP1bar_TAP_L_20250203161352_5.nii',...
+    'parrec_WIPlow_TAP_L_20250203161352_6.nii',...
     };
 
 
