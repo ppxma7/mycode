@@ -1,32 +1,33 @@
 import os
 import subprocess
 
+
 # Paths to input and output folders
 #rootFold = "/Volumes/hermes/canapi_051224/aroma_mni_space/"
-rootFold = "/Volumes/nemosine/CANAPI_210125/spmanalysis/"
+rootFold = "/Volumes/hermes/canapi_030225/spm_analysis/"
 
-strucFold = "/Volumes/nemosine/CANAPI_210125/structs/"
+strucFold = "/Volumes/hermes/canapi_030225/spm_analysis/struc/"
 ica_aroma_path = "/Users/ppzma/Documents/MATLAB/ICA-AROMA/ICA_AROMA.py"  # Path to ICA-AROMA script
 
 brain_mask = os.path.join(rootFold, "brain_mask.nii.gz")  # Optional brain mask
 
-structural_image = os.path.join(strucFold, "parrec_WIPMPRAGE_CS3_5_20241205082447_2.nii")
+structural_image = os.path.join(strucFold, "WIPMPRAGE_CS3_5_20250203161352_9.nii")
 
 os.makedirs(rootFold, exist_ok=True)
 
 # Input files and corresponding motion parameter files
 input_files = [
-    "rwrCANAPI_210125_WIP1bar_PUSH_20250121121208_3_nordic_clv.nii",
-    "rwrCANAPI_210125_WIP1bar_TAP_20250121121208_4_nordic_clv.nii",
-    "rwrCANAPI_210125_WIPlow_PUSH_20250121121208_5_nordic_clv.nii",
-    "rwrCANAPI_210125_WIPlow_TAP_20250121121208_6_nordic_clv.nii"
+    "rwrparrec_WIP1bar_TAP_R_20250203161352_3_nordic_clv.nii",
+    "rwrparrec_WIPlow_TAP_R_20250203161352_4_nordic_clv.nii",
+    "rwrparrec_WIP1bar_TAP_L_20250203161352_5_nordic_clv.nii",
+    "rwrparrec_WIPlow_TAP_L_20250203161352_6_nordic_clv.nii"
 ]
 
 motion_files = [
-    "rp_CANAPI_210125_WIP1bar_PUSH_20250121121208_3_nordic_clv.txt",
-    "rp_CANAPI_210125_WIP1bar_TAP_20250121121208_4_nordic_clv.txt",
-    "rp_CANAPI_210125_WIPlow_PUSH_20250121121208_5_nordic_clv.txt",
-    "rp_CANAPI_210125_WIPlow_TAP_20250121121208_6_nordic_clv.txt"
+    "rp_parrec_WIP1bar_TAP_R_20250203161352_3_nordic_clv.txt",
+    "rp_parrec_WIPlow_TAP_R_20250203161352_4_nordic_clv.txt",
+    "rp_parrec_WIP1bar_TAP_L_20250203161352_5_nordic_clv.txt",
+    "rp_parrec_WIPlow_TAP_L_20250203161352_6_nordic_clv.txt"
 ]
 
 # input_files = [
@@ -57,8 +58,12 @@ for input_file, motion_file in zip(input_files, motion_files):
         input_file_path_nonan
         ], check=True)
 
+
+    #time.sleep(10)
+
     if not os.path.exists(brain_mask):
         print("No brain mask, creating one...")
+
         subprocess.run([
             "bet",
             input_file_path_nonan,
