@@ -9,7 +9,7 @@ root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-T
 #subfolders_to_search = ['scan1_vs_scan2', 'kiwi_vs_mtx','red_vs_green','red_vs_mtx']  # List the specific subfolders you want to search
 #subfolders_to_search = ['cttouch']  # List the specific subfolders you want to search
 #subfolders_to_search = ['lowpush','1barpush','lowtap','1bartap']
-subfolders_to_search = ['1barR','1barL','lowL','lowR','1barvslowL']
+subfolders_to_search = ['1bar_rvl','1bar_lvr']
 
 # Create an empty DataFrame to store all data
 all_data = pd.DataFrame()
