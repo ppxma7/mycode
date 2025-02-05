@@ -8,7 +8,7 @@ import os
 # updated_file_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Zespri- fMRI - General/analysis/nback/combined_data_nback.xlsx'
 #updated_file_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Pain Relief Grant - General/PFP_results/spmexcelfiles_3t/cttouch_combined.xlsx'
 #root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - Touchmap - Touchmap/results/restingstate/'
-root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_210125/shortened_trials_Tap/'
+root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_030225/'
 #root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/Claire_fmrs/090125_fmrs_AB/'
 
 
@@ -54,3 +54,24 @@ all_data.to_excel(output_file_with_regions, index=False)
 
 # Display the first few rows of the updated DataFrame
 print(all_data.head())
+
+# Create and save separate CSV files for each unique Region
+output_folder = os.path.join(root_folder_path, "Region_CSVs")
+os.makedirs(output_folder, exist_ok=True)
+
+# Generate and save separate CSV files for each unique Label
+for label, df_label in all_data.groupby("Label"):
+    df_label_filtered = df_label[["peak_T", "Region"]]
+
+    # We want to remove duplicates, so sort by T
+    df_label_filtered_sorted = df_label_filtered.sort_values(by=['peak_T'], ascending=False)
+
+    df_label_cleaned = df_label_filtered_sorted.drop_duplicates(subset=['Region'])
+
+    print(df_label_cleaned.head())
+
+    label_filename = f"{label.replace(' ', '_')}.csv"
+    df_label_cleaned.to_csv(os.path.join(output_folder, label_filename), index=False)
+
+
+
