@@ -3,8 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Define root directory and file path
-root_dir = "/Users/spmic/data"
-fs_filename = os.path.join(root_dir, "freesurfer_stats.csv")
+root_dir = "/Users/spmic/data/"
+fs_filename = os.path.join(root_dir, "freesurfer_stats_combined.csv")
 
 # Define the specific brain region to analyze
 region_name = "G_postcentral"
@@ -28,7 +28,7 @@ else:
     thickness_plot_path = os.path.join(root_dir, f"{region_name}_thickness.png")
 
     # **Plot 1: Gray Matter Volume (GMV) per Subject**
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(8, 5))
     plt.scatter(df_region["Subject"], df_region["GrayVol"], color="blue", alpha=0.7)
     plt.xlabel("Subject")
     plt.ylabel("Gray Matter Volume (mm³)")
@@ -44,7 +44,7 @@ else:
     print(f"GMV plot saved: {gmv_plot_path}")
 
     # **Plot 2: Cortical Thickness (ThickAvg) per Subject**
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(8, 5))
     plt.scatter(df_region["Subject"], df_region["ThickAvg"], color="green", alpha=0.7)
     plt.xlabel("Subject")
     plt.ylabel("Cortical Thickness (mm)")

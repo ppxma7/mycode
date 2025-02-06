@@ -3,9 +3,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Define root directory where all subject FreeSurfer stats files are stored
-root_dir = "/Users/spmic/data"
-#subjects = ["16469-002A", "Subject2", "Subject3"]  # Add more subjects here
-subjects = ["16469-002A", "16500-002B"]
+group_name = "AFIRM"
+root_dir = os.path.join("/Users/spmic/data/",group_name)
+subjects = ["16469-002A", "16500-002B", "16501-002b", "16521-001b3", "16523_002b"]  # Add more subjects here
+#subjects = ["16905_004", "16905_005", "17880001", "17880002"]
 # Define the stats file relative path
 stats_filename = "analysis/anatMRI/T1/processed/FreeSurfer/stats/lh.aparc.a2009s.stats"
 
@@ -41,6 +42,9 @@ for subject in subjects:
     
     # Add subject column
     df["Subject"] = subject
+
+    # Add group column
+    df["Group"] = group_name  # Assign "SASHB" to all rows
     
     # Append to the list
     all_data.append(df)
@@ -49,7 +53,7 @@ for subject in subjects:
 df_all = pd.concat(all_data, ignore_index=True)
 
 # Save table to show to user
-output_csv_path = os.path.join(root_dir, "freesurfer_stats.csv")
+output_csv_path = os.path.join(root_dir, f"freesurfer_stats_{group_name}.csv")
 df_all.to_csv(output_csv_path, index=False)
 print(f"Data saved to {output_csv_path}")
 
