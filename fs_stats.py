@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 # Define root directory where all subject FreeSurfer stats files are stored
 group_name = "AFIRM"
-root_dir = os.path.join("/Users/spmic/data/",group_name)
+root_dir = os.path.join("/Users/spmic/data/",group_name,"outputs")
 subjects = ["16469-002A", "16500-002B", "16501-002b", "16521-001b3", "16523_002b"]  # Add more subjects here
 #subjects = ["16905_004", "16905_005", "17880001", "17880002"]
 # Define the stats file relative path
