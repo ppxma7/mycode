@@ -3,8 +3,17 @@ import pandas as pd
 
 # Define project folders and file paths
 root_dir = "/Users/spmic/data"
-sashb_file = os.path.join(root_dir, "SASHB", "freesurfer_stats_sashb.csv")
-afirm_file = os.path.join(root_dir, "AFIRM", "freesurfer_stats_afirm.csv")
+out_dir = "/Users/spmic/data/san"
+
+#hemisphere = "l"
+#sashb_file = os.path.join(root_dir, "SASHB", f"freesurfer_stats_{hemisphere}_sashb.csv")
+#combined_csv_path = os.path.join(out_dir, f"freesurfer_stats_{hemisphere}_combined.csv")
+#afirm_file = os.path.join(root_dir, "AFIRM", f"freesurfer_stats_{hemisphere}_afirm.csv")
+
+hemisphere = "R"
+sashb_file = os.path.join(root_dir, "SASHB", f"t1_stats_destrieux_SASHB_{hemisphere}.csv")
+afirm_file = os.path.join(root_dir, "AFIRM", f"t1_stats_destrieux_AFIRM_{hemisphere}.csv")
+combined_csv_path = os.path.join(out_dir, f"t1_stats_destrieux_combined_{hemisphere}.csv")
 
 # Load both CSV files
 df_sashb = pd.read_csv(sashb_file)
@@ -22,7 +31,6 @@ df_combined = pd.concat([df_sashb, df_afirm], ignore_index=True)
 df_combined = df_combined.dropna(axis=1, how='all')
 
 # Save the properly merged CSV
-combined_csv_path = os.path.join(root_dir, "freesurfer_stats_combined.csv")
 df_combined.to_csv(combined_csv_path, index=False)
 
 print(f"Properly merged CSV saved: {combined_csv_path}")

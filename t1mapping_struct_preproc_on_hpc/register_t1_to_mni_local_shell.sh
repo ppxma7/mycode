@@ -13,6 +13,8 @@ SUBJECT=("16521-001b3")
 for subject in "${SUBJECT[@]}"; do
     #python3 /gpfs01/home/ppzma/code/register_t1_to_mni_standalone.py -d "$DATA_DIR" -o "$OUTPUT_DIR" -s "$subject"
     python3 /Users/spmic/Documents/MATLAB/mycode/register_t1_to_mni_standalone_fixing.py -d "$DATA_DIR" -o "$OUTPUT_DIR" -s "$subject"
+    #python3 /Users/spmic/Documents/MATLAB/mycode/apply_extract_atlas_t1.py -o "$OUTPUT_DIR" -s "$subject"
+
 done
 
 echo "Processing complete!"

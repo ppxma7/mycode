@@ -3,12 +3,16 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Define root directory where all subject FreeSurfer stats files are stored
-group_name = "AFIRM"
+group_name = "SASHB"
 root_dir = os.path.join("/Users/spmic/data/",group_name,"outputs")
-subjects = ["16469-002A", "16500-002B", "16501-002b", "16521-001b3", "16523_002b"]  # Add more subjects here
-#subjects = ["16905_004", "16905_005", "17880001", "17880002"]
+out_dir = os.path.join("/Users/spmic/data/",group_name)
+#subjects = ["16469-002A", "16500-002B", "16501-002b", "16521-001b3", "16523_002b"]  # Add more subjects here
+subjects = ["16905_004", "16905_005", "17880001", "17880002"]
 # Define the stats file relative path
-stats_filename = "analysis/anatMRI/T1/processed/FreeSurfer/stats/lh.aparc.a2009s.stats"
+
+hemisphere = "r"
+
+stats_filename = f"analysis/anatMRI/T1/processed/FreeSurfer/stats/{hemisphere}h.aparc.a2009s.stats"
 
 # Initialize empty list to store DataFrames
 all_data = []
@@ -53,7 +57,7 @@ for subject in subjects:
 df_all = pd.concat(all_data, ignore_index=True)
 
 # Save table to show to user
-output_csv_path = os.path.join(root_dir, f"freesurfer_stats_{group_name}.csv")
+output_csv_path = os.path.join(out_dir, f"freesurfer_stats_{hemisphere}_{group_name}.csv")
 df_all.to_csv(output_csv_path, index=False)
 print(f"Data saved to {output_csv_path}")
 
@@ -66,7 +70,7 @@ for subject in subjects:
     sub_df = df_all[df_all["Subject"] == subject]
     
     # Define output path for each subject
-    output_plot_path = os.path.join(root_dir, subject, f"{subject}_gmv.png")
+    output_plot_path = os.path.join(root_dir, subject, f"{subject}_{hemisphere}_gmv.png")
     
     # Create figure
     plt.figure(figsize=(12, 6))
@@ -90,7 +94,7 @@ for subject in subjects:
     sub_df = df_all[df_all["Subject"] == subject]
     
     # Define output path for each subject
-    output_plot_path = os.path.join(root_dir, subject, f"{subject}_ct_thick.png")
+    output_plot_path = os.path.join(root_dir, subject, f"{subject}_{hemisphere}_ct_thick.png")
 
     # Create bar chart figure
     plt.figure(figsize=(12, 6))
