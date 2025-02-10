@@ -11,7 +11,8 @@ root_dir = "/Users/spmic/data/san"
 
 hemisphere = "l"
 
-fs_filename = os.path.join(root_dir, f"freesurfer_stats_{hemisphere}_combined.csv")
+#fs_filename = os.path.join(root_dir, f"freesurfer_stats_{hemisphere}_combined.csv")
+fs_filename = os.path.join(root_dir,"debug.csv")
 
 # Load FreeSurfer stats CSV
 df = pd.read_csv(fs_filename)
@@ -30,14 +31,14 @@ df_thickness = df.groupby(["StructName", "Group"]).agg(
 # Get unique regions and groups
 regions = df["StructName"].unique()
 groups = df["Group"].unique()
-group_colors = {"AFIRM": "#FD8D3C", "SASHB": "#E31A1C"}  # Customize colors per group
+group_colors = {"AFIRM": "#e41a1c", "SASHB": "#377eb8", "NEXPO": "#4daf4a"}  # Customize colors per group
 
 # Define function to plot
 def plot_grouped_bars(df_grouped, y_label, title, filename, ymin, ymax):
     plt.figure(figsize=(10, len(regions) * 0.3))
 
     # Bar width and positioning
-    bar_width = 0.4
+    bar_width = 0.25
     x = np.arange(len(regions))  # X positions for each region
 
     # Loop through groups to plot bars
