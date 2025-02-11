@@ -117,8 +117,10 @@ def register_t1_to_mni(sub_dir, subject, data_dir):
     #BRC_GLOBAL_DIR = "/software/imaging/BRC_pipeline/1.6.6//global"  # Change this to actual path
 
     FSLDIR = "/Users/spmic/fsl/"
-    MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_2mm.nii.gz"
-    BRC_GLOBAL_DIR = "/Users/spmic/data/"
+    #MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_2mm.nii.gz"
+    MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_1mm.nii.gz"
+    #BRC_GLOBAL_DIR = "/Users/spmic/data/"
+    MY_CONFIG_DIR = "/gpfs01/home/ppzma/"
 
     # Subject's MPRAGE path
     mprage_dir = os.path.join(data_dir, subject, "MPRAGE")
@@ -173,7 +175,7 @@ def register_t1_to_mni(sub_dir, subject, data_dir):
         f"--in={mprage_file}",
         f"--ref={MNI_TEMPLATE}",
         f"--aff={affine_mprage_to_mni}",
-        f"--config={BRC_GLOBAL_DIR}/config/bb_fnirt.cnf",
+        f"--config={MY_CONFIG_DIR}/config/bb_fnirt.cnf",
         f"--cout={fnirt_coeff}",
         f"--iout={mprage_to_mni_nonlin}",
         "--interp=spline"
@@ -340,7 +342,11 @@ def main(data_dir, output_dir, subject):
      # Load mask
 
      # create a mask here
-    subprocess.run(["bet", t1_file, os.path.join(sub_dir, "T1_brain"), "-m", "-Z", "-R", "-f", "0"], check=True)
+    #subprocess.run(["bet", t1_file, os.path.join(sub_dir, "T1_brain"), "-m", "-Z", "-R", "-f", "0"], check=True)
+
+    subprocess.run(["fslmaths", t1_file, "-Tmean", os.path.join(sub_dir, "T1_tmean.nii.gz")], check=True)
+    subprocess.run(["fslmaths", os.path.join(sub_dir, "T1_tmean.nii.gz"), "-bin", os.path.join(sub_dir, "T1_tmean_bin.nii.gz")], check=True)
+    subprocess.run(["fslmaths", os.path.join(sub_dir, "T1_tmean_bin.nii.gz"), "-kernel", "sphere", "3", "-dilF", os.path.join(sub_dir, "T1_brain_mask.nii.gz")], check=True)
 
     maskData = nib.load(os.path.join(sub_dir, "T1_brain_mask.nii.gz")).get_fdata()
     maskDatai = maskData.astype(int)
@@ -365,7 +371,7 @@ def main(data_dir, output_dir, subject):
     modSlice2=np.zeros((int(nX)*int(nY),nS))
 
     #for iSlice in range(115,116):#(0,nS) (82,83)
-    for iSlice in range(105,126):#(0,nS) (82,83)
+    for iSlice in range(0,nS):#(0,nS) (82,83)
         start_time = time.time()
     #     if maskDatab[:,:,iSlice]:  
         print('Computing slice '+str(iSlice), flush=True)
