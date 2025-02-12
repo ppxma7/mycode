@@ -7,14 +7,16 @@ clc
 %savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Zespri- fMRI - General/blood_results/'];
 %mypath = savedir;
 %cd(mypath)
-savedir = '/Users/spmic/data/san/gmv/';
-mypath = '/Users/spmic/data/san/';
+plotdir = '/Users/spmic/data/san/plotdir/';
+savedir = '/Users/spmic/data/san/';
 
-hemisphere = 'l';
+hemisphere = 'r';
 
-myFile = [mypath 'freesurfer_stats_' hemisphere '_combined.csv'];
+myFile = [savedir 'freesurfer_stats_' hemisphere '_combined.csv'];
 
 theTable = readtable(myFile);
+
+whichCol = 'gmv';
 
 %% GMV all regions
 [p,tbl,stats] = anova1(theTable.GrayVol,theTable.Group);
@@ -50,7 +52,7 @@ tic
 disp('running all regions....')
 alphaval = 0.01;
 regions = unique(theTable.StructName);
-anova_results_gmv = [];
+anova_results = [];
 for ii = 1:length(regions)
 
     region_name = regions{ii};
@@ -61,8 +63,16 @@ for ii = 1:length(regions)
     regionData = theTable(idxRegion,:); %index into table
 
     % now stats between groups for THIS region
+    
+    if strcmpi(whichCol,'gmv')
+        [p, tbl, stats] = anova1(regionData.GrayVol, regionData.Group, 'off');
+    elseif strcmpi(whichCol,'cth')
+        [p, tbl, stats] = anova1(regionData.ThickAvg, regionData.Group, 'off');
+    elseif strcmpi(whichCol,'t1')
+        [p, tbl, stats] = anova1(regionData.Mean, regionData.Group, 'off');
+    end
 
-    [p, tbl, stats] = anova1(regionData.GrayVol, regionData.Group, 'off');
+    
     % Post-hoc comparisons (Tukey's HSD)
     [c, ~, ~, gnames] = multcompare(stats, "Dimension", 1, 'Display', 'off', ...
         'CriticalValueType', 'bonferroni', 'Alpha', alphaval);
@@ -74,10 +84,12 @@ for ii = 1:length(regions)
     tbldom.("Group B") = gnames(tbldom.("Group B"));
 
     % Store in summary table
-    anova_results_gmv = [anova_results_gmv; {region_name, p}];
+    anova_results = [anova_results; {region_name, p}];
 
     % Save to spreadsheet
-    %writetable(tbldom, sprintf('%s/mult_gmv_%s_%s.xlsx', savedir, hemisphere, region_name));
+    if p<alphaval
+        writetable(tbldom, sprintf('%s/mult_%s_%s_%s.xlsx', plotdir, hemisphere, region_name, whichCol));
+    end
 
 end
 
@@ -89,7 +101,7 @@ toc
 %% now org and plot
 
 clear Mat
-anVals = cell2mat(anova_results_gmv(:,2));
+anVals = cell2mat(anova_results(:,2));
 anValDex = anVals<alphaval;
 sigRegions = regions(anValDex);
 
@@ -100,41 +112,46 @@ for ii = 1:length(sigRegions)
     thisRegion = sigRegions(ii); % this region for this loop
     idxRegion = strcmpi(theTable.StructName,thisRegion); % get indices of each subject's region
     regionData = theTable(idxRegion,:); %index into table
-
-    Mat(:,ii) = regionData.GrayVol;
+    
+    if strcmpi(whichCol,'gmv')
+        Mat(:,ii) = regionData.GrayVol;
+    elseif strcmpi(whichCol,'cth')
+        Mat(:,ii) = regionData.ThickAvg;
+    elseif strcmpi(whichCol,'t1')
+        Mat(:,ii) = regionData.Mean;
+    end
 
 end
 
 myGroup = regionData.Group;
 
-
-%% %% plot
-clear g
-close all
-
-
-for ii = 1:length(sigRegions)
-
-    figure('Position', [100 100 600 400])
-    g = gramm();
-    region_name = sigRegions{ii};
-    thisData = Mat(:,ii); % Extract GMV values for this region
-    
-    
-    g = gramm('x', myGroup, 'y', thisData, 'color', myGroup);
-    g.stat_summary('geom', {'bar', 'black_errorbar'},'type','std','width',1,'dodge',1); % Mean & Std
-    %g(ii,1).stat_boxplot2(); % Boxplot for additional info
-    g.set_names('x', 'Group', 'y', ['GMV - ' region_name]);
-    g.set_title(region_name);
-
-    g.set_text_options('Font', 'Helvetica', 'base_size', 12);
-    g.set_order_options('x', 0, 'color', 0);
-    g.draw();
-
-    filename = sprintf(['plot_GMV_' sigRegions{ii}], '%s');
-    g.export('file_name', filename, 'export_path', savedir, 'file_type', 'pdf');
-    g.export('file_name', filename, 'export_path', savedir, 'file_type', 'eps');
-end
+ %% plot
+% clear g
+% close all
+% 
+% 
+% for ii = 1:length(sigRegions)
+% 
+%     figure('Position', [100 100 600 400])
+%     g = gramm();
+%     region_name = sigRegions{ii};
+%     thisData = Mat(:,ii); % Extract GMV values for this region
+% 
+% 
+%     g = gramm('x', myGroup, 'y', thisData, 'color', myGroup);
+%     g.stat_summary('geom', {'bar', 'black_errorbar'},'type','std','width',1,'dodge',1); % Mean & Std
+%     %g(ii,1).stat_boxplot2(); % Boxplot for additional info
+%     g.set_names('x', 'Group', 'y', ['GMV - ' region_name]);
+%     g.set_title(region_name);
+% 
+%     g.set_text_options('Font', 'Helvetica', 'base_size', 12);
+%     g.set_order_options('x', 0, 'color', 0);
+%     g.draw();
+% 
+%     filename = sprintf(['plot_GMV_' sigRegions{ii}], '%s');
+%     g.export('file_name', filename, 'export_path', savedir, 'file_type', 'pdf');
+%     g.export('file_name', filename, 'export_path', savedir, 'file_type', 'eps');
+% end
 
 %%
 
@@ -142,7 +159,6 @@ clear g
 close all
 
 % Define subplot layout (adjust rows and cols based on number of regions)
-numRows = 4;  % You can tweak this based on layout preference
 numCols = 13;
 
 % Flatten for gramm facet grid
@@ -156,8 +172,7 @@ flattenedData = Mat(:); % Flatten data for plotting
 %figure('Position', [100 100 1400 800]); % Adjust figure size
 figure('Position', [100 100 2000 800]); % Adjust figure size
 g = gramm('x', subjectData, 'y', flattenedData, 'color', subjectData);
-g.facet_wrap(region_labels, 'ncols', numCols,'scale','independent'); % Arrange in grid layout
-
+g.facet_wrap(region_labels, 'ncols', numCols,'scale','independent','column_labels',1); % Arrange in grid layout
 g.stat_summary('geom', {'bar', 'black_errorbar'},'type','std','width',1,'dodge',1); % Mean & Std
 % Plot as violin + boxplot
 %g.stat_violin('fill', 'transparent', 'width', 0.6);
@@ -165,50 +180,45 @@ g.stat_summary('geom', {'bar', 'black_errorbar'},'type','std','width',1,'dodge',
 
 
 % Aesthetics
-g.set_names('x', 'Group', 'y', 'GMV');
+g.set_names('x', 'Group', 'y', whichCol,'column',[]);
 %g.set_title('Significant GMV Regions');
 %g.set_color_options('map', [0 0 0; 0 0.5 1; 1 0 0]); % Adjust color scheme
 g.set_text_options('Font', 'Helvetica', 'base_size', 6, 'facet_scaling', 1);
 g.set_order_options('x', 0, 'color', 0);
 g.no_legend()
-%g.axe_property('YLim', 'auto'); % Allow individual Y-limits per region
+
+if strcmpi(whichCol,'cth')
+    g.axe_property('YLim', [1 4]); % Allow individual Y-limits per region
+end
 %g.set_text_options('facet', false); % Removes facet (subplot) titles
 
 % Draw all tiles in one figure
 g.draw();
 
-% Remove "column" from facet titles
-% Remove "column" from facet titles
-% ==== Fix Titles ====
-% Find all axes in the figure
-g.update()
-allAxes = findobj(gcf, 'Type', 'axes');
-
-% Iterate over axes and modify titles
-for i = 1:length(allAxes)
-    ax = allAxes(i);
-    oldTitle = get(ax, 'Title');
-    oldText = oldTitle.String;
-    
-    % Remove "column" from the title
-    newTitleText = strrep(oldText, ' column', '');  
-    title(ax, newTitleText, 'Interpreter', 'none');
-end
-
-% Draw again to apply updates
-g.draw();
 
 
 % Save figure
-% filename = 'GMV_Significant_Regions';
-% g.export('file_name', filename, 'export_path', savedir, 'file_type', 'pdf');
-% g.export('file_name', filename, 'export_path', savedir, 'file_type', 'eps');
+filename = [whichCol '_sig_Regions_' hemisphere];
+g.export('file_name', filename, 'export_path', plotdir, 'file_type', 'pdf');
+g.export('file_name', filename, 'export_path', plotdir, 'file_type', 'eps');
 
 
 
 %% T1?
+keyboard
 
-myFile = [mypath 't1_stats_destrieux_combined_' hemisphere '.csv'];
+%%
+
+close all
+clear all
+clc
+
+plotdir = '/Users/spmic/data/san/plotdir/';
+savedir = '/Users/spmic/data/san/';
+
+hemisphere = 'L';
+whichCol = 't1';
+myFile = [savedir 't1_stats_destrieux_combined_' hemisphere '.csv'];
 
 theTable = readtable(myFile);
 
@@ -225,5 +235,6 @@ title('T1')
 writecell(tbl,sprintf([savedir 'anova_t1_' hemisphere ],'%s'),'FileType','spreadsheet')
 writetable(tbldom,sprintf([savedir 'mult_d1_t1_' hemisphere ],'%s'),'FileType','spreadsheet')
 
+theTable.Properties.VariableNames{1} = 'StructName';
 
 
