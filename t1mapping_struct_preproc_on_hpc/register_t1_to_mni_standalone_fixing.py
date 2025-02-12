@@ -30,7 +30,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
     
     if not os.path.exists(t1_brain):
         print(f"❌ Missing bet T1 file for {subject}, running bet.")
-        bet_cmd = ["bet", t1_raw, t1_brain, "-R", "-F", "-f", "0.1"]
+        bet_cmd = ["bet", t1_raw, t1_brain, "-R", "-F", "-f", "0.05","-g","-0.5"]
         subprocess.run(bet_cmd, check=True)
 
 
@@ -83,7 +83,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
             "-omat", affine_t1_to_mprage,
             "-out", t1_to_mprage,
             "-cost", "mutualinfo",  # Use MI instead of default corratio
-            "-dof", "12",
+            "-dof", "6",
             "-searchrx", "-90", "90",
             "-searchry", "-90", "90",
             "-searchrz", "-90", "90"
