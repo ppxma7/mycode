@@ -7,7 +7,7 @@ clc
 %savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Zespri- fMRI - General/blood_results/'];
 %mypath = savedir;
 %cd(mypath)
-savedir = '/Users/spmic/data/san/gmv/';
+savedir = '/Users/spmic/data/san/';
 mypath = savedir;
 
 hemisphere = 'l';
@@ -111,30 +111,31 @@ myGroup = regionData.Group;
 %% %% plot
 clear g
 close all
+figure('Position', [100 100 600 400])
+g = gramm();
 
-
-for ii = 1:length(sigRegions)
-
-    figure('Position', [100 100 600 400])
-    g = gramm();
+for ii = 1%:length(sigRegions)
     region_name = sigRegions{ii};
     thisData = Mat(:,ii); % Extract GMV values for this region
     
     
-    g = gramm('x', myGroup, 'y', thisData, 'color', myGroup);
-    g.stat_summary('geom', {'bar', 'black_errorbar'},'type','std','width',1,'dodge',1); % Mean & Std
+    g(ii,1) = gramm('x', myGroup, 'y', thisData, 'color', myGroup);
+    g(ii,1).stat_summary('geom', {'bar', 'black_errorbar'},'type','std','width',1,'dodge',1); % Mean & Std
     %g(ii,1).stat_boxplot2(); % Boxplot for additional info
-    g.set_names('x', 'Group', 'y', ['GMV - ' region_name]);
-    g.set_title(region_name);
-
-    g.set_text_options('Font', 'Helvetica', 'base_size', 12);
-    g.set_order_options('x', 0, 'color', 0);
-    g.draw();
-
-    filename = sprintf(['plot_GMV_' sigRegions{ii}], '%s');
-    g.export('file_name', filename, 'export_path', savedir, 'file_type', 'pdf');
-    g.export('file_name', filename, 'export_path', savedir, 'file_type', 'eps');
+    g(ii,1).set_names('x', 'Group', 'y', ['GMV - ' region_name]);
+    g(ii,1).set_title(region_name);
 end
+
+g.set_text_options('Font', 'Helvetica', 'base_size', 12);
+g.set_order_options('x', 0, 'color', 0);
+g.draw();
+
+for ii = 1%:length(sigRegions)
+    filename = sprintf(['plot_GMV_' sigRegions{ii}], '%s');
+    g(ii,1).export('file_name', filename, 'export_path', savedir, 'file_type', 'pdf');
+    g(ii,1).export('file_name', filename, 'export_path', savedir, 'file_type', 'eps');
+end
+
 
 
 
