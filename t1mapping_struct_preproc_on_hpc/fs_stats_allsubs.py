@@ -9,10 +9,10 @@ import numpy as np
 #root_dir = os.path.join("/Users/spmic/data/",group_name)
 root_dir = "/Users/spmic/data/san"
 
-hemisphere = "l"
+hemisphere = "r"
 
-#fs_filename = os.path.join(root_dir, f"freesurfer_stats_{hemisphere}_combined.csv")
-fs_filename = os.path.join(root_dir,"debug.csv")
+fs_filename = os.path.join(root_dir, f"freesurfer_stats_{hemisphere}_combined.csv")
+#fs_filename = os.path.join(root_dir,"debugg.csv")
 
 # Load FreeSurfer stats CSV
 df = pd.read_csv(fs_filename)
@@ -23,6 +23,7 @@ df_gmv = df.groupby(["StructName", "Group"]).agg(
     Std_dev=("GrayVol", "std")  # Compute std deviation across subjects for GMV
 ).reset_index()
 
+
 df_thickness = df.groupby(["StructName", "Group"]).agg(
     Mean=("ThickAvg", "mean"),  # Compute mean thickness across subjects
     Std_dev=("ThickAvg", "std")  # Compute std deviation for cortical thickness
@@ -32,6 +33,13 @@ df_thickness = df.groupby(["StructName", "Group"]).agg(
 regions = df["StructName"].unique()
 groups = df["Group"].unique()
 group_colors = {"AFIRM": "#e41a1c", "SASHB": "#377eb8", "NEXPO": "#4daf4a"}  # Customize colors per group
+
+print("Grouped GMV Data:\n", df_gmv[df_gmv["StructName"] == "G frontal superior"])
+print("Individual Data:\n", df[df["StructName"] == "G frontal superior"])
+
+print(df["Group"].unique())  # Should match {"AFIRM", "SASHB", "NEXPO"}
+
+df_gmv = df_gmv.set_index("StructName").loc[regions].reset_index()
 
 # Define function to plot
 def plot_grouped_bars(df_grouped, y_label, title, filename, ymin, ymax):
@@ -76,7 +84,7 @@ def plot_grouped_bars(df_grouped, y_label, title, filename, ymin, ymax):
     print(f"Plot saved: {plot_path}")
 
 
-ymin_gmv, ymax_gmv = 0, 15000  # GMV limits
+ymin_gmv, ymax_gmv = 0, 25000  # GMV limits
 ymin_thick, ymax_thick = 1.0, 5.0  # Thickness limits
 
 # Plot GMV

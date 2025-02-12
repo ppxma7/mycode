@@ -12,9 +12,9 @@ OUTPUT_DIR="/Volumes/nemosine/NEXPO/t1mapping_out/"
 
 # SUBJECT=("17105_002" "12411_004" "16464_002" \
 #          "16439_002" "16438_002" "16513_002" \
-#          "17207_003" "17105_002")
+#          "17207_003")
 
-SUBJECT=("16464_002")
+SUBJECT=("17207_003")
 
 
 # Loop through each subject

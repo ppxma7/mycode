@@ -34,7 +34,7 @@ subjects = ["03143_174", "05017_014", "06398_005", "09376_062", "09849_006", "10
 
 # Define the stats file relative path
 
-hemisphere = "l"
+hemisphere = "r"
 
 stats_filename = f"analysis/anatMRI/T1/processed/FreeSurfer/stats/{hemisphere}h.aparc.a2009s.stats"
 
