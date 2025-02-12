@@ -8,7 +8,7 @@ clc
 %mypath = savedir;
 %cd(mypath)
 savedir = '/Users/spmic/data/san/gmv/';
-mypath = savedir;
+mypath = '/Users/spmic/data/san/';
 
 hemisphere = 'l';
 
@@ -77,7 +77,7 @@ for ii = 1:length(regions)
     anova_results_gmv = [anova_results_gmv; {region_name, p}];
 
     % Save to spreadsheet
-    writetable(tbldom, sprintf('%s/mult_gmv_%s_%s.xlsx', savedir, hemisphere, region_name));
+    %writetable(tbldom, sprintf('%s/mult_gmv_%s_%s.xlsx', savedir, hemisphere, region_name));
 
 end
 
@@ -136,6 +136,73 @@ for ii = 1:length(sigRegions)
     g.export('file_name', filename, 'export_path', savedir, 'file_type', 'eps');
 end
 
+%%
+
+clear g
+close all
+
+% Define subplot layout (adjust rows and cols based on number of regions)
+numRows = 4;  % You can tweak this based on layout preference
+numCols = 13;
+
+% Flatten for gramm facet grid
+region_labels = repelem(sigRegions, size(Mat, 1)); % Repeat region names for subjects
+subjectData = repmat(myGroup, length(sigRegions), 1); % Repeat group labels
+flattenedData = Mat(:); % Flatten data for plotting
+
+
+
+% Initialize gramm object with facetting
+%figure('Position', [100 100 1400 800]); % Adjust figure size
+figure('Position', [100 100 2000 800]); % Adjust figure size
+g = gramm('x', subjectData, 'y', flattenedData, 'color', subjectData);
+g.facet_wrap(region_labels, 'ncols', numCols,'scale','independent'); % Arrange in grid layout
+
+g.stat_summary('geom', {'bar', 'black_errorbar'},'type','std','width',1,'dodge',1); % Mean & Std
+% Plot as violin + boxplot
+%g.stat_violin('fill', 'transparent', 'width', 0.6);
+%g.stat_boxplot('width', 0.2);
+
+
+% Aesthetics
+g.set_names('x', 'Group', 'y', 'GMV');
+%g.set_title('Significant GMV Regions');
+%g.set_color_options('map', [0 0 0; 0 0.5 1; 1 0 0]); % Adjust color scheme
+g.set_text_options('Font', 'Helvetica', 'base_size', 6, 'facet_scaling', 1);
+g.set_order_options('x', 0, 'color', 0);
+g.no_legend()
+%g.axe_property('YLim', 'auto'); % Allow individual Y-limits per region
+%g.set_text_options('facet', false); % Removes facet (subplot) titles
+
+% Draw all tiles in one figure
+g.draw();
+
+% Remove "column" from facet titles
+% Remove "column" from facet titles
+% ==== Fix Titles ====
+% Find all axes in the figure
+g.update()
+allAxes = findobj(gcf, 'Type', 'axes');
+
+% Iterate over axes and modify titles
+for i = 1:length(allAxes)
+    ax = allAxes(i);
+    oldTitle = get(ax, 'Title');
+    oldText = oldTitle.String;
+    
+    % Remove "column" from the title
+    newTitleText = strrep(oldText, ' column', '');  
+    title(ax, newTitleText, 'Interpreter', 'none');
+end
+
+% Draw again to apply updates
+g.draw();
+
+
+% Save figure
+% filename = 'GMV_Significant_Regions';
+% g.export('file_name', filename, 'export_path', savedir, 'file_type', 'pdf');
+% g.export('file_name', filename, 'export_path', savedir, 'file_type', 'eps');
 
 
 
