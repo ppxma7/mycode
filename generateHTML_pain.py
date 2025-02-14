@@ -10,6 +10,9 @@ os.makedirs(output_folder, exist_ok=True)
 
 image_folder = "/Users/spmic/data/painfiles/images/"
 
+summary_file = os.path.join(root_folder, "summary.txt")  # Or use summary.md
+image_files = ["allheat.png", "3Tnps_1.png", "7Tnps_1.png"]  # Update with actual filenames
+
 # Define page-to-subject mapping (update this as needed)
 page_mapping = {
     range(1, 6): "sub01",
@@ -19,7 +22,7 @@ page_mapping = {
     range(24, 28): "sub05",
     range(29, 33): "sub06",
     range(34, 39): "sub07",
-    range(40, 40): "sub08",
+    range(40, 41): "sub08",
     # Add more mappings as needed
 }
 
@@ -46,30 +49,88 @@ def get_region_for_pdf(directory, pdf_filename):
 
 def generate_summary_page():
     """Generate a summary.html page from summary.txt or summary.md"""
-    summary_file = os.path.join(root_folder, "summary.txt")  # Or use summary.md
+    
     summary_content = ""
 
     if os.path.exists(summary_file):
         with open(summary_file, "r", encoding="utf-8") as f:
             summary_content = f.read().replace("\n", "<br>")  # Preserve newlines in HTML
 
+    # Generate HTML for summary page
     summary_html = f"""<html>
     <head>
         <title>Summary</title>
         <style>
             body {{ font-family: Arial, sans-serif; padding: 20px; }}
-            .container {{ max-width: 800px; margin: auto; }}
-            a {{ text-decoration: none; color: blue; }}
+            .image-container {{ display: flex; gap: 20px; }}
+            .image-container img {{ width: 300px; height: auto; cursor: pointer; transition: transform 0.2s; }}
+            .image-container img:hover {{ transform: scale(1.1); }}
+            pre {{ background: #f4f4f4; padding: 15px; border-radius: 5px; white-space: pre-wrap; }}
         </style>
     </head>
     <body>
-        <div class="container">
-            <h2>Summary</h2>
-            <p>{summary_content}</p>
-            <p><a href="index.html">⬅ Back to Main Page</a></p>
+        <h1>Summary</h1>
+        <p><a href="index.html">⬅ Back to Main Page</a></p>  <!-- Back button -->
+        <pre>{summary_content}</pre> <!-- Display text from file -->
+
+        <h2>Visual Summary</h2>
+        <div class="image-container">
+    """
+
+    # Add images if they exist
+    for img in image_files:
+        img_path = os.path.join(image_folder, img)
+        if os.path.exists(img_path):
+            summary_html += f'<a href="{image_folder}/{img}" onclick="openLightbox(\'{image_folder}/{img}\'); return false;">'
+            summary_html += f'<img src="{image_folder}/{img}" alt="{img}" width="300" style="cursor:pointer;"></a>'
+
+    summary_html += """
         </div>
+
+        <div id="lightbox" onclick="closeLightbox()">
+            <span id="lightbox-close">&times;</span>
+            <img id="lightbox-img">
+        </div>
+
+        <script>
+        function openLightbox(imgSrc) {
+            document.getElementById('lightbox-img').src = imgSrc;
+            document.getElementById('lightbox').style.display = 'block';
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+        </script>
+
+        <style>
+        #lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            text-align: center;
+            z-index: 1000;
+        }
+        #lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            margin-top: 5%;
+        }
+        #lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+        }
+        </style>
     </body>
-    </html>"""
+    </html>
+    """
 
     # Write the summary.html file in the top-level output folder
     summary_path = os.path.join(output_folder, "summary.html")
@@ -192,6 +253,7 @@ def generate_html(directory, rel_path=""):
             img_path = os.path.join(image_folder, img)
             #html_content += f'<div><img src="{img_path}" style="width:100%; max-width:600px;"></div>'
             html_content += f'<div><img src="{img_path}" style="width:100%; max-width:600px; cursor:pointer;" onclick="openLightbox(\'{img_path}\')"></div>'
+            #html_content += f'<div><img src="{os.path.join(image_folder, img)}" style="width:100%; max-width:600px; cursor:pointer;" onclick="openLightbox(\'{img}\')"></div>'
 
 
 
