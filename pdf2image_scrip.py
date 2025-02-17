@@ -2,9 +2,9 @@ from pdf2image import convert_from_path
 import os
 
 #pdf_path = "/Users/spmic/data/painfiles/painsummary_march2024_subjects_tidied.pdf"
-pdf_path = "/Users/spmic/data/painfiles/images/3T_NPS_vals.pdf"
+pdf_path = "/Users/spmic/data/painfiles/images/pain_hand.pdf"
 output_folder = "/Users/spmic/data/painfiles/images/"
-thisfile = "3Tnps"
+thisfile = "pain_hand"
 
 # Ensure output folder exists
 os.makedirs(output_folder, exist_ok=True)

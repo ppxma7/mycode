@@ -11,7 +11,7 @@ os.makedirs(output_folder, exist_ok=True)
 image_folder = "/Users/spmic/data/painfiles/images/"
 
 summary_file = os.path.join(root_folder, "summary.txt")  # Or use summary.md
-image_files = ["allheat.png", "3Tnps_1.png", "7Tnps_1.png"]  # Update with actual filenames
+image_files = ["allheat.png", "3Tnps_1.png", "7Tnps_1.png", "hypa.png","pain_hand_1.png","pain_arm_1.png"]  # Update with actual filenames
 
 # Define page-to-subject mapping (update this as needed)
 page_mapping = {
@@ -62,9 +62,20 @@ def generate_summary_page():
         <title>Summary</title>
         <style>
             body {{ font-family: Arial, sans-serif; padding: 20px; }}
-            .image-container {{ display: flex; gap: 20px; }}
-            .image-container img {{ width: 300px; height: auto; cursor: pointer; transition: transform 0.2s; }}
-            .image-container img:hover {{ transform: scale(1.1); }}
+            .image-container {{
+                display: flex;
+                flex-wrap: wrap; /* Allow items to wrap to the next row */
+                gap: 20px; /* Space between items */
+            }}
+            .image-container img {{
+                width: 300px; /* Fixed width for images */
+                height: auto; /* Maintain aspect ratio */
+                cursor: pointer;
+                transition: transform 0.2s;
+            }}
+            .image-container img:hover {{
+                transform: scale(1.1);
+            }}
             pre {{ background: #f4f4f4; padding: 15px; border-radius: 5px; white-space: pre-wrap; }}
         </style>
     </head>
