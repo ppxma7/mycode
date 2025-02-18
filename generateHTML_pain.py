@@ -11,7 +11,7 @@ os.makedirs(output_folder, exist_ok=True)
 image_folder = "/Users/spmic/data/painfiles/images/"
 
 summary_file = os.path.join(root_folder, "summary.txt")  # Or use summary.md
-image_files = ["allheat.png", "3Tnps_1.png", "7Tnps_1.png", "hypa.png","pain_hand_1.png","pain_arm_1.png"]  # Update with actual filenames
+image_files = ["posheatflat.png", "negheatflat.png", "3Tnps_1.png", "7Tnps_1.png", "hypa.png","pain_hand_1.png","pain_arm_1.png", "rs.png"]  # Update with actual filenames
 
 # Define page-to-subject mapping (update this as needed)
 page_mapping = {

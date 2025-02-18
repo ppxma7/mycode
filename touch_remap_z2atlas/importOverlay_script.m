@@ -48,16 +48,24 @@
 %     [thisSub '_aveLeftHand_Cope3zstat_2highres.nii'],...
 %     [thisSub '_aveLeftHand_Cope4zstat_2highres.nii'],...
 %     [thisSub '_aveLeftHand_Cope5zstat_2highres.nii']};
-
-theseOverlays = {'mrtoolsspmT_0002.nii',...
-    'mrtoolsspmT_0003.nii',...
-    'mrtoolsspmT_0004.nii',...
-    'mrtoolsspmT_0006.nii',...
-    'mrtoolsspmT_0007.nii',...
-    'mrtoolsspmT_0008.nii',...
-    'mrtoolsspmT_0009.nii',...
-    'mrtoolsspmT_0010.nii',...
+%%
+theseOverlays = {'rspmT_0001.nii',...
+    'rspmT_0005.nii',...
     };
+
+theseFolders = {'thermode_hand_3t',...
+    'thermode_arm_3t',...
+    'thermode_hand_7t',...
+    'thermode_arm_7t',...
+    'thermode_arm_post_7t',...
+    };
+
+% 
+% theseFolders = {
+%     'thermode_hand_7t',...
+%     'thermode_arm_7t',...
+%     'thermode_arm_post_7t',...
+%     };
 
 %subject = '10875';
 %thispath = '/Volumes/nemosine/subs/';
@@ -66,11 +74,12 @@ theseOverlays = {'mrtoolsspmT_0002.nii',...
 %thispath = ['/Volumes/arianthe/exp016/231108_share/sub016_' thisSub '/resultsSummary/'];
 
 
-thispath = '/Volumes/ares/PFS/spm_conversions/cttouch_redo/';
+thispath = '/Volumes/arianthe/PAIN/spmimport_redo_allsubs/';
+thisSub = 'sub07';
 
 
 %pathname = [thispath subject '/label/'];
-pathname = thispath;
+%pathname = thispath;
 %pathname = [thispath subject '/ROIs/'];
 %pathname = [thispath];% '/Volumes/nemosine/subs/13658/label/';
 
@@ -90,26 +99,33 @@ pathname = thispath;
 %     importOverlay(v,params)
 %     clear params
 % end
-
+%%
 %theseOverlays = {'lh.BA3b_exvivo.label.volume.nii'};
 %pathname = [thispath subject '/freesurfer/label/'];
 
-for ii = 1:length(theseOverlays)
-    v = viewGet([], 'view', 1);
-    filename = theseOverlays{ii};
-    %filename = 'lh.BA6_exvivo.label.volume.nii';
-    params.scanlist = 1; % 1 for forward, 2 for reverse
-    %params.min_overlay = 3.09;
-    params.min_overlay = 2;
-    params.max_overlay = 10;
-    params.pathname = [pathname filename];
-    params.frameList = 1;
-    params.useSform = 1;
-    params.filename = filename;
-    params.interpMethod = 'linear';
-    params.nameFrame1 = 'Frame 1';
-    importOverlay_copy(v,params)
-    clear params
+for ii = 1:length(theseFolders)
+    for jj = 1:length(theseOverlays)
+
+        v = viewGet([], 'view', 1);
+
+        filename = fullfile(thispath,thisSub,theseFolders{ii},theseOverlays{jj});
+        %filename = 'lh.BA6_exvivo.label.volume.nii';
+        params.scanlist = 1; % 1 for forward, 2 for reverse
+        %params.min_overlay = 3.09;
+        params.min_overlay = 2;
+        params.max_overlay = 10;
+        params.min_clip = 3.12;
+        %params.colormap = viridis(256);
+        params.max_clip = 10;
+        params.pathname = filename;
+        params.frameList = 1;
+        params.useSform = 1;
+        params.filename = [theseFolders{ii} '_' theseOverlays{jj}];
+        params.interpMethod = 'linear';
+        params.nameFrame1 = 'Frame 1';
+        importOverlay_copy(v,params)
+        clear params
+    end
 end
 
 

@@ -171,8 +171,14 @@ defaultOverlay.data = cell(nScans,1);
 defaultOverlay.date = datestr(now);
 defaultOverlay.params = params;
 % colormap is made with a little bit less on the dark end
-defaultOverlay.colormap = hot(312);
-defaultOverlay.colormap = defaultOverlay.colormap(end-255:end,:);
+
+if isfield(params,'colormap')
+    defaultOverlay.colormap = params.colormap;
+else
+    defaultOverlay.colormap = hot(312);
+    defaultOverlay.colormap = defaultOverlay.colormap(end-255:end,:);
+end
+
 defaultOverlay.alpha = 1;
 defaultOverlay.interrogator = '';
 defaultOverlay.mergeFunction = 'defaultMergeParams';
@@ -180,8 +186,8 @@ defaultOverlay.colormapType = 'normal';
 %defaultOverlay.range = [min_overlay max_overlay];
 if ~contains(params.pathname,'freesurfer')
     if isfield(params,'min_overlay')
-        defaultOverlay.clip = [params.min_overlay params.max_overlay];
-        defaultOverlay.range = [min_overlay params.max_overlay];
+        defaultOverlay.clip = [params.min_clip params.max_clip];
+        defaultOverlay.range = [params.min_overlay params.max_overlay];
     else
         defaultOverlay.clip = [min_overlay max_overlay];
         defaultOverlay.range = [min_overlay max_overlay];
