@@ -24,13 +24,13 @@ df_grouped = df.groupby(["Region", "Group"]).agg(
 # Get unique regions and groups
 regions = df["Region"].unique()
 groups = df["Group"].unique()
-group_colors = {"AFIRM": "#FD8D3C", "SASHB": "#E31A1C"}  # Customize colors per group
-
+#group_colors = {"AFIRM": "#FD8D3C", "SASHB": "#E31A1C", "NEXPO": "#FD8D3C"}  # Customize colors per group
+group_colors = {"AFIRM": "#e41a1c", "SASHB": "#377eb8", "NEXPO": "#4daf4a"}
 # Define figure size
 plt.figure(figsize=(10, len(regions) * 0.3))
 
 # Bar width and positioning
-bar_width = 0.4
+bar_width = 0.25
 x = np.arange(len(regions))  # X positions for each region
 min_x = -1000
 max_x = 10000
