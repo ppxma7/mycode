@@ -84,9 +84,10 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
             "-out", t1_to_mprage,
             "-cost", "mutualinfo",  # Use MI instead of default corratio
             "-dof", "6",
-            "-searchrx", "-90", "90",
-            "-searchry", "-90", "90",
-            "-searchrz", "-90", "90"
+            "-searchrx", "0", "0",
+            "-searchry", "0", "0",
+            "-searchrz", "0", "0",
+            "-usesqform"
         ], check=True)
         print(f"✅ {subject} FLIRT: T1 map registered to MPRAGE.")
 
