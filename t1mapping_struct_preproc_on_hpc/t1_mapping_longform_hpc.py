@@ -116,18 +116,20 @@ def register_t1_to_mni(sub_dir, subject, data_dir):
     #MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_2mm.nii.gz"
     #BRC_GLOBAL_DIR = "/software/imaging/BRC_pipeline/1.6.6//global"  # Change this to actual path
 
-    FSLDIR = "/Users/spmic/fsl/"
+    #FSLDIR = "/Users/spmic/fsl/"
+    FSLDIR = "/usr/local/fsl/"
     #MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_2mm.nii.gz"
     MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_1mm.nii.gz"
     #BRC_GLOBAL_DIR = "/Users/spmic/data/"
-    MY_CONFIG_DIR = "/gpfs01/home/ppzma/"
+    #MY_CONFIG_DIR = "/gpfs01/home/ppzma/"
+    MY_CONFIG_DIR = "/Users/ppzma/data/"
 
     # Subject's MPRAGE path
     mprage_dir = os.path.join(data_dir, subject, "MPRAGE")
     #mprage_file = os.path.join(mprage_dir, "WIP_MPRAGE_CS3p5_201.nii")
     mprage_files = glob.glob(os.path.join(mprage_dir, "*MPRAGE*.nii"))
     mprage_file = mprage_files[0]  # Use the first match
-
+    
     if not os.path.exists(mprage_file):
         print(f"Missing MPRAGE file for {subject}, skipping MNI registration.")
         return
@@ -154,7 +156,11 @@ def register_t1_to_mni(sub_dir, subject, data_dir):
         "-ref", mprage_file,
         "-omat", affine_t1_to_mprage,
         "-out", t1_to_mprage,
-        "-dof", "12"  # Rigid-body transformation
+        "-cost", "mutualinfo",
+        "-dof", "6",
+        "-searchrx", "0", "0",
+        "-searchry", "0", "0",
+        "-searchrz", "0", "0",
     ]
     subprocess.run(flirt_t1_to_mprage, check=True)
 
@@ -346,7 +352,7 @@ def main(data_dir, output_dir, subject):
 
     subprocess.run(["fslmaths", t1_file, "-Tmean", os.path.join(sub_dir, "T1_tmean.nii.gz")], check=True)
     subprocess.run(["fslmaths", os.path.join(sub_dir, "T1_tmean.nii.gz"), "-bin", os.path.join(sub_dir, "T1_tmean_bin.nii.gz")], check=True)
-    subprocess.run(["fslmaths", os.path.join(sub_dir, "T1_tmean_bin.nii.gz"), "-kernel", "sphere", "3", "-dilF", os.path.join(sub_dir, "T1_brain_mask.nii.gz")], check=True)
+    subprocess.run(["fslmaths", os.path.join(sub_dir, "T1_tmean_bin.nii.gz"), "-kernel", "sphere", "5", "-dilF", os.path.join(sub_dir, "T1_brain_mask.nii.gz")], check=True)
 
     maskData = nib.load(os.path.join(sub_dir, "T1_brain_mask.nii.gz")).get_fdata()
     maskDatai = maskData.astype(int)
