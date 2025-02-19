@@ -11,7 +11,7 @@ out_dir = "/Users/spmic/data/san"
 # nexpo_file = os.path.join(root_dir, "NEXPO", f"freesurfer_stats_{hemisphere}_NEXPO.csv")
 # combined_csv_path = os.path.join(out_dir, f"freesurfer_stats_{hemisphere}_combined.csv")
 
-hemisphere = "L"
+hemisphere = "R"
 sashb_file = os.path.join(root_dir, "SASHB", f"t1_stats_destrieux_SASHB_{hemisphere}.csv")
 afirm_file = os.path.join(root_dir, "AFIRM", f"t1_stats_destrieux_AFIRM_{hemisphere}.csv")
 nexpo_file = os.path.join(root_dir, "NEXPO", f"t1_stats_destrieux_NEXPO_{hemisphere}.csv")

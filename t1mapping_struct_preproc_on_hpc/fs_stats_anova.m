@@ -170,7 +170,7 @@ flattenedData = Mat(:); % Flatten data for plotting
 
 % Initialize gramm object with facetting
 %figure('Position', [100 100 1400 800]); % Adjust figure size
-figure('Position', [100 100 2000 800]); % Adjust figure size
+figure('Position', [100 100 2000 600]); % Adjust figure size
 g = gramm('x', subjectData, 'y', flattenedData, 'color', subjectData);
 g.facet_wrap(region_labels, 'ncols', numCols,'scale','independent','column_labels',1); % Arrange in grid layout
 g.stat_summary('geom', {'bar', 'black_errorbar'},'type','std','width',1,'dodge',1); % Mean & Std
@@ -236,5 +236,9 @@ writecell(tbl,sprintf([savedir 'anova_t1_' hemisphere ],'%s'),'FileType','spread
 writetable(tbldom,sprintf([savedir 'mult_d1_t1_' hemisphere ],'%s'),'FileType','spreadsheet')
 
 theTable.Properties.VariableNames{1} = 'StructName';
+
+%%
+
+
 
 

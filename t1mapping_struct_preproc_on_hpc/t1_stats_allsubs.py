@@ -6,7 +6,7 @@ import numpy as np
 # Define root directory and file path
 root_dir = "/Users/spmic/data/san"
 
-hemisphere = "L"
+hemisphere = "R"
 fs_filename = os.path.join(root_dir, f"t1_stats_destrieux_combined_{hemisphere}.csv")
 
 # Load FreeSurfer stats CSV
