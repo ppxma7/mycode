@@ -4,9 +4,10 @@ import glob
 import argparse
 
 # FSL and MNI paths
-FSLDIR = "/usr/local/fsl/"  # Update if needed
+#FSLDIR = "/usr/local/fsl/"  # Update if needed
+FSLDIR = "/Users/spmic/fsl/"
 MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_1mm.nii.gz"  # 1mm version
-MY_CONFIG_DIR = "/Users/ppzma/data/"  # Update if needed
+MY_CONFIG_DIR = "/Users/spmic/data/"  # Update if needed
 
 # Define paths
 #FSLDIR = "/software/imaging/fsl/6.0.6.3"
@@ -30,7 +31,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
     
     if not os.path.exists(t1_brain):
         print(f"❌ Missing bet T1 file for {subject}, running bet.")
-        bet_cmd = ["bet", t1_raw, t1_brain, "-R", "-f", "0.1","-g","-0.2","-S","-B"]
+        bet_cmd = ["bet", t1_raw, t1_brain, "-R", "-f", "0","-g","-0.2","-S","-B"]
         subprocess.run(bet_cmd, check=True)
 
 
