@@ -179,7 +179,16 @@ sigComparisons = tbldom_big(tbldom_big.("P-value") < alphaval, :);
 
 
 % Define subplot layout (adjust rows and cols based on number of regions)
-numCols = 13;
+if strcmpi(whichCol,'t1')
+    numCols = 6;
+    myHorz = 1200;
+    myVertz = 800;
+else
+    numCols = 13;
+    myHorz = 2000;
+    myVertz = 800;
+end
+
 
 % Flatten for gramm facet grid
 region_labels = repelem(sigRegions, size(Mat, 1)); % Repeat region names for subjects
@@ -191,7 +200,7 @@ flattenedData = Mat(:); % Flatten data for plotting
 
 % Initialize gramm object with facetting
 %figure('Position', [100 100 1400 800]); % Adjust figure size
-figure('Position', [100 100 2000 300]); % Adjust figure size
+figure('Position', [100 100 myHorz myVertz]); % Adjust figure size
 g = gramm('x', subjectData, 'y', flattenedData, 'color', subjectData);
 g.facet_wrap(region_labels, 'ncols', numCols,'scale','independent','column_labels',1); % Arrange in grid layout
 g.stat_summary('geom', {'bar', 'black_errorbar'},'type','std','width',1,'dodge',1); % Mean & Std
