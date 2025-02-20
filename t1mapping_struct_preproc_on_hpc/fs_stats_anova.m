@@ -7,23 +7,26 @@ clc
 %savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Zespri- fMRI - General/blood_results/'];
 %mypath = savedir;
 %cd(mypath)
-plotdir = '/Users/spmic/data/san/plotdir/';
 savedir = '/Users/spmic/data/san/';
 
-hemisphere = 'r';
+hemisphere = 'l';
 
 myFile = [savedir 'freesurfer_stats_' hemisphere '_combined.csv'];
 
 theTable = readtable(myFile);
 
 whichCol = 'gmv';
+plotdir = fullfile('/Users/spmic/data/san/plotdir/',whichCol);
+
+
+alphaval = 0.01;
+
 
 %% GMV all regions
 [p,tbl,stats] = anova1(theTable.GrayVol,theTable.Group);
 [p2,tbl2,stats2] = anova1(theTable.ThickAvg,theTable.Group);
 
 %
-alphaval = 0.01;
 
 figure
 [c,m,h,gnames] = multcompare(stats,"Dimension",1,'Display','on','CriticalValueType','bonferroni','Alpha',alphaval);
@@ -53,6 +56,7 @@ disp('running all regions....')
 alphaval = 0.01;
 regions = unique(theTable.StructName);
 anova_results = [];
+tbldom_big = table();
 for ii = 1:length(regions)
 
     region_name = regions{ii};
@@ -86,19 +90,26 @@ for ii = 1:length(regions)
     % Store in summary table
     anova_results = [anova_results; {region_name, p}];
 
+
     % Save to spreadsheet
-    if p<alphaval
+    if any(tbldom.("P-value")<alphaval)
         writetable(tbldom, sprintf('%s/mult_%s_%s_%s.xlsx', plotdir, hemisphere, region_name, whichCol));
+        
+        rowDex = find(tbldom.("P-value")<alphaval);
+        temptbldom = tbldom(rowDex,:); % just get sig mult compare rows
+        temptbldom.Region = repmat({region_name}, height(temptbldom), 1);
+        tbldom_big = [tbldom_big; temptbldom];
     end
 
 end
+
+writetable(tbldom_big, sprintf('%s/mult_%s_%s_tbldombig.xlsx', plotdir, hemisphere, whichCol));
 
 
 toc
 
 
-
-%% now org and plot
+% now org and plot
 
 clear Mat
 anVals = cell2mat(anova_results(:,2));
@@ -124,6 +135,8 @@ for ii = 1:length(sigRegions)
 end
 
 myGroup = regionData.Group;
+
+%
 
  %% plot
 % clear g
@@ -158,6 +171,13 @@ myGroup = regionData.Group;
 clear g
 close all
 
+% Extract significant comparisons
+sigComparisons = tbldom_big(tbldom_big.("P-value") < alphaval, :);
+%sigComparisons.("Group A") = categorical(sigComparisons.("Group A"));
+%sigComparisons.("Group B") = categorical(sigComparisons.("Group B"));
+
+
+
 % Define subplot layout (adjust rows and cols based on number of regions)
 numCols = 13;
 
@@ -166,11 +186,12 @@ region_labels = repelem(sigRegions, size(Mat, 1)); % Repeat region names for sub
 subjectData = repmat(myGroup, length(sigRegions), 1); % Repeat group labels
 flattenedData = Mat(:); % Flatten data for plotting
 
-
+%subjectData = categorical(subjectData);
+%uniqueGroups = unique(subjectData);
 
 % Initialize gramm object with facetting
 %figure('Position', [100 100 1400 800]); % Adjust figure size
-figure('Position', [100 100 2000 600]); % Adjust figure size
+figure('Position', [100 100 2000 300]); % Adjust figure size
 g = gramm('x', subjectData, 'y', flattenedData, 'color', subjectData);
 g.facet_wrap(region_labels, 'ncols', numCols,'scale','independent','column_labels',1); % Arrange in grid layout
 g.stat_summary('geom', {'bar', 'black_errorbar'},'type','std','width',1,'dodge',1); % Mean & Std
@@ -196,7 +217,6 @@ end
 g.draw();
 
 
-
 % Save figure
 filename = [whichCol '_sig_Regions_' hemisphere];
 g.export('file_name', filename, 'export_path', plotdir, 'file_type', 'pdf');
@@ -205,20 +225,18 @@ g.export('file_name', filename, 'export_path', plotdir, 'file_type', 'eps');
 
 
 %% T1?
-keyboard
 
-%%
 
 close all
 clear all
 clc
 
-plotdir = '/Users/spmic/data/san/plotdir/';
 savedir = '/Users/spmic/data/san/';
 
-hemisphere = 'L';
+hemisphere = 'R';
 whichCol = 't1';
 myFile = [savedir 't1_stats_destrieux_combined_' hemisphere '.csv'];
+plotdir = fullfile('/Users/spmic/data/san/plotdir/',whichCol);
 
 theTable = readtable(myFile);
 

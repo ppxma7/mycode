@@ -3,7 +3,8 @@ import pandas as pd
 import glob
 
 # Define root directory
-folder_path = "/Users/spmic/data/san/plotdir/t1_xlsx/"
+folder_path = "/Users/spmic/data/san/plotdir/cth_xlsx/"
+
 
 # Get a list of all Excel files in the folder
 xlsx_files = glob.glob(os.path.join(folder_path, "*.xlsx"))
@@ -26,7 +27,7 @@ for file in xlsx_files:
             continue
 
         # Filter for significant differences (P-value < 0.05)
-        significant_df = df[df["P-value"] < 0.05].copy()
+        significant_df = df[df["P-value"] < 0.01].copy()
 
         if not significant_df.empty:
             # Add a column for the source file
