@@ -25,8 +25,9 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 
 # Define the root path and subfolder names
 # Root path for QA outputs
-root_path = "/Users/spmic/data/preDUST_FUNSTAR/FUNSTAR_QA_240125_MTX/"
-folder_pattern = "qa_output_FUNSTAR*"
+#root_path = "/Users/spmic/data/postDUST_MBSENSE_QUAD_200225/qa_outputs/"
+root_path = "/Users/spmic/data/bloop/"
+folder_pattern = "qa_output*"
 
 
 # Dynamically find subfolders matching the pattern
@@ -47,9 +48,14 @@ def extract_sort_key(folder_name):
         return numeric_part, type_part
     return float('inf'), float('inf')  # Fallback for unmatched folders
 
+# Function to extract the numeric suffix from folder names
+def extract_numeric_suffix(folder_name):
+    match = re.search(r"_(\d+)_clv_clipped$", folder_name)
+    return int(match.group(1)) if match else float('inf')  # Use inf for folders without a match
+
 
 # Sort the subfolders using the combined key
-subfolders.sort(key=extract_sort_key)
+subfolders.sort(key=extract_numeric_suffix)
 
 # Print sorted subfolders to check the order
 print("Sorted Subfolders:")
@@ -63,7 +69,7 @@ for folder in subfolders:
 means = []
 stds = []
 folder_labels = []
-tSNRmax = 200
+tSNRmax = 500
 
 # Process each folder
 for folder in subfolders:
@@ -83,9 +89,9 @@ for folder in subfolders:
 
             # Define the 2D ROI
             # Example: Center at (48, 48) on slice 12 with size 20x20 (in-plane ROI dimensions)
-            slice_index = 16  # The z-slice where the 2D ROI is located
-            roi_center = (28, 40)  # (x, y) center of the ROI
-            roi_size = (10, 10)  # (width, height) of the ROI
+            #slice_index = 12  # The z-slice where the 2D ROI is located
+            roi_center = (30, 60)  # (x, y) center of the ROI
+            roi_size = (20, 20)  # (width, height) of the ROI
 
             # Calculate ROI bounds in 2D
             x_start = max(roi_center[0] - roi_size[0] // 2, 0)
@@ -103,10 +109,11 @@ for folder in subfolders:
             # Print ROI shape
             print("2D ROI shape:", roi_data.shape)
 
-
+            # UNCOMMENT FOR ROI
             # Flatten the data to 1D array
             flat_data = roi_data.flatten()
 
+            # UNCOMMENT FOR ENTIRE IMAGE
             # Flatten the data to 1D array
             #flat_data = data.flatten()
 
@@ -193,31 +200,36 @@ for folder in subfolders:
 # Define the data structure (adjust with actual computed means and stds)
 # Correctly define means_big and stds_big (grouped by Raw and Nordic)
 means_big = np.array([
-    [means[0], means[2], means[4], means[6]],  # Raw
-    [means[1], means[3], means[5], means[7]]   # Nordic
+    means[0:5],  # MB1
+    means[5:10],  # MB2
+    means[10:15],  # MB3
+    means[15:20],  # MB4
 ])
 
 stds_big = np.array([
-    [stds[0], stds[2], stds[4], stds[6]],  # Raw
-    [stds[1], stds[3], stds[5], stds[7]]   # Nordic
+    stds[0:5],  # MB1
+    stds[5:10],  # MB2
+    stds[10:15],  # MB3
+    stds[15:20],  # MB4
 ])
 
 
 
 # Bar settings
 # Bar settings
-labels = ['Scan 11', 'Scan 13', 'Scan 14','Scan 16']  # X-axis labels for scans
-group_labels = ['Raw', 'Nordic']                  # Group labels
-width = 0.2   
+labels = ['1', '2', '3', '4']  # Multiband factors
+sense_factors = ['1', '1.5', '2', '2.5', '3']  # SENSE factors
+
+width = 0.2  # Width of each bar
 
 # Adjusted x positions with gaps between groups
-#x = np.array([0, 1, 2, 3]) * (1 + 0.05 * len(sense_factors))  # Add space after each group
+x = np.array([0, 1, 2, 3]) * (1 + 0.05 * len(sense_factors))  # Add space after each group
 
 #x = np.arange(len(labels))  # The label locations
 
 # Adjusted x positions for each scan
 #x = np.arange(len(labels))  # Base positions for each scan
-x = np.arange(len(labels)) * 0.5  #
+#x = np.arange(len(labels)) * 0.5  #
 
 # Colors
 colors = ['#FFEDA0', '#FD8D3C', '#E31A1C', '#BD0026', '#800026']
@@ -226,35 +238,41 @@ colors = ['#FFEDA0', '#FD8D3C', '#E31A1C', '#BD0026', '#800026']
 #colors = ['#1f77b4', '#ff7f0e']  # Raw (blue) and Nordic (orange)
 
 # Create the bar chart
-fig, ax = plt.subplots(figsize=(8, 6))
-for i in range(means_big.shape[0]):  # Loop over groups (Raw and Nordic)
+fig, ax = plt.subplots(figsize=(10, 6))
+for i in range(means_big.shape[1]):  # Loop over SENSE factors
+
+    #upper_error = stds_big[:, i, 0]  # Q3 - mean
+    #lower_error = stds_big[:, i, 1]  # mean - Q1
+
     ax.bar(
-        x + (i - 0.2) * width,  # Adjust x position for each group
-        means_big[i],
-        yerr=stds_big[i],       # Add error bars
+        x + (i - 2) * width,  # Adjust x position for each SENSE factor
+        means_big[:, i],
+        yerr=stds_big[:, i],  # Asymmetrical IQR error bars
         width=width,
-        label=group_labels[i],
+        label=f'SENSE {sense_factors[i]}',
         color=colors[i],
-        capsize=4,
-        edgecolor='black'
+        capsize=4
     )
 
+    #yerr=stds_big[:, i],
+
+#yerr=[lower_error, upper_error],
+
 # Add labels, title, and legend
-ax.set_xlabel('Scans', fontsize=12)
-ax.set_ylabel('Mean tSNR', fontsize=12)
-ax.set_title('tSNR for Raw and Nordic Groups', fontsize=14)
+ax.set_xlabel('Multiband factor')
+ax.set_ylabel('Temporal Signal to Noise')
+ax.set_title('tSNR by Multiband and SENSE Factors')
 ax.set_xticks(x)
-ax.set_xticklabels(labels, fontsize=10)
-ax.legend(title='Group', loc='best')
+ax.set_xticklabels(labels)
+ax.legend(title='SENSE factor', loc='best')
 ax.grid(axis='y', linestyle='--', alpha=0.6)
-ax.set_ylim(0, tSNRmax)  # Adjust the Y-axis limit to fit your data
+ax.set_ylim(0, tSNRmax) 
 
 # Save the plot
-output_plot_path = root_path + "tSNR_bar_chart_qa_report.png"
+output_plot_path = root_path + "tSNR_bar_chart.png"
+#output_plot_path = root_path + "tSNR_bar_chart_ROI.png"
+
 plt.tight_layout()
 plt.savefig(output_plot_path, dpi=300)
-#plt.show()
-
 print(f"Bar chart saved as {output_plot_path}")
-
 
