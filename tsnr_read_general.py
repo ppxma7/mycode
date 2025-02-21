@@ -25,8 +25,8 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 
 # Define the root path and subfolder names
 # Root path for QA outputs
-#root_path = "/Users/spmic/data/postDUST_MBSENSE_QUAD_200225/qa_outputs/"
-root_path = "/Users/spmic/data/bloop/"
+#root_path = "/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/qa_outputs_nordic/"
+root_path = "/Volumes/DRS-7TfMRI/preDUST/preDUST_QUAD_MBSENSE/"
 folder_pattern = "qa_output*"
 
 
@@ -90,7 +90,7 @@ for folder in subfolders:
             # Define the 2D ROI
             # Example: Center at (48, 48) on slice 12 with size 20x20 (in-plane ROI dimensions)
             #slice_index = 12  # The z-slice where the 2D ROI is located
-            roi_center = (30, 60)  # (x, y) center of the ROI
+            roi_center = (28, 45)  # (x, y) center of the ROI
             roi_size = (20, 20)  # (width, height) of the ROI
 
             # Calculate ROI bounds in 2D
@@ -101,6 +101,7 @@ for folder in subfolders:
 
             # Extract the 2D ROI data
             slice_index = round(data_shape[2] * 2 / 3)
+            #slice_index = 6
             print(f"Slice index: {slice_index}")
 
             slice_data = data[:, :, slice_index]
@@ -111,11 +112,11 @@ for folder in subfolders:
 
             # UNCOMMENT FOR ROI
             # Flatten the data to 1D array
-            flat_data = roi_data.flatten()
+            #flat_data = roi_data.flatten()
 
             # UNCOMMENT FOR ENTIRE IMAGE
             # Flatten the data to 1D array
-            #flat_data = data.flatten()
+            flat_data = data.flatten()
 
             # Remove the bottom 1% of max
             max_val = np.max(flat_data)
@@ -269,7 +270,7 @@ ax.grid(axis='y', linestyle='--', alpha=0.6)
 ax.set_ylim(0, tSNRmax) 
 
 # Save the plot
-output_plot_path = root_path + "tSNR_bar_chart.png"
+output_plot_path = root_path + "tSNR_bar_chart_gen.png"
 #output_plot_path = root_path + "tSNR_bar_chart_ROI.png"
 
 plt.tight_layout()

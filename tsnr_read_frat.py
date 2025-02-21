@@ -5,8 +5,13 @@ import matplotlib.pyplot as plt
 import sys
 
 # Directory containing JSON files
-json_dir = "/Users/spmic/data/preDUST_HEAD_MBSENSE/magnitude/raw_clv/fRAT_analysis_withnoisescan/forplotting_summarised"
-root_path = "/Users/spmic/data/preDUST_HEAD_MBSENSE/"
+#json_dir = "/Users/spmic/data/preDUST_HEAD_MBSENSE/magnitude/raw_clv/fRAT_analysis_withnoisescan/forplotting_summarised"
+#json_dir = "/Volumes/DRS-7TfMRI/preDUST/preDUST_HEAD_MBSENSE/magnitude/nordic_clv/fRAT_analysis/forplotting_summarised"
+json_dir = "/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/fRAT_analysis_isnr/forplotting_summarised"
+
+root_path = "/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/"
+
+thisylim = 400
 # Parse JSON files and extract data
 data = []
 for filename in os.listdir(json_dir):
@@ -41,7 +46,13 @@ for filename in os.listdir(json_dir):
         # Extract Multiband and SENSE factors from filename
         parts = filename.split("_")
         mb_factor = parts[0].replace("MBmb", "")
-        sense_factor = parts[1].replace("SENSEsense", "")
+        #sense_factor = parts[1].replace("SENSEsense", "")
+        sense_factor = parts[1].replace("SENSEsense", "").replace(".json", "")  # Remove .json
+
+
+        print(filename)
+        #print(mb_factor)
+        #print(sense_factor)
         
         # Extract relevant metrics
         mean = overall_data.get("Mean", np.nan)
@@ -95,18 +106,21 @@ for i, sense in enumerate(sense_factors):
 # Add labels, title, and legend
 ax.set_xlabel("Multiband factor")
 ax.set_ylabel("Image Signal to Noise (Mean)")
+#ax.set_ylabel("tSNR (Mean)")
 ax.set_title("iSNR by Multiband and SENSE Factors")
+#ax.set_title("tSNR by Multiband and SENSE Factors")
 ax.set_xticks(x + width * (len(sense_factors) - 1) / 2)
 ax.set_xticklabels(mb_factors)
 ax.grid(axis='y', linestyle='--', alpha=0.6)
 ax.legend(title="SENSE factor")
-ax.set_ylim(0, 400) 
+ax.set_ylim(0, thisylim) 
 
 # Show the plot
 plt.tight_layout()
 #plt.show()
 
-output_plot_path = root_path + "iSNR_bar_chart_frat.png"
+#output_plot_path = root_path + "iSNR_bar_chart_frat.png"
+output_plot_path = root_path + "tSNR_bar_chart_frat_isnr.png"
 
 plt.tight_layout()
 plt.savefig(output_plot_path, dpi=300)
