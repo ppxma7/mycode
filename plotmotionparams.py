@@ -4,7 +4,8 @@ import os
 
 # Input and output folders
 #input_folder = "/Volumes/nemosine/CANAPI_210125/spmanalysis/"  # Replace with your input folder path
-input_folder = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_030225/'
+#input_folder = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_030225/'
+input_folder = '/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/spm_check_motion/'
 output_folder = os.path.join(input_folder, "motion_plots")  # Output folder for saving plots
 os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exist
 
@@ -19,13 +20,27 @@ os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exi
 # ]
 
 input_files = [
-    "rp_parrec_WIP1bar_TAP_R_20250203161352_3_nordic_clv",
-    "rp_parrec_WIPlow_TAP_R_20250203161352_4_nordic_clv",
-    "rp_parrec_WIP1bar_TAP_L_20250203161352_5_nordic_clv",
-    "rp_parrec_WIPlow_TAP_L_20250203161352_6_nordic_clv"
+    "rp_postDUST_HEAD_200225_WIPMB1_SENSE1_20250220151249_3_clv",   
+    "rp_postDUST_HEAD_200225_WIPMB1_SENSE1p5_20250220151249_4_clv",
+    "rp_postDUST_HEAD_200225_WIPMB1_SENSE2_20250220151249_5_clv",
+    "rp_postDUST_HEAD_200225_WIPMB1_SENSE2p5_20250220151249_6_clv",
+    "rp_postDUST_HEAD_200225_WIPMB1_SENSE3_20250220151249_7_clv",
+    "rp_postDUST_HEAD_200225_WIPMB2_SENSE1_20250220151249_10_clv",
+    "rp_postDUST_HEAD_200225_WIPMB2_SENSE1p5_20250220151249_12_clv",
+    "rp_postDUST_HEAD_200225_WIPMB2_SENSE2_20250220151249_14_clv",
+    "rp_postDUST_HEAD_200225_WIPMB2_SENSE2p5_20250220151249_16_clv",
+    "rp_postDUST_HEAD_200225_WIPMB2_SENSE3_20250220151249_18_clv",
+    "rp_postDUST_HEAD_200225_WIPMB3_SENSE1_20250220151249_20_clv",
+    "rp_postDUST_HEAD_200225_WIPMB3_SENSE1p5_20250220151249_22_clv",
+    "rp_postDUST_HEAD_200225_WIPMB3_SENSE2_20250220151249_24_clv",
+    "rp_postDUST_HEAD_200225_WIPMB3_SENSE2p5_20250220151249_26_clv",
+    "rp_postDUST_HEAD_200225_WIPMB3_SENSE3_20250220151249_28_clv",
+    "rp_postDUST_HEAD_200225_WIPMB4_SENSE1_20250220151249_30_clv",
+    "rp_postDUST_HEAD_200225_WIPMB4_SENSE1p5_20250220151249_32_clv",
+    "rp_postDUST_HEAD_200225_WIPMB4_SENSE2_20250220151249_34_clv",
+    "rp_postDUST_HEAD_200225_WIPMB4_SENSE2p5_20250220151249_36_clv",
+    "rp_postDUST_HEAD_200225_WIPMB4_SENSE3_20250220151249_38_clv"
 ]
-
-
 
 # Loop through each file
 for file in input_files:
@@ -60,8 +75,8 @@ for file in input_files:
     axes[0].legend()
     axes[0].grid(True)
     # Add vertical lines at the calculated dynamics
-    for x in timepoints_dynamics:
-        axes[0].axvline(x=x, color='k', linestyle='--', linewidth=0.8)
+    # for x in timepoints_dynamics:
+    #     axes[0].axvline(x=x, color='k', linestyle='--', linewidth=0.8)
 
 
     #axes[0].set_ylim(lower_limit, upper_limit)
@@ -78,7 +93,7 @@ for file in input_files:
 
 
     # Save the plot as PNG
-    plot_file = os.path.join(output_folder, f"{file}_motion_plot_tap.png")
+    plot_file = os.path.join(output_folder, f"{file}_motion_plot.png")
     plt.tight_layout()
     plt.savefig(plot_file, dpi=300)
     plt.close()  # Close the plot to free memory
