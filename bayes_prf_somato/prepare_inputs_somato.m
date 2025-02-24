@@ -20,8 +20,8 @@ n = size(ApFrm, 3);
 
 % Define grid coordinates for a 4x4 array. Adjust these as needed for your scaling.
 % For example, center the grid on 0.
-col_positions = linspace(-1.5, 1.5, 4);  % x-coordinate for columns (digits)
-row_positions = linspace(-1.5, 1.5, 4);  % y-coordinate for rows (within-digit)
+col_positions = linspace(-12, 12, 4);  % x-coordinate for columns (digits)
+row_positions = linspace(-12, 12, 4);  % y-coordinate for rows (within-digit)
 % Optionally, if you wish "up" to be positive, you might want to flip the row coordinates:
 % row_positions = fliplr(row_positions);
 
