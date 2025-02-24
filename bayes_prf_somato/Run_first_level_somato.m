@@ -136,19 +136,23 @@ end
 
 % Load a generic matlabbatch file for fmri_spec, fmri_est, and contrast definitions.
 % (This file should be prepared in advance, for example based on SPM’s fMRI design.)
-fullfile(data_root_dir,thisDSet,'first_level_batch.mat') % Ensure this batch file exists in the working directory
+load(fullfile(data_root_dir,thisDSet,'first_level_batch.mat')) % Ensure this batch file exists in the working directory
 
 %Loop over sessions to set session-specific options.
 % Define the session names corresponding to your file structure
 session_names = {'FWD', 'REV', 'UP1', 'UP2', 'DWN1', 'DWN2'};
 nsess = length(session_names);  % Number of sessions
+onset_file_mapping = [1, 2, 3, 3, 4, 4];
+
 
 for ii = 1:nsess
     % Generate file patterns based on session names
     nii_pattern = sprintf('rubf_%s_nordic_cleave_toppedup.nii', session_names{ii});
     txt_pattern = sprintf('rp_ubf_%s_nordic_cleave_toppedup.txt', session_names{ii});
-    onsets_file = fullfile(out_dir, sprintf('onsets_run%d.mat', ii));  % Matching onsets file
-    
+    % Determine the appropriate onset file for this scan
+    onset_file_index = onset_file_mapping(ii);
+    onsets_file = fullfile(out_dir, sprintf('onsets_run%d.mat', onset_file_index));  % Matching onsets file
+        
     % Select motion regressors and EPI images for session i
     movement = spm_select('FPList', data_dir, txt_pattern);
     epis     = spm_select('ExtFPList', data_dir, nii_pattern, 1:96);
@@ -171,7 +175,7 @@ end
 matlabbatch{1}.spm.stats.fmri_spec.dir = cellstr(glm_dir);
 matlabbatch{1}.spm.stats.fmri_spec.timing.RT = TR;
 
-% Run the SPM first-level specification job.
+%% Run the SPM first-level specification job.
 spm_jobman('run', matlabbatch);
 cd(start_dir);
 
