@@ -99,6 +99,9 @@ for ii = 1:length(stim_files)
             [~, idx_x] = min(abs(bins_x - x_val));
             [~, idx_y] = min(abs(bins_y - y_val));
             bin_idx = sub2ind([numel(bins_y), numel(bins_x)], idx_y, idx_x);
+
+            %fprintf('x: %d, y: %d, idx_x: %d, idx_y: %d, bin_idx: %d\n', x_val, y_val, idx_x, idx_y, bin_idx);
+
             onsets_matrix(t, bin_idx) = onsets_matrix(t, bin_idx) + 1;
         end
     end
