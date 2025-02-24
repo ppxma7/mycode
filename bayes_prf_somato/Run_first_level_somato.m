@@ -142,8 +142,8 @@ load(fullfile(data_root_dir,thisDSet,'first_level_batch.mat')) % Ensure this bat
 % Define the session names corresponding to your file structure
 session_names = {'FWD', 'REV', 'UP1', 'UP2', 'DWN1', 'DWN2'};
 nsess = length(session_names);  % Number of sessions
-onset_file_mapping = [1, 2, 3, 3, 4, 4];
-
+%onset_file_mapping = [1, 2, 3, 3, 4, 4];
+onset_file_mapping = [1, 2, 1, 1, 2, 2];
 
 for ii = 1:nsess
     % Generate file patterns based on session names
