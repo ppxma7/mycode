@@ -7,7 +7,7 @@ import sys
 # Directory containing JSON files
 #json_dir = "/Users/spmic/data/preDUST_HEAD_MBSENSE/magnitude/raw_clv/fRAT_analysis_withnoisescan/forplotting_summarised"
 #json_dir = "/Volumes/DRS-7TfMRI/preDUST/preDUST_HEAD_MBSENSE/magnitude/nordic_clv/fRAT_analysis/forplotting_summarised"
-json_dir = "/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/fRAT_analysis_isnr/forplotting_summarised"
+json_dir = "/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/fRAT_analysis_isnr_middle24/forplotting_summarised"
 
 root_path = "/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/"
 
@@ -120,7 +120,7 @@ plt.tight_layout()
 #plt.show()
 
 #output_plot_path = root_path + "iSNR_bar_chart_frat.png"
-output_plot_path = root_path + "tSNR_bar_chart_frat_isnr.png"
+output_plot_path = root_path + "tSNR_bar_chart_frat_isnr_24slc.png"
 
 plt.tight_layout()
 plt.savefig(output_plot_path, dpi=300)
