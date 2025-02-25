@@ -26,7 +26,7 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 # Define the root path and subfolder names
 # Root path for QA outputs
 #root_path = "/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/qa_outputs_nordic/"
-root_path = "/Volumes/DRS-7TfMRI/postDUST/postDUST_MBSENSE_QUAD_200225/qa_outputs_middle24/"
+root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_MBSENSE_QUAD_200225/qa_outputs_middle24_noisevals/"
 #root_path = "/Volumes/DRS-7TfMRI/preDUST/preDUST_QUAD_MBSENSE/qa_outputs_middle24/"
 folder_pattern = "qa_output*"
 
@@ -70,7 +70,7 @@ for folder in subfolders:
 means = []
 stds = []
 folder_labels = []
-tSNRmax = 300
+iSNRmax = 800
 
 # Process each folder
 for folder in subfolders:
@@ -95,6 +95,7 @@ for folder in subfolders:
             # Example: Center at (48, 48) on slice 12 with size 20x20 (in-plane ROI dimensions)
             #slice_index = 12  # The z-slice where the 2D ROI is located
             roi_center = (28, 62)  # (x, y) center of the ROI
+            #roi_center = (60,35)
             roi_size = (20, 20)  # (width, height) of the ROI
 
             # Calculate ROI bounds in 2D
@@ -159,7 +160,7 @@ for folder in subfolders:
 
             # Visualize the slice with the ROI as a rectangle
             fig, ax = plt.subplots(figsize=(8, 8))
-            img = ax.imshow(slice_data.T, cmap='plasma', origin='lower', vmin=0, vmax=tSNRmax)  # Transpose for correct orientation
+            img = ax.imshow(slice_data.T, cmap='plasma', origin='lower', vmin=0, vmax=iSNRmax)  # Transpose for correct orientation
             ax.add_patch(Rectangle(
                 (x_start, y_start),  # Rectangle bottom-left corner
                 roi_size[0],         # Width of the rectangle
@@ -271,10 +272,10 @@ ax.set_xticks(x)
 ax.set_xticklabels(labels)
 ax.legend(title='SENSE factor', loc='best')
 ax.grid(axis='y', linestyle='--', alpha=0.6)
-ax.set_ylim(0, tSNRmax) 
+ax.set_ylim(0, iSNRmax) 
 
 # Save the plot
-output_plot_path = root_path + "iSNR_bar_chart_roi.png"
+output_plot_path = root_path + "iSNR_bar_chart_roi_withnoise.png"
 #output_plot_path = root_path + "tSNR_bar_chart_ROI.png"
 
 plt.tight_layout()
