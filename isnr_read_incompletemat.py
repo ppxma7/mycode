@@ -89,7 +89,7 @@ for folder in subfolders:
 
 
             data_shape = data.shape
-xw
+
             # Print the shape
             print("Data shape:", data_shape)
 
