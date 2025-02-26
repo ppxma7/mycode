@@ -4,8 +4,10 @@ import re
 import matplotlib.pyplot as plt
 
 
-root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/preDUST/preDUST_HEAD_MBSENSE/qa_output_middle24_noisevals/"
-#root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_MBSENSE_HEAD_200225/qa_output_middle24_noisevals/"
+#root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/preDUST/preDUST_HEAD_MBSENSE/qa_output_middle24_noisevals/"
+#root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_MBSENSE_HEAD_200225/qa_output_middle24_realnoisevals/"
+root_path = "/Users/spmic/data/postDUST_HEAD_noise_250225/qa_outputs_middle24/"
+
 
 folder_pattern = "qa_output*"
 
@@ -66,12 +68,30 @@ for folder in subfolders:
 
 
 # Define the pattern for the labels
-mb_factors = ['MB1', 'MB2', 'MB3', 'MB4']
-sense_factors = ['1', '1.5', '2', '2.5', '3']
+# mb_factors = ['MB1', 'MB2', 'MB3', 'MB4']
+# sense_factors = ['1', '1.5', '2', '2.5', '3']
 
-# Create folder labels in the desired order
-folder_labels = [f"{mb} Sense {sense}" for mb in mb_factors for sense in sense_factors]
+# # Create folder labels in the desired order
+# folder_labels = [f"{mb} Sense {sense}" for mb in mb_factors for sense in sense_factors]
 
+# Define fixed series
+fixed_series = [
+    ('MB1', 'Sense 1', '40ch'),
+    ('MB1', 'Sense 2', '40ch'),
+    ('MB2', 'Sense 1', '40ch'),
+    ('MB2', 'Sense 2', '40ch'),
+    ('MB2', 'Sense 2', '32ch'),
+    ('MB2', 'Sense 1', '32ch'),
+    ('MB3', 'Sense 3', '32ch'),
+    ('MB3', 'Sense 3', '40ch')
+]
+
+# Create folder labels
+folder_labels = [f"{mb} {sense} {ch}" for mb, sense, ch in fixed_series]
+
+# Print result
+for label in folder_labels:
+    print(label)
 
 # Plot the data with the new labels
 plt.figure(figsize=(10, 6))
@@ -80,7 +100,7 @@ plt.xlabel('Folder')
 plt.ylabel('Noise value')
 plt.title('Noise value used for iSNR across Folders')
 plt.xticks(rotation=45, ha='right')
-plt.ylim([0, 12000])  # Adjust as needed
+plt.ylim([0, 1200])  # Adjust as needed
 
 plt.tight_layout()
 # Save the plot
