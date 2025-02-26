@@ -4,7 +4,9 @@ import re
 import matplotlib.pyplot as plt
 
 
-root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_MBSENSE_QUAD_200225/qa_outputs_middle24_noisevals/"
+root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/preDUST/preDUST_HEAD_MBSENSE/qa_output_middle24_noisevals/"
+#root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_MBSENSE_HEAD_200225/qa_output_middle24_noisevals/"
+
 folder_pattern = "qa_output*"
 
 subfolders = [
@@ -78,6 +80,8 @@ plt.xlabel('Folder')
 plt.ylabel('Noise value')
 plt.title('Noise value used for iSNR across Folders')
 plt.xticks(rotation=45, ha='right')
+plt.ylim([0, 12000])  # Adjust as needed
+
 plt.tight_layout()
 # Save the plot
 output_plot_path = root_path + "isnr_noise.png"

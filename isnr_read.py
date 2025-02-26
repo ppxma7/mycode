@@ -26,7 +26,9 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 # Define the root path and subfolder names
 # Root path for QA outputs
 #root_path = "/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/qa_outputs_nordic/"
-root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_MBSENSE_QUAD_200225/qa_outputs_middle24_noisevals/"
+root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_MBSENSE_QUAD_200225/qa_outputs_middle24_diffdyn/"
+#root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/preDUST/preDUST_QUAD_MBSENSE/qa_outputs_middle24_diffdyn/"
+
 #root_path = "/Volumes/DRS-7TfMRI/preDUST/preDUST_QUAD_MBSENSE/qa_outputs_middle24/"
 folder_pattern = "qa_output*"
 
@@ -70,7 +72,7 @@ for folder in subfolders:
 means = []
 stds = []
 folder_labels = []
-iSNRmax = 800
+iSNRmax = 500
 
 # Process each folder
 for folder in subfolders:
@@ -94,7 +96,7 @@ for folder in subfolders:
             # Define the 2D ROI
             # Example: Center at (48, 48) on slice 12 with size 20x20 (in-plane ROI dimensions)
             #slice_index = 12  # The z-slice where the 2D ROI is located
-            roi_center = (28, 62)  # (x, y) center of the ROI
+            roi_center = (28, 55)  # (x, y) center of the ROI
             #roi_center = (60,35)
             roi_size = (20, 20)  # (width, height) of the ROI
 
@@ -201,6 +203,43 @@ for folder in subfolders:
         print(f"File not found: {nii_path}")
 
 
+print("Length of means:", len(means))
+print("Length of stds:", len(stds))
+
+print("Shape of means:", np.shape(means))
+print("Shape of stds:", np.shape(stds))
+
+print("Slice means[0:5]:", means[0:5])
+print("Slice means[5:10]:", means[5:10])
+print("Slice means[10:15]:", means[10:15])
+print("Slice means[15:20]:", means[15:20])
+
+print("Slice stds[0:5]:", stds[0:5])
+print("Slice stds[5:10]:", stds[5:10])
+print("Slice stds[10:15]:", stds[10:15])
+print("Slice stds[15:20]:", stds[15:20])
+
+print("Type of means[0:5]:", type(means[0:5]))
+print("Type of means[5:10]:", type(means[5:10]))
+print("Type of means[10:15]:", type(means[10:15]))
+print("Type of means[15:20]:", type(means[15:20]))
+
+print("Type of stds[0:5]:", type(stds[0:5]))
+print("Type of stds[5:10]:", type(stds[5:10]))
+print("Type of stds[10:15]:", type(stds[10:15]))
+print("Type of stds[15:20]:", type(stds[15:20]))
+
+print("Length of means[0:5]:", len(means[0:5]))
+print("Length of means[5:10]:", len(means[5:10]))
+print("Length of means[10:15]:", len(means[10:15]))
+print("Length of means[15:20]:", len(means[15:20]))
+
+print("Length of stds[0:5]:", len(stds[0:5]))
+print("Length of stds[5:10]:", len(stds[5:10]))
+print("Length of stds[10:15]:", len(stds[10:15]))
+print("Length of stds[15:20]:", len(stds[15:20]))
+
+
 
 
 # Define the data structure (adjust with actual computed means and stds)
@@ -275,7 +314,7 @@ ax.grid(axis='y', linestyle='--', alpha=0.6)
 ax.set_ylim(0, iSNRmax) 
 
 # Save the plot
-output_plot_path = root_path + "iSNR_bar_chart_roi_withnoise.png"
+output_plot_path = root_path + "iSNR_bar_chart_roi_diffdyn.png"
 #output_plot_path = root_path + "tSNR_bar_chart_ROI.png"
 
 plt.tight_layout()
