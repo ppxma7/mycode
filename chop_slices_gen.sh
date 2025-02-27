@@ -29,6 +29,9 @@ for full_file_path in *.nii; do
     elif [ "$dim3" -eq 30 ]; then
         # For 30 slices, remove top 3 and bottom 3
         fslroi "$full_file_path" "$output_file" 0 -1 0 -1 3 24
+    elif [ "$dim3" -eq 48 ]; then
+        # For 48 slices, remove top 6 and bottom 6
+        fslroi "$full_file_path" "$output_file" 0 -1 0 -1 12 24
     else
         echo "Unexpected slice count ($dim3) for $full_file_path. Skipping."
         cp "$full_file_path" "$output_file"
