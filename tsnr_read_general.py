@@ -25,10 +25,19 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 
 # Define the root path and subfolder names
 # Root path for QA outputs
-#root_path = "/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/qa_outputs_nordic/"
-root_path = "/Volumes/DRS-7TfMRI/preDUST/preDUST_QUAD_MBSENSE/"
+#root_path = "/Users/spmic/data/postDUST_HEAD_MBRES/qa_output_nordic_middle24/"
+root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/preDUST/preDUST_HEAD_MBSENSE/qa_output_middle24_correctnoise/"
 folder_pattern = "qa_output*"
 
+mode = 'doroi'  # Example mode
+
+# Check mode and set ROI
+if mode.lower() == 'doroi':
+    ROI = 1
+elif mode.lower() == 'dogen':
+    ROI = 0
+else:
+    ROI = None  # Handle unexpected values if needed
 
 # Dynamically find subfolders matching the pattern
 subfolders = [
@@ -50,7 +59,7 @@ def extract_sort_key(folder_name):
 
 # Function to extract the numeric suffix from folder names
 def extract_numeric_suffix(folder_name):
-    match = re.search(r"_(\d+)_clv_clipped$", folder_name)
+    match = re.search(r"_(\d+)_clipped$", folder_name)
     return int(match.group(1)) if match else float('inf')  # Use inf for folders without a match
 
 
@@ -69,8 +78,8 @@ for folder in subfolders:
 means = []
 stds = []
 folder_labels = []
-tSNRmax = 500
-
+tSNRmax = 200
+tSNRmin = -10
 # Process each folder
 for folder in subfolders:
     print(folder)
@@ -90,7 +99,7 @@ for folder in subfolders:
             # Define the 2D ROI
             # Example: Center at (48, 48) on slice 12 with size 20x20 (in-plane ROI dimensions)
             #slice_index = 12  # The z-slice where the 2D ROI is located
-            roi_center = (28, 45)  # (x, y) center of the ROI
+            roi_center = (32, 50)  # (x, y) center of the ROI
             roi_size = (20, 20)  # (width, height) of the ROI
 
             # Calculate ROI bounds in 2D
@@ -112,11 +121,14 @@ for folder in subfolders:
 
             # UNCOMMENT FOR ROI
             # Flatten the data to 1D array
-            #flat_data = roi_data.flatten()
+            if ROI == 1:
+                flat_data = roi_data.flatten()
+            else: 
+                flat_data = data.flatten()
 
             # UNCOMMENT FOR ENTIRE IMAGE
             # Flatten the data to 1D array
-            flat_data = data.flatten()
+            #flat_data = data.flatten()
 
             # Remove the bottom 1% of max
             max_val = np.max(flat_data)
@@ -214,12 +226,28 @@ stds_big = np.array([
     stds[15:20],  # MB4
 ])
 
+# means_big = np.array([
+#     means[0:3],  # MB1
+#     means[3:6],  # MB2
+#     means[6:9],  # MB3
+#     means[9:12],  # MB4
+# ])
 
+# stds_big = np.array([
+#     stds[0:3],  # MB1
+#     stds[3:6],  # MB2
+#     stds[6:9],  # MB3
+#     stds[9:12],  # MB4
+# ])
 
 # Bar settings
 # Bar settings
 labels = ['1', '2', '3', '4']  # Multiband factors
 sense_factors = ['1', '1.5', '2', '2.5', '3']  # SENSE factors
+
+# labels = ['2', '3', '4', '6']  # Multiband factors
+# sense_factors = ['2', '2.5', '3']  # SENSE factors
+
 
 width = 0.2  # Width of each bar
 
@@ -267,10 +295,16 @@ ax.set_xticks(x)
 ax.set_xticklabels(labels)
 ax.legend(title='SENSE factor', loc='best')
 ax.grid(axis='y', linestyle='--', alpha=0.6)
-ax.set_ylim(0, tSNRmax) 
+ax.set_ylim(tSNRmin, tSNRmax) 
 
 # Save the plot
-output_plot_path = root_path + "tSNR_bar_chart_gen.png"
+if ROI == 1:
+    output_plot_path = root_path + "tSNR_bar_chart_roi.png"
+else:
+    output_plot_path = root_path + "tSNR_bar_chart_gen.png"
+
+print(output_plot_path)
+
 #output_plot_path = root_path + "tSNR_bar_chart_ROI.png"
 
 plt.tight_layout()
