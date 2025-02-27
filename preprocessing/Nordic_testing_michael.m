@@ -3,15 +3,25 @@ clc
 
 %dirname = '/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/T1 mapping - General/040822_dan/t1_nordicdiffnoise/';
 %dirname = '/Volumes/ares/ZESPRI/zespri_180523/zespri_1A/nback/';
-dirname = '/Users/spmic/data/canapi_030225/';
+dirname = '/Users/spmic/data/postDUST_QUAD_MBRES/';
 %dirname = '/Volumes/ares/test/';
 %dirname = '/Volumes/hermes/tgi_sub_05_15874_230622/';
 % 
 
 
 files ={
-    'parrec_WIP1bar_TAP_L_20250203161352_5.nii',...
-    'parrec_WIPlow_TAP_L_20250203161352_6.nii',...
+    'postDUST_QUAD_MBRES_WIPMB2_SENSE2_2mmiso_20250227093738_25.nii.gz',...
+    'postDUST_QUAD_MBRES_WIPMB2_SENSE2p5_2mmiso_20250227093738_26.nii.gz',...
+    'postDUST_QUAD_MBRES_WIPMB2_SENSE3_2mmiso_20250227093738_27.nii.gz',...
+    'postDUST_QUAD_MBRES_WIPMB3_SENSE2_2mmiso_20250227093738_28.nii.gz',...
+    'postDUST_QUAD_MBRES_WIPMB3_SENSE2p5_2mmiso_20250227093738_29.nii.gz',...
+    'postDUST_QUAD_MBRES_WIPMB3_SENSE3_2mmiso_20250227093738_30.nii.gz',...
+    'postDUST_QUAD_MBRES_WIPMB4_SENSE2_2mmiso_20250227093738_31.nii.gz',...
+    'postDUST_QUAD_MBRES_WIPMB4_SENSE2p5_2mmiso_20250227093738_32.nii.gz',...
+    'postDUST_QUAD_MBRES_WIPMB4_SENSE3_2mmiso_20250227093738_33.nii.gz',...
+    'postDUST_QUAD_MBRES_WIPMB6_SENSE2_2mmiso_20250227093738_34.nii.gz',...
+    'postDUST_QUAD_MBRES_WIPMB6_SENSE2p5_2mmiso_20250227093738_35.nii.gz',...
+    'postDUST_QUAD_MBRES_WIPMB6_SENSE3_2mmiso_20250227093738_37.nii.gz',...
     };
 
 
@@ -54,7 +64,7 @@ for nn = 1:length(filelist)
     ARG.temporal_phase=1;
     ARG.phase_filter_width=10;
     ARG.gfactor_patch_overlap=6;
-    ARG.save_residual_matlab=1;
+    ARG.save_residual_matlab=0;
 
     %ARG.measured_noise = sqrt(2)./2;
     %ARG.kernel_size_PCA = [];
@@ -64,6 +74,20 @@ for nn = 1:length(filelist)
     if ARG.noise_volume_last == 0
         ARG.factor_error=1.5;
     end
+
+    if ARG.noise_volume_last == 1
+        disp('checking histogram binning of noise volume...')
+        b = load_untouch_nii(fn_magn_in);
+        bs = single(b.img);
+        bs_noise = bs(:,:,:,end); %grab last dynamic
+        bs_noise_vec = bs_noise(:);
+        unique_values = length(unique(bs_noise_vec));
+        figure, histogram(bs_noise_vec,100)
+        title(sprintf('Unique values: %d',unique_values))
+        fprintf('\nThere are %d unique values, still gonna run NORDIC, but just be careful...\n',unique_values)
+        saveas(gcf,[data_path,fn_out,'_noise_hist.png'])
+    end
+
 
 
 

@@ -4,7 +4,7 @@ clear all
 clc
 userName = char(java.lang.System.getProperty('user.name'));
 
-savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-TheUniversityofNottingham/stage/dust/'];
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-TheUniversityofNottingham/stage/dust/postDUST_Files/270225/'];
 
 % preDUST_HEAD_MBSENSE_2DEPI_MB1_SENSE1_24slc_2p5mm_20250120071225_8_clipped
 % preDUST_HEAD_MBSENSE_2DEPI_MB1_SENSE2_30slc_2p5mm_20250120071225_10_clipped
