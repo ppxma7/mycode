@@ -7,11 +7,12 @@ import sys
 # Directory containing JSON files
 #json_dir = "/Users/spmic/data/preDUST_HEAD_MBSENSE/magnitude/raw_clv/fRAT_analysis_withnoisescan/forplotting_summarised"
 #json_dir = "/Volumes/DRS-7TfMRI/preDUST/preDUST_HEAD_MBSENSE/magnitude/nordic_clv/fRAT_analysis/forplotting_summarised"
-json_dir = "/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/fRAT_analysis_isnr_middle24/forplotting_summarised"
+#json_dir = "/Users/spmic/data/postDUST_HEAD_MBRES/fRAT_raw/forplotting_summarised_tsnr"
 
-root_path = "/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/"
+root_path = "/Users/spmic/data/postDUST_HEAD_MBRES/fRAT_raw/"
+json_dir = os.path.join(root_path, "forplotting_summarised_isnr")
 
-thisylim = 400
+thisylim = 120
 # Parse JSON files and extract data
 data = []
 for filename in os.listdir(json_dir):
@@ -83,6 +84,8 @@ for d in data:
     sense_idx = sense_factors.index(d["SENSE"])
     means[mb_idx, sense_idx] = d["Mean"]
     std_devs[mb_idx, sense_idx] = d["Std_dev"]
+    print(d["MB"])
+
 
 # Plot the bar chart
 x = np.arange(len(mb_factors))  # Multiband factors
@@ -93,6 +96,7 @@ colors = ['#FFEDA0', '#FD8D3C', '#E31A1C', '#BD0026', '#800026']
 fig, ax = plt.subplots(figsize=(10, 6))
 
 for i, sense in enumerate(sense_factors):
+    print(sense)
     ax.bar(
         x + i * width,
         means[:, i],
@@ -107,7 +111,7 @@ for i, sense in enumerate(sense_factors):
 ax.set_xlabel("Multiband factor")
 ax.set_ylabel("Image Signal to Noise (Mean)")
 #ax.set_ylabel("tSNR (Mean)")
-ax.set_title("iSNR by Multiband and SENSE Factors")
+ax.set_title("SNR by Multiband and SENSE Factors")
 #ax.set_title("tSNR by Multiband and SENSE Factors")
 ax.set_xticks(x + width * (len(sense_factors) - 1) / 2)
 ax.set_xticklabels(mb_factors)
@@ -120,7 +124,7 @@ plt.tight_layout()
 #plt.show()
 
 #output_plot_path = root_path + "iSNR_bar_chart_frat.png"
-output_plot_path = root_path + "tSNR_bar_chart_frat_isnr_24slc.png"
+output_plot_path = root_path + "iSNR_bar_chart_frat.png"
 
 plt.tight_layout()
 plt.savefig(output_plot_path, dpi=300)
