@@ -10,7 +10,7 @@ for full_file_path in *.nii; do
     # Check if the filename contains "_ph"
     if [[ "$base_name" == *_ph ]]; then
         # Insert _clipped before _ph.nii.gz
-        output_file="${base_name%_ph}_clipped_ph.nii.gz"
+        output_file="${base_name%_ph}_clipped_ph.nii"
     else
         # Default case: append _clipped to the filename
         output_file="${base_name}_clipped.nii"
@@ -30,8 +30,11 @@ for full_file_path in *.nii; do
         # For 30 slices, remove top 3 and bottom 3
         fslroi "$full_file_path" "$output_file" 0 -1 0 -1 3 24
     elif [ "$dim3" -eq 48 ]; then
-        # For 48 slices, remove top 6 and bottom 6
+        # For 48 slices, remove top 12 and bottom 12
         fslroi "$full_file_path" "$output_file" 0 -1 0 -1 12 24
+    elif [ "$dim3" -eq 60 ]; then
+        # For 60 slices, remove top 18 and bottom 18
+        fslroi "$full_file_path" "$output_file" 0 -1 0 -1 18 24
     else
         echo "Unexpected slice count ($dim3) for $full_file_path. Skipping."
         cp "$full_file_path" "$output_file"

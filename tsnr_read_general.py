@@ -26,7 +26,8 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 # Define the root path and subfolder names
 # Root path for QA outputs
 #root_path = "/Users/spmic/data/postDUST_HEAD_MBRES/qa_output_nordic_middle24/"
-root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/preDUST/preDUST_HEAD_MBSENSE/qa_output_middle24_correctnoise/"
+#root_path = "/Volumes/r15/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_QUAD_MBRES/qa_output_nordic_middle24/"
+root_path = "/Users/spmic/data/postDUST_QUAD_MBRES_1p5_1p25/qa_outputs_1p25/"
 folder_pattern = "qa_output*"
 
 mode = 'doroi'  # Example mode
@@ -34,8 +35,10 @@ mode = 'doroi'  # Example mode
 # Check mode and set ROI
 if mode.lower() == 'doroi':
     ROI = 1
+    tSNRmax = 600
 elif mode.lower() == 'dogen':
     ROI = 0
+    tSNRmax = 400
 else:
     ROI = None  # Handle unexpected values if needed
 
@@ -78,7 +81,7 @@ for folder in subfolders:
 means = []
 stds = []
 folder_labels = []
-tSNRmax = 200
+#tSNRmax = 600
 tSNRmin = -10
 # Process each folder
 for folder in subfolders:
@@ -99,7 +102,9 @@ for folder in subfolders:
             # Define the 2D ROI
             # Example: Center at (48, 48) on slice 12 with size 20x20 (in-plane ROI dimensions)
             #slice_index = 12  # The z-slice where the 2D ROI is located
-            roi_center = (32, 50)  # (x, y) center of the ROI
+            #roi_center = (35, 85)  # (x, y) center of the ROI
+            #roi_center = (35, 70)  # (x, y) center of the ROI
+            roi_center = (45, 115)  # (x, y) center of the ROI
             roi_size = (20, 20)  # (width, height) of the ROI
 
             # Calculate ROI bounds in 2D
@@ -109,8 +114,8 @@ for folder in subfolders:
             y_end = min(roi_center[1] + roi_size[1] // 2, data_shape[1])
 
             # Extract the 2D ROI data
-            slice_index = round(data_shape[2] * 2 / 3)
-            #slice_index = 6
+            #slice_index = round(data_shape[2] * 2 / 3)
+            slice_index = 12
             print(f"Slice index: {slice_index}")
 
             slice_data = data[:, :, slice_index]
@@ -212,47 +217,75 @@ for folder in subfolders:
 
 # Define the data structure (adjust with actual computed means and stds)
 # Correctly define means_big and stds_big (grouped by Raw and Nordic)
+# means_big = np.array([
+#     means[0:5],  # MB1
+#     means[5:10],  # MB2
+#     means[10:15],  # MB3
+#     means[15:20],  # MB4
+# ])
+
+# stds_big = np.array([
+#     stds[0:5],  # MB1
+#     stds[5:10],  # MB2
+#     stds[10:15],  # MB3
+#     stds[15:20],  # MB4
+# ])
+
 means_big = np.array([
-    means[0:5],  # MB1
-    means[5:10],  # MB2
-    means[10:15],  # MB3
-    means[15:20],  # MB4
+    means[0:3],  # MB2
+    means[3:6],  # MB3
+    means[6:9],  # MB4
 ])
 
 stds_big = np.array([
-    stds[0:5],  # MB1
-    stds[5:10],  # MB2
-    stds[10:15],  # MB3
-    stds[15:20],  # MB4
+    stds[0:3],  # MB2
+    stds[3:6],  # MB3
+    stds[6:9],  # MB4
 ])
 
 # means_big = np.array([
-#     means[0:3],  # MB1
-#     means[3:6],  # MB2
-#     means[6:9],  # MB3
+#     means[0:3],  # MB2
+#     means[3:6],  # MB3
+#     means[6:9],  # MB4
 #     means[9:12],  # MB4
 # ])
 
 # stds_big = np.array([
-#     stds[0:3],  # MB1
-#     stds[3:6],  # MB2
-#     stds[6:9],  # MB3
+#     stds[0:3],  # MB2
+#     stds[3:6],  # MB3
+#     stds[6:9],  # MB4
 #     stds[9:12],  # MB4
+# ])
+
+# means_big = np.array([
+#     means[0:3],  # MB3
+#     means[3:6],  # MB4
+# ])
+
+# stds_big = np.array([
+#     stds[0:3],  # MB3
+#     stds[3:6],  # MB4
 # ])
 
 # Bar settings
 # Bar settings
-labels = ['1', '2', '3', '4']  # Multiband factors
-sense_factors = ['1', '1.5', '2', '2.5', '3']  # SENSE factors
+# labels = ['1', '2', '3', '4']  # Multiband factors
+# sense_factors = ['1', '1.5', '2', '2.5', '3']  # SENSE factors
 
-# labels = ['2', '3', '4', '6']  # Multiband factors
+labels = ['2','3','4']  # Multiband factors
+sense_factors = ['2', '2.5', '3']  # SENSE factors
+
+# labels = ['3', '4']  # Multiband factors
 # sense_factors = ['2', '2.5', '3']  # SENSE factors
 
 
 width = 0.2  # Width of each bar
 
 # Adjusted x positions with gaps between groups
-x = np.array([0, 1, 2, 3]) * (1 + 0.05 * len(sense_factors))  # Add space after each group
+#x = np.array([0, 1, 2, 3]) * (1 + 0.05 * len(sense_factors))  # Add space after each group
+
+x = np.array([0, 1, 2]) * (1 + 0.05 * len(sense_factors))  # Add space after each group
+#x = np.array([0, 1]) * (1 + 0.05 * len(sense_factors))  # Add space after each group
 
 #x = np.arange(len(labels))  # The label locations
 
