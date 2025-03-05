@@ -9,8 +9,8 @@ import sys
 #json_dir = "/Volumes/DRS-7TfMRI/preDUST/preDUST_HEAD_MBSENSE/magnitude/nordic_clv/fRAT_analysis/forplotting_summarised"
 #json_dir = "/Users/spmic/data/postDUST_HEAD_MBRES/fRAT_raw/forplotting_summarised_tsnr"
 
-root_path = "/Users/spmic/data/postDUST_HEAD_MBRES/fRAT_raw/"
-json_dir = os.path.join(root_path, "forplotting_summarised_isnr")
+root_path = "/Users/spmic/data/postDUST_HEAD_MBRES_1p5/fRAT_raw/"
+json_dir = os.path.join(root_path, "forplotting_summarised_tsnr")
 
 thisylim = 120
 # Parse JSON files and extract data
@@ -93,7 +93,7 @@ width = 0.15  # Bar width
 # Colors
 colors = ['#FFEDA0', '#FD8D3C', '#E31A1C', '#BD0026', '#800026']
 
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(8, 6))
 
 for i, sense in enumerate(sense_factors):
     print(sense)
@@ -108,11 +108,14 @@ for i, sense in enumerate(sense_factors):
     )
 
 # Add labels, title, and legend
+if "tsnr" in json_dir:
+    ax.set_ylabel("Temporal Signal to Noise (Mean)")
+    ax.set_title("tSNR by Multiband and SENSE Factors")
+else:
+    ax.set_ylabel("Image Noise to Signal Ratio (Mean)")
+    ax.set_title("iSNR by Multiband and SENSE Factors")
+
 ax.set_xlabel("Multiband factor")
-ax.set_ylabel("Image Signal to Noise (Mean)")
-#ax.set_ylabel("tSNR (Mean)")
-ax.set_title("SNR by Multiband and SENSE Factors")
-#ax.set_title("tSNR by Multiband and SENSE Factors")
 ax.set_xticks(x + width * (len(sense_factors) - 1) / 2)
 ax.set_xticklabels(mb_factors)
 ax.grid(axis='y', linestyle='--', alpha=0.6)
@@ -124,7 +127,13 @@ plt.tight_layout()
 #plt.show()
 
 #output_plot_path = root_path + "iSNR_bar_chart_frat.png"
-output_plot_path = root_path + "iSNR_bar_chart_frat.png"
+
+# Save the plot
+if "tsnr" in json_dir:
+    output_plot_path = root_path + "tSNR_bar_chart_frat.png"
+else:
+    output_plot_path = root_path + "iSNR_bar_chart_frat.png"
+
 
 plt.tight_layout()
 plt.savefig(output_plot_path, dpi=300)
