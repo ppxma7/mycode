@@ -27,7 +27,7 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 # Root path for QA outputs
 #root_path = "/Users/spmic/data/postDUST_HEAD_MBRES/qa_output_nordic_middle24/"
 #root_path = "/Volumes/r15/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_QUAD_MBRES/qa_output_nordic_middle24/"
-root_path = "/Users/spmic/data/postDUST_QUAD_MBRES_1p5_1p25/qa_outputs_1p25/"
+root_path = "/Users/spmic/data/postDUST_HEAD_MBRES_1p5/qa_outputs_1p5_60slc/"
 folder_pattern = "qa_output*"
 
 mode = 'doroi'  # Example mode
@@ -35,10 +35,10 @@ mode = 'doroi'  # Example mode
 # Check mode and set ROI
 if mode.lower() == 'doroi':
     ROI = 1
-    tSNRmax = 600
+    tSNRmax = 200
 elif mode.lower() == 'dogen':
     ROI = 0
-    tSNRmax = 400
+    tSNRmax = 200
 else:
     ROI = None  # Handle unexpected values if needed
 
@@ -65,9 +65,15 @@ def extract_numeric_suffix(folder_name):
     match = re.search(r"_(\d+)_clipped$", folder_name)
     return int(match.group(1)) if match else float('inf')  # Use inf for folders without a match
 
+def extract_numeric_suffix_nordic(folder_name):
+    match = re.search(r"_(\d+)_nordic_clipped$", folder_name)
+    return int(match.group(1)) if match else float('inf')  # Use inf for folders without a match
 
 # Sort the subfolders using the combined key
-subfolders.sort(key=extract_numeric_suffix)
+if "nordic" in root_path:
+    subfolders.sort(key=extract_numeric_suffix_nordic)
+else:
+    subfolders.sort(key=extract_numeric_suffix)
 
 # Print sorted subfolders to check the order
 print("Sorted Subfolders:")
@@ -104,7 +110,8 @@ for folder in subfolders:
             #slice_index = 12  # The z-slice where the 2D ROI is located
             #roi_center = (35, 85)  # (x, y) center of the ROI
             #roi_center = (35, 70)  # (x, y) center of the ROI
-            roi_center = (45, 115)  # (x, y) center of the ROI
+            #roi_center = (45, 115)  # (x, y) center of the ROI
+            roi_center = (35, 60)  # (x, y) center of the ROI
             roi_size = (20, 20)  # (width, height) of the ROI
 
             # Calculate ROI bounds in 2D
@@ -231,17 +238,49 @@ for folder in subfolders:
 #     stds[15:20],  # MB4
 # ])
 
-means_big = np.array([
+sense_factors = ['2', '2.5', '3']  # SENSE factors
+
+if "60slc" in root_path:
+    means_big = np.array([
+    means[0:3],  # MB3
+    means[3:6],  # MB4
+    ])
+
+    stds_big = np.array([
+        stds[0:3],  # MB3
+        stds[3:6],  # MB4
+    ])
+    labels = ['3','4']  # Multiband factors
+    x = np.array([0, 1]) * (1 + 0.05 * len(sense_factors))  # Add space after each group
+    plotlen = 5
+
+else:
+    means_big = np.array([
     means[0:3],  # MB2
     means[3:6],  # MB3
     means[6:9],  # MB4
-])
+    ])
 
-stds_big = np.array([
-    stds[0:3],  # MB2
-    stds[3:6],  # MB3
-    stds[6:9],  # MB4
-])
+    stds_big = np.array([
+        stds[0:3],  # MB2
+        stds[3:6],  # MB3
+        stds[6:9],  # MB4
+    ])
+    labels = ['2','3','4']  # Multiband factors
+    x = np.array([0, 1, 2]) * (1 + 0.05 * len(sense_factors))
+    plotlen = 8
+
+# means_big = np.array([
+#     means[0:3],  # MB2
+#     means[3:6],  # MB3
+#     means[6:9],  # MB4
+# ])
+
+# stds_big = np.array([
+#     stds[0:3],  # MB2
+#     stds[3:6],  # MB3
+#     stds[6:9],  # MB4
+# ])
 
 # means_big = np.array([
 #     means[0:3],  # MB2
@@ -257,26 +296,18 @@ stds_big = np.array([
 #     stds[9:12],  # MB4
 # ])
 
-# means_big = np.array([
-#     means[0:3],  # MB3
-#     means[3:6],  # MB4
-# ])
 
-# stds_big = np.array([
-#     stds[0:3],  # MB3
-#     stds[3:6],  # MB4
-# ])
 
 # Bar settings
 # Bar settings
 # labels = ['1', '2', '3', '4']  # Multiband factors
 # sense_factors = ['1', '1.5', '2', '2.5', '3']  # SENSE factors
 
-labels = ['2','3','4']  # Multiband factors
-sense_factors = ['2', '2.5', '3']  # SENSE factors
+#labels = ['2','3','4']  # Multiband factors
 
-# labels = ['3', '4']  # Multiband factors
-# sense_factors = ['2', '2.5', '3']  # SENSE factors
+
+#labels = ['3', '4']  # Multiband factors
+#sense_factors = ['2', '2.5', '3']  # SENSE factors
 
 
 width = 0.2  # Width of each bar
@@ -284,7 +315,7 @@ width = 0.2  # Width of each bar
 # Adjusted x positions with gaps between groups
 #x = np.array([0, 1, 2, 3]) * (1 + 0.05 * len(sense_factors))  # Add space after each group
 
-x = np.array([0, 1, 2]) * (1 + 0.05 * len(sense_factors))  # Add space after each group
+#x = np.array([0, 1, 2]) * (1 + 0.05 * len(sense_factors))  # Add space after each group
 #x = np.array([0, 1]) * (1 + 0.05 * len(sense_factors))  # Add space after each group
 
 #x = np.arange(len(labels))  # The label locations
@@ -300,7 +331,7 @@ colors = ['#FFEDA0', '#FD8D3C', '#E31A1C', '#BD0026', '#800026']
 #colors = ['#1f77b4', '#ff7f0e']  # Raw (blue) and Nordic (orange)
 
 # Create the bar chart
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(plotlen, 6))
 for i in range(means_big.shape[1]):  # Loop over SENSE factors
 
     #upper_error = stds_big[:, i, 0]  # Q3 - mean

@@ -26,11 +26,23 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 # Define the root path and subfolder names
 # Root path for QA outputs
 #root_path = "/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/qa_outputs_nordic/"
-root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_MBSENSE_QUAD_200225/qa_outputs_middle24_diffdyn/"
+#root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_MBSENSE_QUAD_200225/qa_outputs_middle24_diffdyn/"
 #root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/preDUST/preDUST_QUAD_MBSENSE/qa_outputs_middle24_diffdyn/"
-
+root_path = "/Users/spmic/data/postDUST_HEAD_MBRES_1p5/qa_outputs_1p5/"
 #root_path = "/Volumes/DRS-7TfMRI/preDUST/preDUST_QUAD_MBSENSE/qa_outputs_middle24/"
 folder_pattern = "qa_output*"
+
+mode = 'doroi'  # Example mode
+
+# Check mode and set ROI
+if mode.lower() == 'doroi':
+    ROI = 1
+    iSNRmax = 100
+elif mode.lower() == 'dogen':
+    ROI = 0
+    iSNRmax = 100
+else:
+    ROI = None  # Handle unexpected values if needed
 
 
 # Dynamically find subfolders matching the pattern
@@ -72,7 +84,7 @@ for folder in subfolders:
 means = []
 stds = []
 folder_labels = []
-iSNRmax = 500
+#iSNRmax = 100
 
 # Process each folder
 for folder in subfolders:
@@ -84,8 +96,8 @@ for folder in subfolders:
             # Load the NIfTI file
             nii = nib.load(nii_path)
             data = nii.get_fdata()
-            data = data[:, :, :, 0]
-
+            #data = data[:, :, :, 0]
+            data = data.mean(axis=3)  # shape = (x, y, z) get mean across 4th dimension
 
             data_shape = data.shape
 
@@ -96,7 +108,7 @@ for folder in subfolders:
             # Define the 2D ROI
             # Example: Center at (48, 48) on slice 12 with size 20x20 (in-plane ROI dimensions)
             #slice_index = 12  # The z-slice where the 2D ROI is located
-            roi_center = (28, 55)  # (x, y) center of the ROI
+            roi_center = (32, 55)  # (x, y) center of the ROI
             #roi_center = (60,35)
             roi_size = (20, 20)  # (width, height) of the ROI
 
@@ -119,7 +131,10 @@ for folder in subfolders:
 
             # UNCOMMENT FOR ROI
             # Flatten the data to 1D array
-            flat_data = roi_data.flatten()
+            if ROI == 1:
+                flat_data = roi_data.flatten()
+            else: 
+                flat_data = data.flatten()
 
             # UNCOMMENT FOR ENTIRE IMAGE
             # Flatten the data to 1D array
@@ -203,72 +218,88 @@ for folder in subfolders:
         print(f"File not found: {nii_path}")
 
 
-print("Length of means:", len(means))
-print("Length of stds:", len(stds))
+# print("Length of means:", len(means))
+# print("Length of stds:", len(stds))
 
-print("Shape of means:", np.shape(means))
-print("Shape of stds:", np.shape(stds))
+# print("Shape of means:", np.shape(means))
+# print("Shape of stds:", np.shape(stds))
 
-print("Slice means[0:5]:", means[0:5])
-print("Slice means[5:10]:", means[5:10])
-print("Slice means[10:15]:", means[10:15])
-print("Slice means[15:20]:", means[15:20])
+# print("Slice means[0:5]:", means[0:5])
+# print("Slice means[5:10]:", means[5:10])
+# print("Slice means[10:15]:", means[10:15])
+# print("Slice means[15:20]:", means[15:20])
 
-print("Slice stds[0:5]:", stds[0:5])
-print("Slice stds[5:10]:", stds[5:10])
-print("Slice stds[10:15]:", stds[10:15])
-print("Slice stds[15:20]:", stds[15:20])
+# print("Slice stds[0:5]:", stds[0:5])
+# print("Slice stds[5:10]:", stds[5:10])
+# print("Slice stds[10:15]:", stds[10:15])
+# print("Slice stds[15:20]:", stds[15:20])
 
-print("Type of means[0:5]:", type(means[0:5]))
-print("Type of means[5:10]:", type(means[5:10]))
-print("Type of means[10:15]:", type(means[10:15]))
-print("Type of means[15:20]:", type(means[15:20]))
+# print("Type of means[0:5]:", type(means[0:5]))
+# print("Type of means[5:10]:", type(means[5:10]))
+# print("Type of means[10:15]:", type(means[10:15]))
+# print("Type of means[15:20]:", type(means[15:20]))
 
-print("Type of stds[0:5]:", type(stds[0:5]))
-print("Type of stds[5:10]:", type(stds[5:10]))
-print("Type of stds[10:15]:", type(stds[10:15]))
-print("Type of stds[15:20]:", type(stds[15:20]))
+# print("Type of stds[0:5]:", type(stds[0:5]))
+# print("Type of stds[5:10]:", type(stds[5:10]))
+# print("Type of stds[10:15]:", type(stds[10:15]))
+# print("Type of stds[15:20]:", type(stds[15:20]))
 
-print("Length of means[0:5]:", len(means[0:5]))
-print("Length of means[5:10]:", len(means[5:10]))
-print("Length of means[10:15]:", len(means[10:15]))
-print("Length of means[15:20]:", len(means[15:20]))
+# print("Length of means[0:5]:", len(means[0:5]))
+# print("Length of means[5:10]:", len(means[5:10]))
+# print("Length of means[10:15]:", len(means[10:15]))
+# print("Length of means[15:20]:", len(means[15:20]))
 
-print("Length of stds[0:5]:", len(stds[0:5]))
-print("Length of stds[5:10]:", len(stds[5:10]))
-print("Length of stds[10:15]:", len(stds[10:15]))
-print("Length of stds[15:20]:", len(stds[15:20]))
+# print("Length of stds[0:5]:", len(stds[0:5]))
+# print("Length of stds[5:10]:", len(stds[5:10]))
+# print("Length of stds[10:15]:", len(stds[10:15]))
+# print("Length of stds[15:20]:", len(stds[15:20]))
 
 
 
 
 # Define the data structure (adjust with actual computed means and stds)
 # Correctly define means_big and stds_big (grouped by Raw and Nordic)
+# means_big = np.array([
+#     means[0:5],  # MB1
+#     means[5:10],  # MB2
+#     means[10:15],  # MB3
+#     means[15:20],  # MB4
+# ])
+
+# stds_big = np.array([
+#     stds[0:5],  # MB1
+#     stds[5:10],  # MB2
+#     stds[10:15],  # MB3
+#     stds[15:20],  # MB4
+# ])
+
 means_big = np.array([
-    means[0:5],  # MB1
-    means[5:10],  # MB2
-    means[10:15],  # MB3
-    means[15:20],  # MB4
+    means[0:3],  # MB2
+    means[3:6],  # MB3
+    means[6:9],  # MB4
 ])
 
 stds_big = np.array([
-    stds[0:5],  # MB1
-    stds[5:10],  # MB2
-    stds[10:15],  # MB3
-    stds[15:20],  # MB4
+    stds[0:3],  # MB2
+    stds[3:6],  # MB3
+    stds[6:9],  # MB4
 ])
 
+labels = ['2','3','4']  # Multiband factors
+sense_factors = ['2', '2.5', '3']  # SENSE factors
+x = np.array([0, 1, 2]) * (1 + 0.05 * len(sense_factors))
 
+plotlen = 8
 
 # Bar settings
 # Bar settings
-labels = ['1', '2', '3', '4']  # Multiband factors
-sense_factors = ['1', '1.5', '2', '2.5', '3']  # SENSE factors
+#labels = ['1', '2', '3', '4']  # Multiband factors
+#sense_factors = ['1', '1.5', '2', '2.5', '3']  # SENSE factors
 
 width = 0.2  # Width of each bar
 
 # Adjusted x positions with gaps between groups
-x = np.array([0, 1, 2, 3]) * (1 + 0.05 * len(sense_factors))  # Add space after each group
+#x = np.array([0, 1, 2, 3]) * (1 + 0.05 * len(sense_factors))  # Add space after each group
 
 #x = np.arange(len(labels))  # The label locations
 
@@ -314,7 +345,13 @@ ax.grid(axis='y', linestyle='--', alpha=0.6)
 ax.set_ylim(0, iSNRmax) 
 
 # Save the plot
-output_plot_path = root_path + "iSNR_bar_chart_roi_diffdyn.png"
+
+# Save the plot
+if ROI == 1:
+    output_plot_path = root_path + "iSNR_bar_chart_roi.png"
+else:
+    output_plot_path = root_path + "iSNR_bar_chart_gen.png"
+#output_plot_path = root_path + "iSNR_bar_chart_roi.png"
 #output_plot_path = root_path + "tSNR_bar_chart_ROI.png"
 
 plt.tight_layout()
