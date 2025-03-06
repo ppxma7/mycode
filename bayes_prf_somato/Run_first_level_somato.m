@@ -29,7 +29,7 @@ glm_dir = fullfile(data_root_dir,'prf7_bayesprf_test','GLM');
 out_dir = fullfile(data_root_dir,'prf7_bayesprf_test','outputs');
 
 % Number of sessions (adjust if needed)
-nsess = 6;
+%nsess = 2;
 
 % fMRI and stimulus timing parameters
 TR            = 2;      % Repetition time: 2 s (your scanner parameter)
@@ -68,6 +68,7 @@ spm_jobman('initcfg');
 
 
 stim_files = {'fwd1.mat', 'rev1.mat', 'up1.mat', 'dwn1.mat'};  % List your stimulus files
+stim_files = {'fwd1.mat'};  % List your stimulus files
 U_all = cell(1, length(stim_files));
 
 for ii = 1:length(stim_files)
@@ -140,10 +141,12 @@ load(fullfile(data_root_dir,thisDSet,'first_level_batch.mat')) % Ensure this bat
 
 %Loop over sessions to set session-specific options.
 % Define the session names corresponding to your file structure
-session_names = {'FWD', 'REV', 'UP1', 'UP2', 'DWN1', 'DWN2'};
+%session_names = {'FWD', 'REV', 'UP1', 'UP2', 'DWN1', 'DWN2'};
+session_names = {'FWD'};
 nsess = length(session_names);  % Number of sessions
 %onset_file_mapping = [1, 2, 3, 3, 4, 4];
-onset_file_mapping = [1, 2, 1, 1, 2, 2];
+%onset_file_mapping = [1, 2, 1, 1, 2, 2];
+onset_file_mapping = [1];
 
 for ii = 1:nsess
     % Generate file patterns based on session names
