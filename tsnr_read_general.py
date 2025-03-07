@@ -27,10 +27,10 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 # Root path for QA outputs
 #root_path = "/Users/spmic/data/postDUST_HEAD_MBRES/qa_output_nordic_middle24/"
 #root_path = "/Volumes/r15/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_QUAD_MBRES/qa_output_nordic_middle24/"
-root_path = "/Users/spmic/data/postDUST_HEAD_MBRES_1p5/qa_outputs_1p5_60slc/"
+root_path = "/Users/spmic/data/postDUST_HEAD_MBHIRES_1p25/qa_outputs_de/"
 folder_pattern = "qa_output*"
 
-mode = 'doroi'  # Example mode
+mode = 'dogen'  # Example mode
 
 # Check mode and set ROI
 if mode.lower() == 'doroi':
@@ -65,6 +65,10 @@ def extract_numeric_suffix(folder_name):
     match = re.search(r"_(\d+)_clipped$", folder_name)
     return int(match.group(1)) if match else float('inf')  # Use inf for folders without a match
 
+def extract_numeric_suffix_str(folder_name):
+    match = re.search(r"_(e\d+|ws)_clipped$", folder_name)  # Match e1, e2, or ws
+    return match.group(1) if match else "zz"  # Sort 'ws' properly, and default to "zz" for unmatched cases
+
 def extract_numeric_suffix_nordic(folder_name):
     match = re.search(r"_(\d+)_nordic_clipped$", folder_name)
     return int(match.group(1)) if match else float('inf')  # Use inf for folders without a match
@@ -73,7 +77,7 @@ def extract_numeric_suffix_nordic(folder_name):
 if "nordic" in root_path:
     subfolders.sort(key=extract_numeric_suffix_nordic)
 else:
-    subfolders.sort(key=extract_numeric_suffix)
+    subfolders.sort(key=extract_numeric_suffix_str)
 
 # Print sorted subfolders to check the order
 print("Sorted Subfolders:")
@@ -110,7 +114,7 @@ for folder in subfolders:
             #slice_index = 12  # The z-slice where the 2D ROI is located
             #roi_center = (35, 85)  # (x, y) center of the ROI
             #roi_center = (35, 70)  # (x, y) center of the ROI
-            #roi_center = (45, 115)  # (x, y) center of the ROI
+            #roi_center = (45, 70)  # (x, y) center of the ROI
             roi_center = (35, 60)  # (x, y) center of the ROI
             roi_size = (20, 20)  # (width, height) of the ROI
 
@@ -270,31 +274,20 @@ else:
     x = np.array([0, 1, 2]) * (1 + 0.05 * len(sense_factors))
     plotlen = 8
 
+
+#sense_factors = ['e1', 'e2', 'ws']  # SENSE factors
+
+#quick
 # means_big = np.array([
-#     means[0:3],  # MB2
-#     means[3:6],  # MB3
-#     means[6:9],  # MB4
+#     means[0:3],  # MB3
 # ])
 
 # stds_big = np.array([
-#     stds[0:3],  # MB2
-#     stds[3:6],  # MB3
-#     stds[6:9],  # MB4
+#     stds[0:3],  # MB3
 # ])
-
-# means_big = np.array([
-#     means[0:3],  # MB2
-#     means[3:6],  # MB3
-#     means[6:9],  # MB4
-#     means[9:12],  # MB4
-# ])
-
-# stds_big = np.array([
-#     stds[0:3],  # MB2
-#     stds[3:6],  # MB3
-#     stds[6:9],  # MB4
-#     stds[9:12],  # MB4
-# ])
+# labels = ['3']  # Multiband factors
+# x = np.array([0]) * (1 + 0.05 * len(sense_factors))
+# plotlen = 4
 
 
 
@@ -355,9 +348,10 @@ for i in range(means_big.shape[1]):  # Loop over SENSE factors
 ax.set_xlabel('Multiband factor')
 ax.set_ylabel('Temporal Signal to Noise')
 ax.set_title('tSNR by Multiband and SENSE Factors')
+#ax.set_title('tSNR DE')
 ax.set_xticks(x)
 ax.set_xticklabels(labels)
-ax.legend(title='SENSE factor', loc='best')
+ax.legend(title='SENSE', loc='best')
 ax.grid(axis='y', linestyle='--', alpha=0.6)
 ax.set_ylim(tSNRmin, tSNRmax) 
 

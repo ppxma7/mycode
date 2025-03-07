@@ -9,8 +9,8 @@ import sys
 #json_dir = "/Volumes/DRS-7TfMRI/preDUST/preDUST_HEAD_MBSENSE/magnitude/nordic_clv/fRAT_analysis/forplotting_summarised"
 #json_dir = "/Users/spmic/data/postDUST_HEAD_MBRES/fRAT_raw/forplotting_summarised_tsnr"
 
-root_path = "/Users/spmic/data/postDUST_HEAD_MBRES_1p5/fRAT_raw/"
-json_dir = os.path.join(root_path, "forplotting_summarised_tsnr")
+root_path = "/Users/spmic/data/postDUST_HEAD_MBHIRES_1p25/fRAT_raw/"
+json_dir = os.path.join(root_path, "forplotting_summarised_isnr")
 
 thisylim = 120
 # Parse JSON files and extract data

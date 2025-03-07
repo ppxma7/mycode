@@ -26,9 +26,9 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 # Define the root path and subfolder names
 # Root path for QA outputs
 #root_path = "/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/qa_outputs_nordic/"
-#root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_MBSENSE_QUAD_200225/qa_outputs_middle24_diffdyn/"
+root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_HEAD_MBRES/qa_output_middle24/"
 #root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/preDUST/preDUST_QUAD_MBSENSE/qa_outputs_middle24_diffdyn/"
-root_path = "/Users/spmic/data/postDUST_HEAD_MBRES_1p5/qa_outputs_1p5/"
+#root_path = "/Users/spmic/data/postDUST_HEAD_MBHIRES_1p25/qa_outputs/"
 #root_path = "/Volumes/DRS-7TfMRI/preDUST/preDUST_QUAD_MBSENSE/qa_outputs_middle24/"
 folder_pattern = "qa_output*"
 
@@ -37,10 +37,10 @@ mode = 'doroi'  # Example mode
 # Check mode and set ROI
 if mode.lower() == 'doroi':
     ROI = 1
-    iSNRmax = 100
+    iSNRmax = 50
 elif mode.lower() == 'dogen':
     ROI = 0
-    iSNRmax = 100
+    iSNRmax = 50
 else:
     ROI = None  # Handle unexpected values if needed
 
@@ -109,6 +109,7 @@ for folder in subfolders:
             # Example: Center at (48, 48) on slice 12 with size 20x20 (in-plane ROI dimensions)
             #slice_index = 12  # The z-slice where the 2D ROI is located
             roi_center = (32, 55)  # (x, y) center of the ROI
+            #roi_center = (45, 70)  # (x, y) center of the ROI
             #roi_center = (60,35)
             roi_size = (20, 20)  # (width, height) of the ROI
 
@@ -277,19 +278,21 @@ means_big = np.array([
     means[0:3],  # MB2
     means[3:6],  # MB3
     means[6:9],  # MB4
+    means[9:12],  # MB4
 ])
 
 stds_big = np.array([
     stds[0:3],  # MB2
     stds[3:6],  # MB3
     stds[6:9],  # MB4
+    stds[9:12],  # MB4    
 ])
 
-labels = ['2','3','4']  # Multiband factors
+labels = ['2','3','4','6']  # Multiband factors
 sense_factors = ['2', '2.5', '3']  # SENSE factors
-x = np.array([0, 1, 2]) * (1 + 0.05 * len(sense_factors))
+x = np.array([0, 1, 2, 3]) * (1 + 0.05 * len(sense_factors))
 
-plotlen = 8
+plotlen = 10
 
 # Bar settings
 # Bar settings
