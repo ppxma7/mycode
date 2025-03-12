@@ -27,18 +27,19 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 # Root path for QA outputs
 #root_path = "/Users/spmic/data/postDUST_HEAD_MBRES/qa_output_nordic_middle24/"
 #root_path = "/Volumes/r15/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_QUAD_MBRES/qa_output_nordic_middle24/"
-root_path = "/Users/spmic/data/postDUST_HEAD_MBHIRES_1p25/qa_outputs_de/"
+root_path = "/Users/spmic/data/postDUST_HEAD_MBHIRES_1p25/qa_outputs/"
 folder_pattern = "qa_output*"
 
-mode = 'dogen'  # Example mode
+mode = 'doroi'  # Example mode
+
 
 # Check mode and set ROI
 if mode.lower() == 'doroi':
     ROI = 1
-    tSNRmax = 200
+    tSNRmax = 100
 elif mode.lower() == 'dogen':
     ROI = 0
-    tSNRmax = 200
+    tSNRmax = 100
 else:
     ROI = None  # Handle unexpected values if needed
 
@@ -77,7 +78,7 @@ def extract_numeric_suffix_nordic(folder_name):
 if "nordic" in root_path:
     subfolders.sort(key=extract_numeric_suffix_nordic)
 else:
-    subfolders.sort(key=extract_numeric_suffix_str)
+    subfolders.sort(key=extract_numeric_suffix)
 
 # Print sorted subfolders to check the order
 print("Sorted Subfolders:")
@@ -115,7 +116,7 @@ for folder in subfolders:
             #roi_center = (35, 85)  # (x, y) center of the ROI
             #roi_center = (35, 70)  # (x, y) center of the ROI
             #roi_center = (45, 70)  # (x, y) center of the ROI
-            roi_center = (35, 60)  # (x, y) center of the ROI
+            roi_center = (45, 60)  # (x, y) center of the ROI
             roi_size = (20, 20)  # (width, height) of the ROI
 
             # Calculate ROI bounds in 2D
@@ -242,38 +243,55 @@ for folder in subfolders:
 #     stds[15:20],  # MB4
 # ])
 
-sense_factors = ['2', '2.5', '3']  # SENSE factors
+sense_factors = ['1.8', '2', '2.5', '3']  # SENSE factors
 
-if "60slc" in root_path:
-    means_big = np.array([
-    means[0:3],  # MB3
-    means[3:6],  # MB4
-    ])
+# if "60slc" in root_path:
+#     means_big = np.array([
+#     means[0:3],  # MB3
+#     means[3:6],  # MB4
+#     ])
 
-    stds_big = np.array([
-        stds[0:3],  # MB3
-        stds[3:6],  # MB4
-    ])
-    labels = ['3','4']  # Multiband factors
-    x = np.array([0, 1]) * (1 + 0.05 * len(sense_factors))  # Add space after each group
-    plotlen = 5
+#     stds_big = np.array([
+#         stds[0:3],  # MB3
+#         stds[3:6],  # MB4
+#     ])
+#     labels = ['3','4']  # Multiband factors
+#     x = np.array([0, 1]) * (1 + 0.05 * len(sense_factors))  # Add space after each group
+#     plotlen = 5
 
-else:
-    means_big = np.array([
-    means[0:3],  # MB2
-    means[3:6],  # MB3
-    means[6:9],  # MB4
-    ])
+# else:
+#     means_big = np.array([
+#     means[0:3],  # MB2
+#     means[3:6],  # MB3
+#     means[6:9],  # MB4
+#     ])
 
-    stds_big = np.array([
-        stds[0:3],  # MB2
-        stds[3:6],  # MB3
-        stds[6:9],  # MB4
-    ])
-    labels = ['2','3','4']  # Multiband factors
-    x = np.array([0, 1, 2]) * (1 + 0.05 * len(sense_factors))
-    plotlen = 8
+#     stds_big = np.array([
+#         stds[0:3],  # MB2
+#         stds[3:6],  # MB3
+#         stds[6:9],  # MB4
+#     ])
+#     labels = ['2','3','4']  # Multiband factors
+#     x = np.array([0, 1, 2]) * (1 + 0.05 * len(sense_factors))
+#     plotlen = 8
 
+
+means_big = np.array([
+    means[0:4],                      # MB2 (4 values)
+    np.append(np.nan, means[4:7]),   # MB3 (3 values + 1 NaN padding)
+    np.append(np.nan, means[7:10]),  # MB4 (3 values + 1 NaN padding)
+])
+
+stds_big = np.array([
+    stds[0:4],                      # MB2 (4 values)
+    np.append(np.nan, stds[4:7]),   # MB3 (3 values + 1 NaN padding)
+    np.append(np.nan, stds[7:10]),  # MB4 (3 values + 1 NaN padding)
+])
+
+
+labels = ['2','3','4']  # Multiband factors
+x = np.array([0, 1, 2]) * (1 + 0.05 * len(sense_factors))
+plotlen = 8
 
 #sense_factors = ['e1', 'e2', 'ws']  # SENSE factors
 
@@ -318,31 +336,63 @@ width = 0.2  # Width of each bar
 #x = np.arange(len(labels)) * 0.5  #
 
 # Colors
+unique_color = '#2ca02c'  # Unique color for SENSE 1.8
 colors = ['#FFEDA0', '#FD8D3C', '#E31A1C', '#BD0026', '#800026']
 
 # Colors for groups
 #colors = ['#1f77b4', '#ff7f0e']  # Raw (blue) and Nordic (orange)
 
 # Create the bar chart
+# fig, ax = plt.subplots(figsize=(plotlen, 6))
+# for i in range(means_big.shape[1]):  # Loop over SENSE factors
+
+#     #upper_error = stds_big[:, i, 0]  # Q3 - mean
+#     #lower_error = stds_big[:, i, 1]  # mean - Q1
+
+#     ax.bar(
+#         x + (i - 2) * width,  # Adjust x position for each SENSE factor
+#         means_big[:, i],
+#         yerr=stds_big[:, i],  # Asymmetrical IQR error bars
+#         width=width,
+#         label=f'SENSE {sense_factors[i]}',
+#         color=colors[i],
+#         capsize=4
+#     )
+
+#     #yerr=stds_big[:, i],
+
+# #yerr=[lower_error, upper_error],
+
+# Use this if you have uneven 2D Numpy arrays
 fig, ax = plt.subplots(figsize=(plotlen, 6))
-for i in range(means_big.shape[1]):  # Loop over SENSE factors
+for row in range(means_big.shape[0]):     # Loop over MB factors (rows)
+    for col in range(means_big.shape[1]):   # Loop over SENSE factors (columns)
+        
+        # Skip if the specific MB/SENSE value is NaN
+        if np.isnan(means_big[row, col]):
+            continue
+        
+        # For the SENSE 1.8 column (col==0)
+        # Use unique_color only for MB2 (row==0), otherwise use the standard color (first in list)
+        if col == 0:
+            bar_color = unique_color if row == 0 else colors[0]
+        else:
+            # For SENSE 2, 2.5, 3, use the standard colors
+            bar_color = colors[col - 1]
+        
+        # Calculate x position: assuming 'x' is defined for each MB factor (row)
+        x_pos = x[row] + (col - 2) * width
+        
+        ax.bar(
+            x_pos,
+            means_big[row, col],
+            yerr=stds_big[row, col],
+            width=width,
+            label=f'MB{row+2} SENSE {sense_factors[col]}',
+            color=bar_color,
+            capsize=4
+        )
 
-    #upper_error = stds_big[:, i, 0]  # Q3 - mean
-    #lower_error = stds_big[:, i, 1]  # mean - Q1
-
-    ax.bar(
-        x + (i - 2) * width,  # Adjust x position for each SENSE factor
-        means_big[:, i],
-        yerr=stds_big[:, i],  # Asymmetrical IQR error bars
-        width=width,
-        label=f'SENSE {sense_factors[i]}',
-        color=colors[i],
-        capsize=4
-    )
-
-    #yerr=stds_big[:, i],
-
-#yerr=[lower_error, upper_error],
 
 # Add labels, title, and legend
 ax.set_xlabel('Multiband factor')
@@ -357,9 +407,9 @@ ax.set_ylim(tSNRmin, tSNRmax)
 
 # Save the plot
 if ROI == 1:
-    output_plot_path = root_path + "tSNR_bar_chart_roi.png"
+    output_plot_path = root_path + "tSNR_bar_chart_roi_testing.png"
 else:
-    output_plot_path = root_path + "tSNR_bar_chart_gen.png"
+    output_plot_path = root_path + "tSNR_bar_chart_gen_testing.png"
 
 print(output_plot_path)
 
