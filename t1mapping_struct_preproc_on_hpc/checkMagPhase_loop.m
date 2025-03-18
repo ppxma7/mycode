@@ -2,7 +2,7 @@ clear all
 close all
 clc
 
-parentDir = '/Volumes/nemosine/NEXPO/outputs';
+parentDir = '/Users/spmic/data/AFIRM/inputs/new/'
 
 % Get all entries in the directory
 dirInfo = dir(parentDir);
@@ -18,7 +18,7 @@ for ii = 1:length(folderNames)
 
     
 
-    thisFile = dir(fullfile(folderPath,'*01.nii'));
+    thisFile = dir(fullfile(folderPath,'*01.nii.gz'));
 
    
         
