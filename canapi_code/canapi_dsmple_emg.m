@@ -6,22 +6,23 @@
 close all
 clear variables
 clc
-dataset = 'canapi_030225';
-mypath='/Users/spmic/data/canapi_030225/EMG/Export/';
+dataset = 'canapi_180325';
+mypath='/Users/spmic/data/canapi_emg/Export/';
 userName = char(java.lang.System.getProperty('user.name'));
-savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_030225/plots/'];
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_180325/plots/'];
 
-myfiles = {'CANAPI01_RL_1BAR_Rectify.dat','CANAPI01_RL_15per_Rectify.dat',...
-    'CANAPI01_LL_1BAR_Rectify.dat','CANAPI01_LL_15per_Rectify.dat'};
+myfiles = {'CANAPI_sub02_L_1BAR_Rectify.dat','CANAPI_sub02_L_15per_Rectify.dat',...
+    'CANAPI_sub02_R_1BAR_Rectify.dat','CANAPI_sub02_R_15per_Rectify.dat',...
+    };
 
 
-markerFiles = {'CANAPI01_RL_1BAR_Rectify_marker.txt','CANAPI01_RL_15per_Rectify_marker.txt',...
-    'CANAPI01_LL_1BAR_Rectify_marker.txt','CANAPI01_LL_15per_Rectify_marker.txt'};
+markerFiles = {'CANAPI_sub02_L_1BAR_Rectify_marker.txt','CANAPI_sub02_L_15per_Rectify_marker.txt',...
+    'CANAPI_sub02_R_1BAR_Rectify_marker.txt','CANAPI_sub02_R_15per_Rectify_marker.txt'};
 
 
 Fs = 2500;
 num_channels = 2;
-target_num_samples = 227; % this is how long the fMRI timeseries is
+target_num_samples = 228; % this is how long the fMRI timeseries is
 %target_num_samples = 100; % without rest at end
 TR = 1.5;
 firstMarker = 2;
@@ -51,10 +52,10 @@ for ii = 1:length(myfiles)
     %to the last marker position
     startMark = thisMarker.Position(firstMarker);
     endMark = thisMarker.Position(lastMarker)+(thisMarker.Position(lastMarker)-thisMarker.Position(twoBefore));
-    
+
     % this is for the version where there was no rest at the end
     %endMark = thisMarker.Position(lastMarker)+(thisMarker.Position(lastMarker-1)-thisMarker.Position(twoBefore));
-    
+
     % cut it to when the trials start, to when it ends
     ch1_clv = thisFile(1,startMark:endMark);
     ch2_clv = thisFile(2,startMark:endMark);
@@ -64,7 +65,7 @@ for ii = 1:length(myfiles)
     % % detrend
     % ch1_clv_dt = detrend(ch1_clv);
     % ch2_clv_dt = detrend(ch2_clv);
-    % 
+    %
     % % zero centre
     % ch1_clv_dt_nrm = ch1_clv_dt - mean(ch1_clv_dt);
     % ch2_clv_dt_nrm = ch2_clv_dt - mean(ch2_clv_dt);
@@ -77,53 +78,81 @@ for ii = 1:length(myfiles)
     % downsample the signal, to the desired target, here it is 114
     ch1_clv_dt_nrm_dsmpl = resample(ch1_clv_dt_nrm, target_num_samples,thisLen);
     ch2_clv_dt_nrm_dsmpl = resample(ch2_clv_dt_nrm, target_num_samples,thisLen_ch2);
-    
+
     % convolve signal
     ch1_clv_dt_nrm_dsmpl_conv = conv(ch1_clv_dt_nrm_dsmpl, hrf);
     ch2_clv_dt_nrm_dsmpl_conv = conv(ch2_clv_dt_nrm_dsmpl, hrf);
-    
+
 
     ch1_clv_dt_nrm_dsmpl_conv_clv = ch1_clv_dt_nrm_dsmpl_conv(1:target_num_samples);  % Trim to match original length
     ch2_clv_dt_nrm_dsmpl_conv_clv = ch2_clv_dt_nrm_dsmpl_conv(1:target_num_samples);  % Trim to match original length
 
 
 
-%     figure('Position',[100 100 600 800])
-%     tiledlayout(5,1)
-%     nexttile
-%     plot(ch1_clv)
-%     title('signal')
-%     nexttile
-%     plot(ch1_clv_dt)
-%     title('signal+detrend')
-%     nexttile
-%     plot(ch1_clv_dt_nrm)
-%     title('signal+detrend+normalize')
-%     nexttile
-%     plot(ch1_clv_dt_nrm_dsmpl)
-%     title('signal+detrend+normalize+dsmple')
-%     nexttile
-%     plot(ch1_clv_dt_nrm_dsmpl_conv_clv)
-%     title('signal+detrend+normalize+dsmple+convolve')
-%     filename = [savedir 'emg-proc-steps' extractBefore(myfiles{ii},'.')];
-%     h = gcf;
-%     set(h, 'PaperOrientation', 'landscape');
-%     set(h, 'PaperUnits', 'inches');
-%     set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
-%     set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
-%     print(h, '-dpdf', filename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
-% 
+    %     figure('Position',[100 100 600 800])
+    %     tiledlayout(5,1)
+    %     nexttile
+    %     plot(ch1_clv)
+    %     title('signal')
+    %     nexttile
+    %     plot(ch1_clv_dt)
+    %     title('signal+detrend')
+    %     nexttile
+    %     plot(ch1_clv_dt_nrm)
+    %     title('signal+detrend+normalize')
+    %     nexttile
+    %     plot(ch1_clv_dt_nrm_dsmpl)
+    %     title('signal+detrend+normalize+dsmple')
+    %     nexttile
+    %     plot(ch1_clv_dt_nrm_dsmpl_conv_clv)
+    %     title('signal+detrend+normalize+dsmple+convolve')
+    %     filename = [savedir 'emg-proc-steps' extractBefore(myfiles{ii},'.')];
+    %     h = gcf;
+    %     set(h, 'PaperOrientation', 'landscape');
+    %     set(h, 'PaperUnits', 'inches');
+    %     set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
+    %     set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
+    %     print(h, '-dpdf', filename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
+    %
+    %% optional if you have accelerometer traces
+
+    ch3_clv = thisFile(3,startMark:endMark);
+    ch4_clv = thisFile(4,startMark:endMark);
+    ch5_clv = thisFile(5,startMark:endMark);
+
+    thisLen = length(ch3_clv);
+
+    [myupper3, mylower3] = envelope(ch3_clv,winLen,'rms');
+    [myupper4, mylower4] = envelope(ch4_clv,winLen,'rms');
+    [myupper5, mylower5] = envelope(ch5_clv,winLen,'rms');
 
 
+    ch3_clv_dt_nrm = normalize(myupper3,'range');
+    ch4_clv_dt_nrm = normalize(myupper4,'range');
+    ch5_clv_dt_nrm = normalize(myupper5,'range');
+
+    % downsample the signal, to the desired target, here it is 114
+    ch3_clv_dt_nrm_dsmpl = resample(ch3_clv_dt_nrm, target_num_samples,thisLen);
+    ch4_clv_dt_nrm_dsmpl = resample(ch4_clv_dt_nrm, target_num_samples,thisLen);
+    ch5_clv_dt_nrm_dsmpl = resample(ch5_clv_dt_nrm, target_num_samples,thisLen);
+
+    % convolve signal
+    ch3_clv_dt_nrm_dsmpl_conv = conv(ch3_clv_dt_nrm_dsmpl, hrf);
+    ch4_clv_dt_nrm_dsmpl_conv = conv(ch4_clv_dt_nrm_dsmpl, hrf);
+    ch5_clv_dt_nrm_dsmpl_conv = conv(ch5_clv_dt_nrm_dsmpl, hrf);
 
 
+    ch3_clv_dt_nrm_dsmpl_conv_clv = ch3_clv_dt_nrm_dsmpl_conv(1:target_num_samples);  % Trim to match original length
+    ch4_clv_dt_nrm_dsmpl_conv_clv = ch4_clv_dt_nrm_dsmpl_conv(1:target_num_samples);  % Trim to match original length
+    ch5_clv_dt_nrm_dsmpl_conv_clv = ch5_clv_dt_nrm_dsmpl_conv(1:target_num_samples);  % Trim to match original length
 
 
+    %% saving
 
-%     figure
-%     plot(ch1_clv_dt_nrm_dsmpl)
-%     hold on
-%     plot(ch2_clv_dt_nrm_dsmpl)
+    %     figure
+    %     plot(ch1_clv_dt_nrm_dsmpl)
+    %     hold on
+    %     plot(ch2_clv_dt_nrm_dsmpl)
 
     saveMat{ii,1} = ch1_clv_dt_nrm_dsmpl_conv_clv;
     saveMat{ii,2} = ch2_clv_dt_nrm_dsmpl_conv_clv;
@@ -133,6 +162,20 @@ for ii = 1:length(myfiles)
 
     saveMat_raw{ii,1} = ch1_clv_dt_nrm;
     saveMat_raw{ii,2} = ch2_clv_dt_nrm;
+
+
+    %%
+    saveMat{ii,3} = ch3_clv_dt_nrm_dsmpl_conv_clv;
+    saveMat{ii,4} = ch4_clv_dt_nrm_dsmpl_conv_clv;
+    saveMat{ii,5} = ch5_clv_dt_nrm_dsmpl_conv_clv;
+
+    saveMat_noconv{ii,3} = ch3_clv_dt_nrm_dsmpl;
+    saveMat_noconv{ii,4} = ch4_clv_dt_nrm_dsmpl;
+    saveMat_noconv{ii,5} = ch5_clv_dt_nrm_dsmpl;
+
+    saveMat_raw{ii,3} = ch3_clv_dt_nrm;
+    saveMat_raw{ii,4} = ch4_clv_dt_nrm;
+    saveMat_raw{ii,5} = ch5_clv_dt_nrm;
 
 
 end
@@ -158,7 +201,7 @@ end
 signal = signal./2;
 
 
-
+return
 %% plot
 close all
 % figure('Position',[0 400 1600 800])
@@ -171,19 +214,19 @@ close all
 %     plot(signal)
 %     %legend('Trispect force','ideal block','Location','best')
 %     legend('ch1','ch2','ideal block')
-% 
+%
 % %     if jj<5%4
 % %         title([extractBefore(myfiles{jj},'.') ' 1 bar'])
 % %     elseif jj>4%3
 % %         title([extractBefore(myfiles{jj},'_') ' 30 prc'])
 % %     end
 %      title([extractBefore(myfiles{jj},'.')],'Interpreter','none'))
-% 
+%
 % end
 %[FILEPATH,NAME,EXT] = fileparts(myfile1);
 t = datetime('now','TimeZone','local','Format','dd-MM-yyyy-HH-mm-ss');
 filename1 = [savedir 'emg_dwnsmpl-LL' dataset '-' char(t)];
-filename2 = [savedir 'emg_dwnsmpl-RL' dataset '-' char(t)];
+%filename2 = [savedir 'emg_dwnsmpl-RL' dataset '-' char(t)];
 figure('Position',[0 0 1400 800])
 tiledlayout(2,2)
 
@@ -209,6 +252,43 @@ set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
 set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
 print(h, '-dpdf', filename1, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
 
+%% try plotting with acclereomercr
+close all
+t = datetime('now','TimeZone','local','Format','dd-MM-yyyy-HH-mm-ss');
+filename1 = [savedir 'accel_emg_dwnsmpl-LL' dataset '-' char(t)];
+%filename2 = [savedir 'emg_dwnsmpl-RL' dataset '-' char(t)];
+figure('Position',[0 0 1400 800])
+tiledlayout(2,2)
+
+flays = 4; %[2 5 4 6];
+for jj = 1:flays
+    nexttile
+    plot(saveMat_noconv{jj,3},'linewidth',1,'Color','#1b9e77')
+    hold on
+    plot(saveMat_noconv{jj,4},'linewidth',1,'Color','#d95f02')
+    hold on
+    plot(saveMat_noconv{jj,5},'linewidth',1,'Color','#7570b3')
+    hold on
+    plot(signal,'Color','#EDB120')
+    %legend('Trispect force','ideal block','Location','best')
+    legend('x','y','z','ideal block')
+    title([extractBefore(myfiles{jj},'.')],'Interpreter','none')
+    ylim([0 1])
+end
+
+
+h = gcf;
+set(h, 'PaperOrientation', 'landscape');
+set(h, 'PaperUnits', 'inches');
+set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
+set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
+print(h, '-dpdf', filename1, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
+
+
+
+
+
+
 %%
 % figure('Position',[0 0 1000 800])
 % flays = [1 3 7];
@@ -223,8 +303,8 @@ print(h, '-dpdf', filename1, '-fillpage', '-r300');  % -r300 sets the resolution
 %     title([extractBefore(myfiles{jj},'.')],'Interpreter','none')
 %     ylim([0 1])
 % end
-% 
-% 
+%
+%
 % h = gcf;
 % set(h, 'PaperOrientation', 'landscape');
 % set(h, 'PaperUnits', 'inches');
@@ -253,7 +333,7 @@ legend('raw fMRI','corrected fMRI')
 a = saveMat_raw{5,1};
 b = saveMat_raw{6,1};
 c = saveMat_raw{7,1};
-d = saveMat_raw{8,1}; 
+d = saveMat_raw{8,1};
 arsmpl = resample(a, target_num_samples,length(a));
 brsmpl = resample(b, target_num_samples,length(b));
 crsmpl = resample(c, target_num_samples,length(c));
