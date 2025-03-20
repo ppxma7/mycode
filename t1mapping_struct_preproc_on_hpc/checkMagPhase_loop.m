@@ -2,7 +2,7 @@ clear all
 close all
 clc
 
-parentDir = '/Users/spmic/data/AFIRM/inputs/new/'
+parentDir = '/Users/spmic/data/NEXPO/inputs/'
 
 % Get all entries in the directory
 dirInfo = dir(parentDir);

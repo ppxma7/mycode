@@ -6,22 +6,19 @@
 close all
 clear variables
 clc
-dataset = 'canapi_sub02_180325';
-mypath='/Users/spmic/data/canapi_sub02_180325/EMG/Export/';
+dataset = 'canapi_sub03_180325';
+mypath='/Users/spmic/data/canapi_sub03_180325/EMG/Export/';
 userName = char(java.lang.System.getProperty('user.name'));
-savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_180325/plots_sub02/'];
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_180325/plots_sub03/'];
 
-% myfiles = {'CANAPI_sub03_L_1BAR_Rectify.dat','CANAPI_sub03_L_15per_Rectify.dat',...
-%     'CANAPI_sub03_R_1BAR_redo2_Rectify.dat','CANAPI_sub03_R_15per_Rectify.dat',...
-%     };
-% markerFiles = {'CANAPI_sub03_L_1BAR_Rectify_marker.txt','CANAPI_sub03_L_15per_Rectify_marker.txt',...
-%     'CANAPI_sub03_R_1BAR_redo2_Rectify_marker.txt','CANAPI_sub03_R_15per_Rectify_marker.txt'};
-
-myfiles = {'CANAPI_sub02_L_1BAR_Rectify.dat','CANAPI_sub02_L_15per_Rectify.dat',...
-    'CANAPI_sub02_R_1BAR_Rectify.dat','CANAPI_sub02_R_15per_Rectify.dat',...
+myfiles = {'CANAPI_sub03_L_1BAR_Rectify.dat','CANAPI_sub03_L_15per_Rectify.dat',...
+    'CANAPI_sub03_R_1BAR_redo2_Rectify.dat','CANAPI_sub03_R_15per_Rectify.dat',...
     };
-markerFiles = {'CANAPI_sub02_L_1BAR_Rectify_marker.txt','CANAPI_sub02_L_15per_Rectify_marker.txt',...
-    'CANAPI_sub02_R_1BAR_Rectify_marker.txt','CANAPI_sub02_R_15per_Rectify_marker.txt'};
+
+
+markerFiles = {'CANAPI_sub03_L_1BAR_Rectify_marker.txt','CANAPI_sub03_L_15per_Rectify_marker.txt',...
+    'CANAPI_sub03_R_1BAR_redo2_Rectify_marker.txt','CANAPI_sub03_R_15per_Rectify_marker.txt'};
+
 
 Fs = 2500;
 num_channels = 2;
@@ -128,7 +125,7 @@ for ii = 1:length(myfiles)
 
     %% optional if you have accelerometer traces
 
-    if size(thisFile,1) == 5
+    if size(File,1) == 5
 
         ch3_clv = thisFile(3,startMark:endMark);
         ch4_clv = thisFile(4,startMark:endMark);
@@ -174,6 +171,19 @@ for ii = 1:length(myfiles)
 
 
     end
+    %% saving
+
+    %     figure
+    %     plot(ch1_clv_dt_nrm_dsmpl)
+    %     hold on
+    %     plot(ch2_clv_dt_nrm_dsmpl)
+
+
+
+
+    %%
+
+    
 
 
 end
@@ -192,20 +202,17 @@ for kk = 1:length(myfiles)
     writematrix(thisRow,thisRowName,'Delimiter','\t');
     
     %optional save accel traces if emg looks bad
+    thisRow = saveMat{kk,3}';
+    thisRowName = [mypath extractBefore(myfiles{kk},'.') '_rectify_ch3_dsmpled.txt'];
+    writematrix(thisRow,thisRowName,'Delimiter','\t');
 
-    if size(thisFile,1) == 5
-        thisRow = saveMat{kk,3}';
-        thisRowName = [mypath extractBefore(myfiles{kk},'.') '_rectify_ch3_dsmpled.txt'];
-        writematrix(thisRow,thisRowName,'Delimiter','\t');
+    thisRow = saveMat{kk,4}';
+    thisRowName = [mypath extractBefore(myfiles{kk},'.') '_rectify_ch4_dsmpled.txt'];
+    writematrix(thisRow,thisRowName,'Delimiter','\t');
 
-        thisRow = saveMat{kk,4}';
-        thisRowName = [mypath extractBefore(myfiles{kk},'.') '_rectify_ch4_dsmpled.txt'];
-        writematrix(thisRow,thisRowName,'Delimiter','\t');
-
-        thisRow = saveMat{kk,5}';
-        thisRowName = [mypath extractBefore(myfiles{kk},'.') '_rectify_ch5_dsmpled.txt'];
-        writematrix(thisRow,thisRowName,'Delimiter','\t');
-    end
+    thisRow = saveMat{kk,5}';
+    thisRowName = [mypath extractBefore(myfiles{kk},'.') '_rectify_ch5_dsmpled.txt'];
+    writematrix(thisRow,thisRowName,'Delimiter','\t');
 
 end
 
