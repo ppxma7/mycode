@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define the base directory where subject data is stored
-BASE_DIR="/Users/spmic/data/CATALYST/GBPERM_subs/"
-OUTPUT_FILE="/Users/spmic/data/CATALYST/GBPERM_subs/TIV_volumes_IBD.csv"
+BASE_DIR="/Users/spmic/data/IBD_structs_MNIspace_results/surfaces/"
+OUTPUT_FILE="/Users/spmic/data/IBD_structs_MNIspace_results/TIV_volumes_IBD.csv"
 
 # List of subjects
 #SUBJECTS=(sub01 sub02 sub03 sub04 sub06 sub07 sub08 sub09 sub10)
@@ -25,7 +25,7 @@ echo "Subject,GMV (mm3),WMV (mm3),CSF (mm3),TIV (mm3)" > $OUTPUT_FILE
 # Iterate through each subject
 for SUB in "${SUBJECTS[@]}"; do
     # Define the path to the segmentation directory
-    SEG_DIR="$BASE_DIR/$SUB/seg/tissue/sing_chan"
+    SEG_DIR="$BASE_DIR/$SUB/analysis/anatMRI/T1/processed/seg/tissue/sing_chan"
 
     # Define the PVE files
     PVE_GM="$SEG_DIR/T1_pve_GM.nii.gz"
