@@ -4,10 +4,10 @@ import subprocess
 
 # Paths to input and output folders
 #rootFold = "/Volumes/hermes/canapi_051224/aroma_mni_space/"
-rootFold = "/Users/spmic/data/canapi_sub02_180325/spm_analysis/"
+rootFold = "/Volumes/nemosine/canapi_sub02_180325/spm_analysis/"
 
-strucFold = "/Users/spmic/data/canapi_sub02_180325/structurals/"
-ica_aroma_path = "/Users/spmic/Documents/MATLAB/ICA-AROMA/ICA_AROMA.py"  # Path to ICA-AROMA script
+strucFold = "/Volumes/nemosine/canapi_sub02_180325/spm_analysis/structurals/"
+ica_aroma_path = "/Users/ppzma/Documents/MATLAB/ICA-AROMA/ICA_AROMA.py"  # Path to ICA-AROMA script
 
 brain_mask = os.path.join(rootFold, "mymask.nii")  # Optional brain mask
 #print(brain_mask)
@@ -26,9 +26,9 @@ input_files = [
 
 motion_files = [
     "rp_canapi_sub02_180325_WIP1bar_TAP_R_20250318153536_6_nordic_clv.txt",
-    "rwrcanapi_sub02_180325_WIPlow_TAP_R_20250318153536_7_nordic_clv.txt",
-    "rwrcanapi_sub02_180325_WIP1bar_TAP_L_20250318153536_8_nordic_clv.txt",
-    "rwrcanapi_sub02_180325_WIPlow_TAP_L_20250318153536_9_nordic_clv.txt"
+    "rp_canapi_sub02_180325_WIPlow_TAP_R_20250318153536_7_nordic_clv.txt",
+    "rp_canapi_sub02_180325_WIP1bar_TAP_L_20250318153536_8_nordic_clv.txt",
+    "rp_canapi_sub02_180325_WIPlow_TAP_L_20250318153536_9_nordic_clv.txt"
 ]
 
 # input_files = [
@@ -68,10 +68,10 @@ for input_file, motion_file in zip(input_files, motion_files):
         subprocess.run([
             "bet",
             input_file_path_nonan,
-            rootFold + "brain",
+            os.path.join(rootFold, base_name + "brain"),
             "-R","-F","-m",
             ], check=True)
-        brain_mask = os.path.join(rootFold, "brain_mask.nii.gz")
+        brain_mask = os.path.join(rootFold, base_name + "brain_mask.nii.gz")
 
 
     motion_params_file_path = os.path.join(rootFold, motion_file)
