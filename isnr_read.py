@@ -26,7 +26,8 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 # Define the root path and subfolder names
 # Root path for QA outputs
 #root_path = "/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/qa_outputs_nordic/"
-root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_HEAD_MBRES/qa_output_middle24/"
+#root_path = "/Volumes/r15/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_MBSENSE_QUAD_200225/qa_outputs_middle24/"
+root_path = "/Users/spmic/data/dustquad/qa_output_middle24_pre/"
 #root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/preDUST/preDUST_QUAD_MBSENSE/qa_outputs_middle24_diffdyn/"
 #root_path = "/Users/spmic/data/postDUST_HEAD_MBHIRES_1p25/qa_outputs/"
 #root_path = "/Volumes/DRS-7TfMRI/preDUST/preDUST_QUAD_MBSENSE/qa_outputs_middle24/"
@@ -37,10 +38,10 @@ mode = 'doroi'  # Example mode
 # Check mode and set ROI
 if mode.lower() == 'doroi':
     ROI = 1
-    iSNRmax = 50
+    iSNRmax = 400
 elif mode.lower() == 'dogen':
     ROI = 0
-    iSNRmax = 50
+    iSNRmax = 400
 else:
     ROI = None  # Handle unexpected values if needed
 
@@ -108,8 +109,8 @@ for folder in subfolders:
             # Define the 2D ROI
             # Example: Center at (48, 48) on slice 12 with size 20x20 (in-plane ROI dimensions)
             #slice_index = 12  # The z-slice where the 2D ROI is located
-            roi_center = (32, 55)  # (x, y) center of the ROI
-            #roi_center = (45, 70)  # (x, y) center of the ROI
+            #roi_center = (32, 55)  # (x, y) center of the ROI
+            roi_center = (30, 40)  # (x, y) center of the ROI
             #roi_center = (60,35)
             roi_size = (20, 20)  # (width, height) of the ROI
 
@@ -206,6 +207,7 @@ for folder in subfolders:
             # Save the figure to a file
             output_path = os.path.join(root_path, folder, "slice_with_isnr.png")
             #output_path = "/path/to/save/figure_with_tsnr.png"
+
             plt.savefig(output_path, dpi=300, bbox_inches='tight')
             print(f"Figure saved at {output_path}")
             # Suppress plot display
@@ -260,39 +262,41 @@ for folder in subfolders:
 
 # Define the data structure (adjust with actual computed means and stds)
 # Correctly define means_big and stds_big (grouped by Raw and Nordic)
-# means_big = np.array([
-#     means[0:5],  # MB1
-#     means[5:10],  # MB2
-#     means[10:15],  # MB3
-#     means[15:20],  # MB4
-# ])
-
-# stds_big = np.array([
-#     stds[0:5],  # MB1
-#     stds[5:10],  # MB2
-#     stds[10:15],  # MB3
-#     stds[15:20],  # MB4
-# ])
-
 means_big = np.array([
-    means[0:3],  # MB2
-    means[3:6],  # MB3
-    means[6:9],  # MB4
-    means[9:12],  # MB4
+    means[0:5],  # MB1
+    means[5:10],  # MB2
+    means[10:15],  # MB3
+    means[15:20],  # MB4
 ])
 
 stds_big = np.array([
-    stds[0:3],  # MB2
-    stds[3:6],  # MB3
-    stds[6:9],  # MB4
-    stds[9:12],  # MB4    
+    stds[0:5],  # MB1
+    stds[5:10],  # MB2
+    stds[10:15],  # MB3
+    stds[15:20],  # MB4
 ])
 
-labels = ['2','3','4','6']  # Multiband factors
-sense_factors = ['2', '2.5', '3']  # SENSE factors
+# means_big = np.array([
+#     means[0:3],  # MB2
+#     means[3:6],  # MB3
+#     means[6:9],  # MB4
+#     means[9:12],  # MB6
+# ])
+
+# stds_big = np.array([
+#     stds[0:3],  # MB2
+#     stds[3:6],  # MB3
+#     stds[6:9],  # MB4
+#     stds[9:12],  # MB6    
+# ])
+
+labels = ['1','2','3','4']  # Multiband factors
+sense_factors = ['1', '1.5', '2', '2.5', '3']  # SENSE factors
+#sense_factors = ['2', '2.5', '3']  # SENSE factors
+
 x = np.array([0, 1, 2, 3]) * (1 + 0.05 * len(sense_factors))
 
-plotlen = 10
+plotlen = 8
 
 # Bar settings
 # Bar settings
@@ -317,7 +321,7 @@ colors = ['#FFEDA0', '#FD8D3C', '#E31A1C', '#BD0026', '#800026']
 #colors = ['#1f77b4', '#ff7f0e']  # Raw (blue) and Nordic (orange)
 
 # Create the bar chart
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(plotlen, 6))
 for i in range(means_big.shape[1]):  # Loop over SENSE factors
 
     #upper_error = stds_big[:, i, 0]  # Q3 - mean
@@ -333,6 +337,8 @@ for i in range(means_big.shape[1]):  # Loop over SENSE factors
         capsize=4
     )
 
+
+
     #yerr=stds_big[:, i],
 
 #yerr=[lower_error, upper_error],
@@ -345,7 +351,7 @@ ax.set_xticks(x)
 ax.set_xticklabels(labels)
 ax.legend(title='SENSE factor', loc='best')
 ax.grid(axis='y', linestyle='--', alpha=0.6)
-ax.set_ylim(0, iSNRmax) 
+ax.set_ylim(-10, iSNRmax) 
 
 # Save the plot
 
