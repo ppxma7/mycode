@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Iterate over all NIfTI files in the current directory
-for full_file_path in *.nii.gz; do
+for full_file_path in *.nii; do
 
     # Extract the base name without the extension
-    base_name=$(basename "$full_file_path" .nii.gz)
+    base_name=$(basename "$full_file_path" .nii)
 
 
     # Check if the filename contains "_ph"
