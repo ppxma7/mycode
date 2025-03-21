@@ -29,7 +29,7 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 #root_path = "/Volumes/r15/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_QUAD_MBRES/qa_output_nordic_middle24/"
 #root_path = "/Users/spmic/data/postDUST_HEAD_MBHIRES_1p25/qa_outputs/"
 #root_path = "/Volumes/r15/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_MBSENSE_QUAD_200225/qa_outputs_middle24/"
-root_path = "/Users/spmic/data/dustquad/qa_output_middle24_pre/"
+root_path = "/Users/spmic/data/qa_outputs_1p5/"
 
 folder_pattern = "qa_output*"
 
@@ -39,7 +39,7 @@ mode = 'doroi'  # Example mode
 # Check mode and set ROI
 if mode.lower() == 'doroi':
     ROI = 1
-    tSNRmax = 900
+    tSNRmax = 400
 elif mode.lower() == 'dogen':
     ROI = 0
     tSNRmax = 400
@@ -120,7 +120,7 @@ for folder in subfolders:
             #roi_center = (35, 70)  # (x, y) center of the ROI
             #roi_center = (45, 70)  # (x, y) center of the ROI
             #roi_center = (45, 60)  # (x, y) center of the ROI
-            roi_center = (30, 40)
+            roi_center = (40, 82)
             roi_size = (20, 20)  # (width, height) of the ROI
 
             # Calculate ROI bounds in 2D
@@ -233,39 +233,37 @@ for folder in subfolders:
 
 # Define the data structure (adjust with actual computed means and stds)
 # Correctly define means_big and stds_big (grouped by Raw and Nordic)
-means_big = np.array([
-    means[0:5],  # MB1
-    means[5:10],  # MB2
-    means[10:15],  # MB3
-    means[15:20],  # MB4
-])
-
-stds_big = np.array([
-    stds[0:5],  # MB1
-    stds[5:10],  # MB2
-    stds[10:15],  # MB3
-    stds[15:20],  # MB4
-])
-
 # means_big = np.array([
-#     means[0:3],  # MB2
-#     means[3:6],  # MB3
-#     means[6:9],  # MB4
-#     means[9:12],  # MB5
+#     means[0:5],  # MB1
+#     means[5:10],  # MB2
+#     means[10:15],  # MB3
+#     means[15:20],  # MB4
 # ])
 
 # stds_big = np.array([
-#     stds[0:3],  # MB2
-#     stds[3:6],  # MB3
-#     stds[6:9],  # MB4
-#     stds[9:12],  # MB5
+#     stds[0:5],  # MB1
+#     stds[5:10],  # MB2
+#     stds[10:15],  # MB3
+#     stds[15:20],  # MB4
 # ])
 
-sense_factors = ['1','1.5', '2', '2.5', '3']  # SENSE factors
+means_big = np.array([
+    means[0:3],  # MB2
+    means[3:6],  # MB3
+    means[6:9],  # MB4
+])
+
+stds_big = np.array([
+    stds[0:3],  # MB2
+    stds[3:6],  # MB3
+    stds[6:9],  # MB4
+])
+
+sense_factors = ['2', '2.5', '3']  # SENSE factors
 #sense_factors = ['2', '2.5', '3']  # SENSE factors
 
-labels = ['1','2','3', '4']  # Multiband factors
-x = np.array([0, 1, 2, 3]) * (1 + 0.05 * len(sense_factors))
+labels = ['2','3', '4']  # Multiband factors
+x = np.array([0, 1, 2]) * (1 + 0.05 * len(sense_factors))
 plotlen = 8
 
 # if "60slc" in root_path:
@@ -379,7 +377,7 @@ for i in range(means_big.shape[1]):  # Loop over SENSE factors
         means_big[:, i],
         yerr=stds_big[:, i],  # Asymmetrical IQR error bars
         width=width,
-        label=f'SENSE FACTOR {sense_factors[i]}',
+        label=f'SENSE {sense_factors[i]}',
         color=colors[i],
         capsize=4
     )
@@ -432,9 +430,9 @@ ax.set_ylim(tSNRmin, tSNRmax)
 
 # Save the plot
 if ROI == 1:
-    output_plot_path = root_path + "tSNR_bar_chart_roi_testing.png"
+    output_plot_path = root_path + "tSNR_bar_chart_roi.png"
 else:
-    output_plot_path = root_path + "tSNR_bar_chart_gen_testing.png"
+    output_plot_path = root_path + "tSNR_bar_chart_gen.png"
 
 print(output_plot_path)
 

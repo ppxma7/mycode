@@ -27,7 +27,7 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 # Root path for QA outputs
 #root_path = "/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/qa_outputs_nordic/"
 #root_path = "/Volumes/r15/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_MBSENSE_QUAD_200225/qa_outputs_middle24/"
-root_path = "/Users/spmic/data/dustquad/qa_output_middle24_pre/"
+root_path = "/Users/spmic/data/qa_outputs_1p5/"
 #root_path = "/Volumes/DRS-7TfMRI/DUST_upgrade/preDUST/preDUST_QUAD_MBSENSE/qa_outputs_middle24_diffdyn/"
 #root_path = "/Users/spmic/data/postDUST_HEAD_MBHIRES_1p25/qa_outputs/"
 #root_path = "/Volumes/DRS-7TfMRI/preDUST/preDUST_QUAD_MBSENSE/qa_outputs_middle24/"
@@ -110,7 +110,7 @@ for folder in subfolders:
             # Example: Center at (48, 48) on slice 12 with size 20x20 (in-plane ROI dimensions)
             #slice_index = 12  # The z-slice where the 2D ROI is located
             #roi_center = (32, 55)  # (x, y) center of the ROI
-            roi_center = (30, 40)  # (x, y) center of the ROI
+            roi_center = (40, 82)  # (x, y) center of the ROI
             #roi_center = (60,35)
             roi_size = (20, 20)  # (width, height) of the ROI
 
@@ -262,39 +262,37 @@ for folder in subfolders:
 
 # Define the data structure (adjust with actual computed means and stds)
 # Correctly define means_big and stds_big (grouped by Raw and Nordic)
-means_big = np.array([
-    means[0:5],  # MB1
-    means[5:10],  # MB2
-    means[10:15],  # MB3
-    means[15:20],  # MB4
-])
-
-stds_big = np.array([
-    stds[0:5],  # MB1
-    stds[5:10],  # MB2
-    stds[10:15],  # MB3
-    stds[15:20],  # MB4
-])
-
 # means_big = np.array([
-#     means[0:3],  # MB2
-#     means[3:6],  # MB3
-#     means[6:9],  # MB4
-#     means[9:12],  # MB6
+#     means[0:5],  # MB1
+#     means[5:10],  # MB2
+#     means[10:15],  # MB3
+#     means[15:20],  # MB4
 # ])
 
 # stds_big = np.array([
-#     stds[0:3],  # MB2
-#     stds[3:6],  # MB3
-#     stds[6:9],  # MB4
-#     stds[9:12],  # MB6    
+#     stds[0:5],  # MB1
+#     stds[5:10],  # MB2
+#     stds[10:15],  # MB3
+#     stds[15:20],  # MB4
 # ])
 
-labels = ['1','2','3','4']  # Multiband factors
-sense_factors = ['1', '1.5', '2', '2.5', '3']  # SENSE factors
+means_big = np.array([
+    means[0:3],  # MB2
+    means[3:6],  # MB3
+    means[6:9],  # MB4
+])
+
+stds_big = np.array([
+    stds[0:3],  # MB2
+    stds[3:6],  # MB3
+    stds[6:9],  # MB4 
+])
+
+labels = ['2','3','4']  # Multiband factors
+sense_factors = ['2', '2.5', '3']  # SENSE factors
 #sense_factors = ['2', '2.5', '3']  # SENSE factors
 
-x = np.array([0, 1, 2, 3]) * (1 + 0.05 * len(sense_factors))
+x = np.array([0, 1, 2]) * (1 + 0.05 * len(sense_factors))
 
 plotlen = 8
 
@@ -349,7 +347,7 @@ ax.set_ylabel('Image Signal to Noise')
 ax.set_title('iSNR by Multiband and SENSE Factors')
 ax.set_xticks(x)
 ax.set_xticklabels(labels)
-ax.legend(title='SENSE factor', loc='best')
+ax.legend(title='SENSE', loc='best')
 ax.grid(axis='y', linestyle='--', alpha=0.6)
 ax.set_ylim(-10, iSNRmax) 
 
