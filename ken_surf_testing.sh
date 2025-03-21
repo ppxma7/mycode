@@ -1,8 +1,23 @@
 #!/bin/bash
+
+# Here is some code for Ken
+# He wants to take the digit atlas Surface based ROIs, 
+# Move them to native surface space, and then move 
+# these to native volume space
+
+# make sure you have fsaverage in your subjects dir
+
+# ma 2025
+
 cd ~
 source $FREESURFER_HOME/SetUpFreeSurfer.sh
+
+# this is where your atlas digit rois are
 MOUNT='/Users/spmic/data/ken_surf_testig/'
+
+# this is where your subjects freesurfer directory is
 ANATMOUNT='/Users/spmic/data/subs/'
+
 export SUBJECTS_DIR=$ANATMOUNT
 
 subjectlist="atlas"
@@ -30,9 +45,10 @@ do
          --subject ${anatsub} \
          --o ${MOUNT}/${subject}/RD${k}_${anatsub}_vol_method1.mgz
 
+      # convert to nifti 
       mri_convert ${MOUNT}/${subject}/RD${k}_${anatsub}_vol_method1.mgz ${MOUNT}/${subject}/RD${k}_${anatsub}_vol_method1.nii.gz
 
-      #binarise
+      # binarise if you want a mask
       mri_binarize --i ${MOUNT}/${subject}/RD${k}_${anatsub}_vol_method1.nii.gz \
          --min 0.0001 --o ${MOUNT}/${subject}/RD${k}_${anatsub}_vol_method1_bin.nii.gz
 
@@ -48,9 +64,10 @@ do
          --template ${SUBJECTS_DIR}/${anatsub}/mri/brain.mgz \
          --o ${MOUNT}/${subject}/RD${k}_${anatsub}_vol_method2.mgz
 
+      # convert to nifti
       mri_convert ${MOUNT}/${subject}/RD${k}_${anatsub}_vol_method2.mgz ${MOUNT}/${subject}/RD${k}_${anatsub}_vol_method2.nii.gz
 
-      #binarise
+      # binarise if you want a mask
       mri_binarize --i ${MOUNT}/${subject}/RD${k}_${anatsub}_vol_method2.nii.gz \
          --min 0.0001 --o ${MOUNT}/${subject}/RD${k}_${anatsub}_vol_method2_bin.nii.gz
 
