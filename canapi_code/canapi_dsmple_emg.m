@@ -7,7 +7,7 @@ close all
 clear variables
 clc
 dataset = 'canapi_sub02_180325';
-mypath='/Users/spmic/data/canapi_sub02_180325/EMG/Export/';
+mypath='/Volumes/nemosine/canapi_sub02_180325/EMG/Export/';
 userName = char(java.lang.System.getProperty('user.name'));
 savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_180325/plots_sub02/'];
 
@@ -25,7 +25,7 @@ markerFiles = {'CANAPI_sub02_L_1BAR_Rectify_marker.txt','CANAPI_sub02_L_15per_Re
 
 Fs = 2500;
 num_channels = 2;
-target_num_samples = 228; % this is how long the fMRI timeseries is
+target_num_samples = 227; % this is how long the fMRI timeseries is
 %target_num_samples = 100; % without rest at end
 TR = 1.5;
 firstMarker = 2;
@@ -79,6 +79,7 @@ for ii = 1:length(myfiles)
     ch2_clv_dt_nrm = normalize(myupper2,'range');
 
     % downsample the signal, to the desired target, here it is 114
+    disp('resampling')
     ch1_clv_dt_nrm_dsmpl = resample(ch1_clv_dt_nrm, target_num_samples,thisLen);
     ch2_clv_dt_nrm_dsmpl = resample(ch2_clv_dt_nrm, target_num_samples,thisLen_ch2);
 
