@@ -5,41 +5,24 @@ import os
 # Input and output folders
 #input_folder = "/Volumes/nemosine/CANAPI_210125/spmanalysis/"  # Replace with your input folder path
 #input_folder = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_030225/'
-input_folder = '/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/spm_check_motion/'
+#input_folder = '/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/spm_check_motion/'
+input_folder = '/Users/spmic/data/canapi_sub03_180325/spm_analysis/'
 output_folder = os.path.join(input_folder, "motion_plots")  # Output folder for saving plots
 os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exist
 
-# List of input files
+#List of input files
 # input_files = [
-#     "parrec_WIP1bar_20241205082447_6_nordic_clv",
-#     "parrec_WIP1bar_20241205082447_10_nordic_clv",
-#     "parrec_WIP30prc_20241205082447_5_nordic_clv",
-#     "parrec_WIP30prc_20241205082447_9_nordic_clv",
-#     "parrec_WIP50prc_20241205082447_4_nordic_clv",
-#     "parrec_WIP50prc_20241205082447_8_nordic_clv"
+#     "rp_canapi_sub02_180325_WIP1bar_TAP_R_20250318153536_6_nordic_clv",
+#     "rp_canapi_sub02_180325_WIPlow_TAP_R_20250318153536_7_nordic_clv",
+#     "rp_canapi_sub02_180325_WIP1bar_TAP_L_20250318153536_8_nordic_clv",
+#     "rp_canapi_sub02_180325_WIPlow_TAP_L_20250318153536_9_nordic_clv"
 # ]
 
 input_files = [
-    "rp_postDUST_HEAD_200225_WIPMB1_SENSE1_20250220151249_3_clv",   
-    "rp_postDUST_HEAD_200225_WIPMB1_SENSE1p5_20250220151249_4_clv",
-    "rp_postDUST_HEAD_200225_WIPMB1_SENSE2_20250220151249_5_clv",
-    "rp_postDUST_HEAD_200225_WIPMB1_SENSE2p5_20250220151249_6_clv",
-    "rp_postDUST_HEAD_200225_WIPMB1_SENSE3_20250220151249_7_clv",
-    "rp_postDUST_HEAD_200225_WIPMB2_SENSE1_20250220151249_10_clv",
-    "rp_postDUST_HEAD_200225_WIPMB2_SENSE1p5_20250220151249_12_clv",
-    "rp_postDUST_HEAD_200225_WIPMB2_SENSE2_20250220151249_14_clv",
-    "rp_postDUST_HEAD_200225_WIPMB2_SENSE2p5_20250220151249_16_clv",
-    "rp_postDUST_HEAD_200225_WIPMB2_SENSE3_20250220151249_18_clv",
-    "rp_postDUST_HEAD_200225_WIPMB3_SENSE1_20250220151249_20_clv",
-    "rp_postDUST_HEAD_200225_WIPMB3_SENSE1p5_20250220151249_22_clv",
-    "rp_postDUST_HEAD_200225_WIPMB3_SENSE2_20250220151249_24_clv",
-    "rp_postDUST_HEAD_200225_WIPMB3_SENSE2p5_20250220151249_26_clv",
-    "rp_postDUST_HEAD_200225_WIPMB3_SENSE3_20250220151249_28_clv",
-    "rp_postDUST_HEAD_200225_WIPMB4_SENSE1_20250220151249_30_clv",
-    "rp_postDUST_HEAD_200225_WIPMB4_SENSE1p5_20250220151249_32_clv",
-    "rp_postDUST_HEAD_200225_WIPMB4_SENSE2_20250220151249_34_clv",
-    "rp_postDUST_HEAD_200225_WIPMB4_SENSE2p5_20250220151249_36_clv",
-    "rp_postDUST_HEAD_200225_WIPMB4_SENSE3_20250220151249_38_clv"
+    "rp_canapi_sub03_180325_WIPlow_TAP_R_20250318163243_9_nordic_clv",
+    "rp_canapi_sub03_180325_WIP1bar_TAP_L_20250318163243_10_nordic_clv",
+    "rp_canapi_sub03_180325_WIP1bar_TAP_R_20250318163243_8_nordic_clv",
+    "rp_canapi_sub03_180325_WIPlow_TAP_L_20250318163243_11_nordic_clv"
 ]
 
 # Loop through each file
