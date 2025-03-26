@@ -46,7 +46,7 @@ for gfactor_file in gfactor_files:
 
     # Original g-factor map
     ax = axes[0]
-    im0 = ax.imshow(data_g[:, :, mid_slice_g], cmap='grey', origin='lower', vmin=0, vmax=20)
+    im0 = ax.imshow(data_g[:, :, mid_slice_g], cmap='grey', origin='lower', vmin=0, vmax=40)
     fig.colorbar(im0, ax=ax, fraction=0.046, pad=0.04)
     ax.set_title(f"Original g-factor\nMean: {mean_g:.3f}")
 
