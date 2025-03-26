@@ -178,7 +178,7 @@ def generate_html(directory, rel_path=""):
     </head>
     <body>
     <h2>{directory}</h2>
-    <h1>Hello there, weary traveller!</h1>
+    <h1>Hello</h1>
     <p>Click on any folder to explore its contents:</p>"""
 
     # **Add Summary Link Only on the Main Landing Page**

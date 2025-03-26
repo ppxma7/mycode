@@ -13,7 +13,7 @@ cd ~
 source $FREESURFER_HOME/SetUpFreeSurfer.sh
 
 # this is where your atlas digit rois are
-MOUNT='/Users/spmic/data/ken_surf_testig/'
+MOUNT='/Users/spmic/data/ken_surf_testing/'
 
 # this is where your subjects freesurfer directory is
 ANATMOUNT='/Users/spmic/data/subs/'
