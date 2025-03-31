@@ -46,19 +46,19 @@ for gfactor_file in gfactor_files:
 
     # Original g-factor map
     ax = axes[0]
-    im0 = ax.imshow(data_g[:, :, mid_slice_g], cmap='grey', origin='lower', vmin=0, vmax=40)
+    im0 = ax.imshow(data_g[:, :, mid_slice_g], cmap='grey', origin='lower') #, vmin=0, vmax=40)
     fig.colorbar(im0, ax=ax, fraction=0.046, pad=0.04)
     ax.set_title(f"Original g-factor\nMean: {mean_g:.3f}")
 
     # 1/g-factor map
     ax = axes[1]
-    im1 = ax.imshow(one_over_g[:, :, mid_slice_g], cmap='inferno', origin='lower', vmin=0, vmax=0.5)
+    im1 = ax.imshow(one_over_g[:, :, mid_slice_g], cmap='inferno', origin='lower') #, vmin=0, vmax=0.5)
     fig.colorbar(im1, ax=ax, fraction=0.046, pad=0.04)
     ax.set_title(f"1/g-factor\nMean: {mean_one_over_g:.3f}")
 
     # Magnitude image
     ax = axes[2]
-    im2 = ax.imshow(data_mag[:, :, mid_slice_mag], cmap='grey', origin='lower', vmin=0, vmax=100000)
+    im2 = ax.imshow(data_mag[:, :, mid_slice_mag], cmap='grey', origin='lower') # vmin=0, vmax=100000)
     fig.colorbar(im2, ax=ax, fraction=0.046, pad=0.04)
     #ax.set_title(f"Magnitude Image\nMean: {mean_mag:.3f}")
 
