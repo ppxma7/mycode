@@ -60,11 +60,10 @@ for fname in files:
     # Create masked mean image (set values below threshold to 0)
     masked_mean = np.where(mask, mean_volume, 0)
     plt.figure(figsize=(8, 6))
-    plt.imshow(masked_mean[:, :, mid_slice], cmap='viridis', origin='lower')
-    plt.title(f"Masked Mean Image (mean > {threshold}) at mid slice")
-    plt.colorbar(label="Mean Intensity")
+    plt.imshow(masked_mean[:, :, mid_slice], cmap='viridis', origin='lower', vmin=0, vmax=250000)
+    plt.axis('off')  # Remove axis bars
     masked_mean_png_fname = base_fname + "_masked_mean_visualization.png"
-    plt.savefig(masked_mean_png_fname, dpi=300)
+    plt.savefig(masked_mean_png_fname, dpi=300, bbox_inches='tight', pad_inches=0)
     plt.close()
 
     scans.append({
