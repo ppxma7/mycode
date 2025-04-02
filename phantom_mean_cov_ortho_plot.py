@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 
 # Define paths and parameters
-root_path = "/Users/spmic/data/gre_se_shifts_020425/magnitude/se/"
+root_path = "/Users/spmic/data/gre_se_shifts_head_020425/magnitude/gre/"
 output_plot_path = os.path.join(root_path, "bar_chart_shifts.png")
-threshold = 10000  # Set your threshold value here
+threshold = 5000  # Set your threshold value here
 
 # Get list of nii.gz files
 files = [f for f in os.listdir(root_path) if f.endswith('.nii.gz')]
@@ -20,20 +20,24 @@ files = [f for f in os.listdir(root_path) if f.endswith('.nii.gz')]
 
 if "magnitude/se/" in root_path:
     # Pattern for magnitude images
-    pattern = r"gre_se_shifts_020425_WIPMB(\d+)_SEEPI_S(\d+)_((?:\d+(?:p\d+)?mmiso))_shift(\d+)_\d+_\d+\.nii\.gz"
-    vmax_val = 200000
+    pattern = r"gre_se_shifts_head_020425_WIPMB(\d+)_SEEPI_S(\d+)_((?:\d+(?:p\d+)?mmiso))_shift(\d+)_\d+_\d+\.nii\.gz"
+    vmax_val = 100000 #200000
     ymax = 1
 else:
-    pattern = r"gre_se_shifts_020425_WIPMB(\d+)_GREEPI_S(\d+)_((?:\d+(?:p\d+)?mmiso))_shift(\d+)_\d+_\d+\.nii\.gz"
-    vmax_val = 100000
-    ymax = 0.5
+    pattern = r"gre_se_shifts_head_020425_WIPMB(\d+)_GREEPI_S(\d+)_((?:\d+(?:p\d+)?mmiso))_shift(\d+)_\d+_\d+\.nii\.gz"
+    vmax_val = 35000 #100000
+    ymax = 1
 
 #pattern = r"gre_se_shifts_020425_WIPMB(\d+)_SEEPI_S(\d+)_((?:\d+(?:p\d+)?mmiso))_shift(\d+)_\d+_\d+\.nii\.gz"
 
 # List to store scan info for later plotting
 scans = []
 
-maskmax = 100000
+# Define rotation multiplier 
+rotMult = 3
+
+# Define mask max value for visualization
+maskmax = vmax_val
 
 # Define vmin and vmax
 vmin_val = 0
@@ -88,18 +92,19 @@ for fname in files:
     coronal_slice = mean_volume.shape[1] // 2
     axial_slice = mean_volume.shape[2] // 2
 
+
     # Sagittal view (slice along x-axis)
-    axes[0].imshow(np.rot90(mean_volume[sagittal_slice, :, :]), cmap='gray', origin='lower', vmin=vmin_val, vmax=vmax_val)
+    axes[0].imshow(np.rot90(mean_volume[sagittal_slice, :, :],k=rotMult), cmap='gray', origin='lower', vmin=vmin_val, vmax=vmax_val)
     axes[0].set_title("Sagittal View")
     axes[0].axis("off")
 
     # Coronal view (slice along y-axis)
-    axes[1].imshow(np.rot90(mean_volume[:, coronal_slice, :]), cmap='gray', origin='lower', vmin=vmin_val, vmax=vmax_val)
+    axes[1].imshow(np.rot90(mean_volume[:, coronal_slice, :],k=rotMult), cmap='gray', origin='lower', vmin=vmin_val, vmax=vmax_val)
     axes[1].set_title("Coronal View")
     axes[1].axis("off")
 
     # Axial view (slice along z-axis)
-    axes[2].imshow(np.rot90(mean_volume[:, :, axial_slice]), cmap='gray', origin='lower', vmin=vmin_val, vmax=vmax_val)
+    axes[2].imshow(np.rot90(mean_volume[:, :, axial_slice],k=rotMult), cmap='gray', origin='lower', vmin=vmin_val, vmax=vmax_val)
     axes[2].set_title("Axial View")
     axes[2].axis("off")
 
