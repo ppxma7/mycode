@@ -50,6 +50,9 @@
 %     [thisSub '_aveLeftHand_Cope5zstat_2highres.nii']};
 %%
 theseOverlays = {'rspmT_0001.nii',...
+    'rspmT_0002.nii',...
+    'rspmT_0003.nii',...
+    'rspmT_0004.nii',...
     'rspmT_0005.nii',...
     };
 
@@ -114,7 +117,7 @@ for ii = 1:length(theseFolders)
         %params.min_overlay = 3.09;
         params.min_overlay = 2;
         params.max_overlay = 10;
-        params.min_clip = 3.12;
+        params.min_clip = 2.3;
         %params.colormap = viridis(256);
         params.max_clip = 10;
         params.pathname = filename;
