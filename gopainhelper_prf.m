@@ -8,18 +8,19 @@ savedir = ['/Users/' userName '/The University of Nottingham/Pain Relief Grant -
 
 %%
 %subs = {'260821_prf_14359'};
-subs = {'15874_prf13', '210922_prf3','211004_prf6','211011_prf7','211207_prf10','211215_prf11','260821_prf_14359'};
+%subs = {'15874_prf13', '210922_prf3','211004_prf6','211011_prf7','211207_prf10','211215_prf11','260821_prf_14359'};
 
 %subs = {'260821_prf_14359', '211011_prf7'};
 
-
+subs = {'260821_prf_14359'};
 
 mypath = '/Volumes/arianthe/prf_smoothed_1p5mm/';
 cd(mypath)
 hemisphere = 'l';
 surface = 'inflated'; % or sphere!
 %subject = {'14359', '11251'};
-subject = {'15874','12778_psir_1mm','15435_psir_1mm','11251','15252_psir_1mm','11766','14359'};
+%subject = {'15874','12778_psir_1mm','15435_psir_1mm','11251','15252_psir_1mm','11766','14359'};
+subject = {'14359'};
 map = 'hsv';
 nchips = 256;
 mymin = 0.5;

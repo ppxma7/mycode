@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 
 # Define paths and parameters
-root_path = "/Users/spmic/data/gre_se_shifts_head_020425/magnitude/gre/"
+root_path = "/Users/spmic/data/gre_se_shifts_head_020425/magnitude/mmisc/se/"
 output_plot_path = os.path.join(root_path, "bar_chart_shifts.png")
 threshold = 5000  # Set your threshold value here
 
 # Get list of nii.gz files
-files = [f for f in os.listdir(root_path) if f.endswith('.nii.gz')]
+files = [f for f in os.listdir(root_path) if f.endswith('.nii')]
 
 # Updated pattern to match filenames like:
 # gre_se_shifts_020425_WIPMB2_GREEPI_S3_1p5mmiso_shift0_20250402092939_16.nii.gz
@@ -27,6 +27,10 @@ else:
     pattern = r"gre_se_shifts_head_020425_WIPMB(\d+)_GREEPI_S(\d+)_((?:\d+(?:p\d+)?mmiso))_shift(\d+)_\d+_\d+\.nii\.gz"
     vmax_val = 35000 #100000
     ymax = 1
+
+pattern = r"gre_se_shifts_head_020425_WIPMB(\d+)_SEEPI_S(\d+)_((?:\d+(?:p\d+)?mmiso))_shift(\d+)_\d+_\d+\.nii"
+vmax_val = 100000 #100000
+ymax = 1
 
 #pattern = r"gre_se_shifts_020425_WIPMB(\d+)_SEEPI_S(\d+)_((?:\d+(?:p\d+)?mmiso))_shift(\d+)_\d+_\d+\.nii\.gz"
 
