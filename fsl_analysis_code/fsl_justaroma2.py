@@ -4,31 +4,31 @@ import subprocess
 
 # Paths to input and output folders
 #rootFold = "/Volumes/hermes/canapi_051224/aroma_mni_space/"
-rootFold = "/Volumes/nemosine/canapi_sub03_180325/spm_analysis/"
+rootFold = "/Volumes/nemosine/canapi_sub04_280425/spm_analysis/"
 
-strucFold = "/Volumes/nemosine/canapi_sub03_180325/spm_analysis/structurals/"
+strucFold = "/Volumes/nemosine/canapi_sub04_280425/spm_analysis/structurals/"
 ica_aroma_path = "/Users/ppzma/Documents/MATLAB/ICA-AROMA/ICA_AROMA.py"  # Path to ICA-AROMA script
 
 brain_mask = os.path.join(rootFold, "mymask.nii")  # Optional brain mask
 #print(brain_mask)
 
-structural_image = os.path.join(strucFold, "sub03_mprage.nii")
+structural_image = os.path.join(strucFold, "sub04_mprage.nii")
 
 os.makedirs(rootFold, exist_ok=True)
 
 # Input files and corresponding motion parameter files
 input_files = [
-    "rwrcanapi_sub03_180325_WIP1bar_TAP_R_20250318163243_8_nordic_clv.nii",
-    "rwrcanapi_sub03_180325_WIPlow_TAP_R_20250318163243_9_nordic_clv.nii",
-    "rwrcanapi_sub03_180325_WIP1bar_TAP_L_20250318163243_10_nordic_clv.nii",
-    "rwrcanapi_sub03_180325_WIPlow_TAP_L_20250318163243_11_nordic_clv.nii"
+    "rwrparrec_WIP1bar_TAP_R_20250428095438_4_nordic_clv.nii",
+    "rwrparrec_WIPlow_TAP_R_20250428095438_5_nordic_clv.nii",
+    "rwrparrec_WIP1bar_TAP_L_20250428095438_6_nordic_clv.nii",
+    "rwrparrec_WIPlow_TAP_L_20250428095438_7_nordic_clv.nii"
 ]
 
 motion_files = [
-    "rp_canapi_sub03_180325_WIP1bar_TAP_R_20250318163243_8_nordic_clv.txt",
-    "rp_canapi_sub03_180325_WIPlow_TAP_R_20250318163243_9_nordic_clv.txt",
-    "rp_canapi_sub03_180325_WIP1bar_TAP_L_20250318163243_10_nordic_clv.txt",
-    "rp_canapi_sub03_180325_WIPlow_TAP_L_20250318163243_11_nordic_clv.txt"
+    "rp_parrec_WIP1bar_TAP_R_20250428095438_4_nordic_clv.txt",
+    "rp_parrec_WIPlow_TAP_R_20250428095438_5_nordic_clv.txt",
+    "rp_parrec_WIP1bar_TAP_L_20250428095438_6_nordic_clv.txt",
+    "rp_parrec_WIPlow_TAP_L_20250428095438_7_nordic_clv.txt"
 ]
 
 # input_files = [

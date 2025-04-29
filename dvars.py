@@ -15,19 +15,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Define the parent folder where the subject folders and pre-denoising file reside.
-parent_path = "/Volumes/nemosine/canapi_sub02_180325/spm_analysis"
+parent_path = "/Volumes/nemosine/canapi_sub04_280425/spm_analysis"
 
 # List of subject folder names (exactly as they appear in the parent folder)
+subjects = [
+    "rwrparrec_WIP1bar_TAP_R_20250428095438_4_nordic_clv", 
+    "rwrparrec_WIPlow_TAP_R_20250428095438_5_nordic_clv", 
+    "rwrparrec_WIP1bar_TAP_L_20250428095438_6_nordic_clv", 
+    "rwrparrec_WIPlow_TAP_L_20250428095438_7_nordic_clv"
+]
+
 # subjects = [
 #     "rwrcanapi_sub02_180325_WIP1bar_TAP_R_20250318153536_6_nordic_clv", 
-#     "rwrcanapi_sub02_180325_WIPlow_TAP_R_20250318153536_7_nordic_clv", 
-#     "rwrcanapi_sub02_180325_WIP1bar_TAP_L_20250318153536_8_nordic_clv", 
-#     "rwrcanapi_sub02_180325_WIPlow_TAP_L_20250318153536_9_nordic_clv"
 # ]
-
-subjects = [
-    "rwrcanapi_sub02_180325_WIP1bar_TAP_R_20250318153536_6_nordic_clv", 
-]
 
 for subj in subjects:
     print(f"\nProcessing subject: {subj}")

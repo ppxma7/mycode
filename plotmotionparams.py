@@ -6,7 +6,8 @@ import os
 #input_folder = "/Volumes/nemosine/CANAPI_210125/spmanalysis/"  # Replace with your input folder path
 #input_folder = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_030225/'
 #input_folder = '/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/spm_check_motion/'
-input_folder = '/Users/spmic/data/canapi_sub03_180325/spm_analysis/'
+#input_folder = '/Users/spmic/data/canapi_sub03_180325/spm_analysis/'
+input_folder = '/Volumes/nemosine/canapi_sub04_280425/spm_analysis/'
 output_folder = os.path.join(input_folder, "motion_plots")  # Output folder for saving plots
 os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exist
 
@@ -19,10 +20,10 @@ os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exi
 # ]
 
 input_files = [
-    "rp_canapi_sub03_180325_WIPlow_TAP_R_20250318163243_9_nordic_clv",
-    "rp_canapi_sub03_180325_WIP1bar_TAP_L_20250318163243_10_nordic_clv",
-    "rp_canapi_sub03_180325_WIP1bar_TAP_R_20250318163243_8_nordic_clv",
-    "rp_canapi_sub03_180325_WIPlow_TAP_L_20250318163243_11_nordic_clv"
+    "rp_parrec_WIP1bar_TAP_R_20250428095438_4_nordic_clv",
+    "rp_parrec_WIPlow_TAP_R_20250428095438_5_nordic_clv",
+    "rp_parrec_WIP1bar_TAP_L_20250428095438_6_nordic_clv",
+    "rp_parrec_WIPlow_TAP_L_20250428095438_7_nordic_clv"
 ]
 
 # Loop through each file
