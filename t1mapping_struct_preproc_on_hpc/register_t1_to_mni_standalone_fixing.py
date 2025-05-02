@@ -5,9 +5,13 @@ import argparse
 
 # FSL and MNI paths
 #FSLDIR = "/usr/local/fsl/"  # Update if needed
-FSLDIR = "/Users/spmic/fsl/"
+# FSLDIR = "/Users/spmic/fsl/"
+# MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_1mm.nii.gz"  # 1mm version
+# MY_CONFIG_DIR = "/Users/spmic/data/"  # Update if needed
+
+FSLDIR = "/usr/local/fsl/"
 MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_1mm.nii.gz"  # 1mm version
-MY_CONFIG_DIR = "/Users/spmic/data/"  # Update if needed
+MY_CONFIG_DIR = "/Users/ppzma/data/"  # Update if needed
 
 # Define paths
 #FSLDIR = "/software/imaging/fsl/6.0.6.3"
