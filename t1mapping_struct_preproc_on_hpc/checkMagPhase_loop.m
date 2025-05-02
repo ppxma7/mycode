@@ -18,7 +18,7 @@ for ii = 1:length(folderNames)
 
     
 
-    thisFile = dir(fullfile(folderPath,'*01.nii.gz'));
+    thisFile = dir(fullfile(folderPath,'*01.nii'));
 
    
         

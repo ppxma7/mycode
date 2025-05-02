@@ -31,7 +31,7 @@ cd(mypath)
 
 magData = fullfile(mypath,magData);
 
-phData = [extractBefore(magData,'.') '_ph.nii.gz'];
+phData = [extractBefore(magData,'.') '_ph.nii'];
 
 %edges = 128;
 % if strcmpi(magData(end-2:end),'.gz')

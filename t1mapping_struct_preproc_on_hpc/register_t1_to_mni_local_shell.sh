@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Directory
-DATA_DIR="/Volumes/nemosine/NEXPO/inputs"  # Change to your actual data path
-OUTPUT_DIR="/Volumes/nemosine/NEXPO/t1mapping_out/"
+DATA_DIR="/Users/spmic/data/NEXPO/inputs"  # Change to your actual data path
+OUTPUT_DIR="/Users/spmic/data/NEXPO/t1mapping_out/"
 
 # List of subjects (update as necessary)
 # SUBJECT=("16469-002A" "16500-002B" "16501-002b" \
@@ -23,8 +23,8 @@ OUTPUT_DIR="/Volumes/nemosine/NEXPO/t1mapping_out/"
 # completed ("10760_130" "16044_002" "16043_002" "15721_009" "12967_004" )
 #16788_002
 
-SUBJECT=("16788_002" "16986_002")
-
+SUBJECT=("09849" "10469" "12294" "13676" "14342_003" "16279" "16517" "16544" "16569_002" "16911" \
+    "17076_002" "17080_002" "17930_002" "18031_002" "18038_002" "18076_002" "18094_002")
 
 # Loop through each subject
 for subject in "${SUBJECT[@]}"; do

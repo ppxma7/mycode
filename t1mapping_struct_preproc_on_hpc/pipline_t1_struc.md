@@ -10,7 +10,7 @@
 - Bring everything back locally
 - Check registration locally using `register_t1_to_mni_local_shell.sh`. This calls `register_t1_to_mni_standalone_fixing.py`.
 - Now get read CSV / plot
-- Run `fs_stats.py`
+- Run `fs_stats.py` (twice for l and r)
 - Then you will need to run `mergecsv.py` to stick csvs together from different groups (AFIRM, SASHB etc)
 - `fs_stats_allsubs.py` will plot
 - Do the same for T1 mapping
