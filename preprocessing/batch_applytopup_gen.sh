@@ -21,9 +21,11 @@ mydata="topup/"
 #     parrec_FAST_rsfMRI_TOPUP_20221117112738_23.nii
 #     parrec_thermode_TOPUP_20221117112738_11.nii
 #     parrec_thermode_TOPUP_20221117112738_26.nii"
-myscans=("digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_11_nordic_clv" \
-	"digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_12_nordic_clv")
+# myscans=("digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_11_nordic_clv" \
+# 	"digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_12_nordic_clv")
 
+myscans=("digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_12_nordic_clv" \
+	"digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_11_nordic_clv")
 
 
 
@@ -65,13 +67,14 @@ done
 for sub in $mysub
 do
 	echo $sub
-	for scan in $myscans
-	do
-
-		echo $scan
-		echo "Applying those topups..."
+	for scan in "${myscans[@]}"; do
+		echo "  Processing scan: $scan"
+		echo "  Applying topup..."
 		cd ${mypath}/$sub/${mydata}/
-		sh /Users/ppzma/Documents/MATLAB/nottingham/fMRI_preproc/applytoppedup.sh ${mypath}/$sub/${mydata}/ ${mypath}/$sub/${mydata}/$scan ${mypath}/$sub/${mydata}/${mergescan}_merged
+		sh /Users/ppzma/Documents/MATLAB/nottingham/fMRI_preproc/applytoppedup.sh \
+			${mypath}/$sub/${mydata}/ \
+			${mypath}/$sub/${mydata}/$scan \
+			${mypath}/$sub/${mydata}/${mergescan}_merged
 
 	done
 
