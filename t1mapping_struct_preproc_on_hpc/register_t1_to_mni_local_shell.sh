@@ -53,6 +53,8 @@ SUBJECT=(
     "17765_002" "17769_002" "17930_002" "18031_002" "18038_002" "18076_002" "18094_002"
 )
 
+SUBJECT=("17207_003")
+
 # Loop through each subject
 for subject in "${SUBJECT[@]}"; do
     #python3 /gpfs01/home/ppzma/code/register_t1_to_mni_standalone.py -d "$DATA_DIR" -o "$OUTPUT_DIR" -s "$subject"
