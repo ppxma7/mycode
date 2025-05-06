@@ -7,8 +7,8 @@ clc
 %dirname = '/Volumes/hermes/tgi_sub_05_15874_230622/';
 %
 %dirname = '/Volumes/nemosine/postDUST_QUAD_SEEPI_MBSHIFTS_2mm/';
-dirname = '/Users/spmic/data/postDUST_QUAD_SEEPI_MBSHIFTS_2mm/';
-
+%dirname = '/Users/spmic/data/postDUST_QUAD_SEEPI_MBSHIFTS_2mm/';
+dirname = '/Volumes/nemosine/digitmap_14359_020525/';
 % files ={
 %     'canapi_sub02_180325_WIPlow_TAP_R_20250318153536_7.nii.gz',...
 %     'canapi_sub02_180325_WIP1bar_TAP_R_20250318153536_6.nii.gz',...
@@ -16,7 +16,8 @@ dirname = '/Users/spmic/data/postDUST_QUAD_SEEPI_MBSHIFTS_2mm/';
 %     'canapi_sub02_180325_WIP1bar_TAP_L_20250318153536_8.nii.gz',...
 %     };
 
-files = {'postDUST_QUAD_SEEPI_MBSHIFTS_2mm_WIPMB2_SEEPI_S2_2mmiso_shift_default_20250328103153_18.nii.gz'}
+files = {'digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_11.nii.gz',...
+    'digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_12.nii.gz'};
 
 % files ={
 %     'postDUST_QUAD_SEEPI_MBSHIFTS_2mm_WIPMB2_SEEPI_S2_2mmiso_shift_default_20250328103153_18.nii.gz',...

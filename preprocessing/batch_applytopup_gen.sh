@@ -2,9 +2,9 @@
 
 echo "Hey, you. You're finally awake..."
 
-mypath="/Volumes/ares"
-mysub="pain_07_15874_230213"
-mydata="topup/topup_rs_2"
+mypath="/Volumes/nemosine/"
+mysub="digitmap_14359_020525"
+mydata="topup/"
 # myscans="parrec_FAST_rsfMRI_20221117112738_6_nordic.nii
 #     parrec_FAST_rsfMRI_20221117112738_7_nordic.nii
 #     parrec_FAST_rsfMRI_20221117112738_22_nordic.nii
@@ -21,7 +21,10 @@ mydata="topup/topup_rs_2"
 #     parrec_FAST_rsfMRI_TOPUP_20221117112738_23.nii
 #     parrec_thermode_TOPUP_20221117112738_11.nii
 #     parrec_thermode_TOPUP_20221117112738_26.nii"
-myscans="parrec_FAST_rsfMRI_20230213101502_23_nordic_clv"
+myscans=("digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_11_nordic_clv" \
+	"digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_12_nordic_clv")
+
+
 
 
 # myscans="parrec_thermode_block1_20221117112738_9_nordic_clv
@@ -42,14 +45,20 @@ myscans="parrec_FAST_rsfMRI_20230213101502_23_nordic_clv"
 # tgi_sub_04_12778_221124_WIPTGI1_20221124145248_4_nordic_clv
 # tgi_sub_04_12778_221124_WIPTGI2_20221124145248_5_nordic_clv"
 
-topupscan="parrec_FAST_rsfMRI_TOPUP_20230213101502_24_clv"
-mergescan="parrec_FAST_rsfMRI_20230213101502_23_nordic_clv"
+topupscan="digitmap_14359_020525_WIPTOPUP_A_20250502152646_13_clv"
+mergescan="digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_11_nordic_clv"
+
+numDyn=5
 
 for sub in $mysub
 do
 	echo "Running toppedup first..."
 	cd ${mypath}/$sub/${mydata}/
-	sh /Users/ppzma/Documents/MATLAB/nottingham/bin/toppedup.sh ${mypath}/$sub/${mydata}/ ${mypath}/$sub/${mydata}/$mergescan ${mypath}/$sub/${mydata}/$topupscan
+	sh /Users/ppzma/Documents/MATLAB/nottingham/fMRI_preproc/toppedup.sh \
+		${mypath}/$sub/${mydata}/ \
+		${mypath}/$sub/${mydata}/$mergescan \
+		${mypath}/$sub/${mydata}/$topupscan \
+		$numDyn
 done
 
 
@@ -62,7 +71,7 @@ do
 		echo $scan
 		echo "Applying those topups..."
 		cd ${mypath}/$sub/${mydata}/
-		sh /Users/ppzma/Documents/MATLAB/nottingham/bin/applytoppedup.sh ${mypath}/$sub/${mydata}/ ${mypath}/$sub/${mydata}/$scan ${mypath}/$sub/${mydata}/${mergescan}_merged
+		sh /Users/ppzma/Documents/MATLAB/nottingham/fMRI_preproc/applytoppedup.sh ${mypath}/$sub/${mydata}/ ${mypath}/$sub/${mydata}/$scan ${mypath}/$sub/${mydata}/${mergescan}_merged
 
 	done
 
