@@ -11,7 +11,7 @@ from itertools import combinations  # For pairwise comparisons
 
 # Read CSV data
 root_folder = '/Users/spmic/data/san/'  # Replace with your file path
-hemisphere = 'l'
+hemisphere = 'r'
 file_path = os.path.join(root_folder,f'freesurfer_stats_{hemisphere}_combined.csv')
 whichCol = 'gmv'
 save_dir = os.path.join('/Users/spmic/data/san/plotdir/', whichCol)
