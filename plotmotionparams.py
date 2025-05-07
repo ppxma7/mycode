@@ -7,7 +7,9 @@ import os
 #input_folder = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_030225/'
 #input_folder = '/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/spm_check_motion/'
 #input_folder = '/Users/spmic/data/canapi_sub03_180325/spm_analysis/'
-input_folder = '/Volumes/nemosine/canapi_sub04_280425/spm_analysis/'
+#input_folder = '/Volumes/nemosine/canapi_sub04_280425/spm_analysis/'
+input_folder = '/Volumes/nemosine/digitmap_14359_020525/spmanalysis/'
+
 output_folder = os.path.join(input_folder, "motion_plots")  # Output folder for saving plots
 os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exist
 
@@ -20,11 +22,10 @@ os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exi
 # ]
 
 input_files = [
-    "rp_parrec_WIP1bar_TAP_R_20250428095438_4_nordic_clv",
-    "rp_parrec_WIPlow_TAP_R_20250428095438_5_nordic_clv",
-    "rp_parrec_WIP1bar_TAP_L_20250428095438_6_nordic_clv",
-    "rp_parrec_WIPlow_TAP_L_20250428095438_7_nordic_clv"
+    "rp_digitmap_14359_020525_FWD_11_nordic_clv_toppedup",
+    "rp_digitmap_14359_020525_REV_12_nordic_clv_toppedup"
 ]
+
 
 # Loop through each file
 for file in input_files:
@@ -40,11 +41,14 @@ for file in input_files:
 
     lower_limit = -2
     upper_limit = 2
-
+    tr = 2
     # Convert times in seconds to dynamics
     #timepoints_seconds = [21, 51, 81, 111, 141] #PUSH
-    timepoints_seconds = [21, 61, 101, 141, 181, 221, 261, 301, 341, 381] #TAP
-    timepoints_dynamics = [int(t / 1.5) for t in timepoints_seconds]
+    #timepoints_seconds = [21, 61, 101, 141, 181, 221, 261, 301, 341, 381] #TAP
+
+    timepoints_seconds = [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220] #TW
+
+    timepoints_dynamics = [int(t / tr) for t in timepoints_seconds]
 
     # Plot translations and rotations
     fig, axes = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
