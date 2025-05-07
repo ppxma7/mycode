@@ -46,9 +46,6 @@ jitter_strength = 0.1
 for _, row in df.iterrows():
     region_index = np.where(regions == row["Region"])[0][0]  # Get x position
     group_offset = list(groups).index(row["Group"]) * bar_width  # Offset for groups
-    #jitter = np.random.uniform(-jitter_strength, jitter_strength)  # Add jitter
-    #plt.scatter(row["Mean"], region_index + group_offset + jitter, 
-    #            color=group_colors[row["Group"]], alpha=0.6, edgecolors="black")
     plt.scatter(row["Mean"], region_index + group_offset, 
                 color=group_colors[row["Group"]], alpha=0.6, edgecolors="black")
 

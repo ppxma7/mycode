@@ -5,17 +5,17 @@ import pandas as pd
 root_dir = "/Users/spmic/data"
 out_dir = "/Users/spmic/data/san"
 
-hemisphere = "l"
-sashb_file = os.path.join(root_dir, "SASHB", f"freesurfer_stats_{hemisphere}_SASHB.csv")
-afirm_file = os.path.join(root_dir, "AFIRM", f"freesurfer_stats_{hemisphere}_AFIRM.csv")
-nexpo_file = os.path.join(root_dir, "NEXPO", f"freesurfer_stats_{hemisphere}_NEXPO.csv")
-combined_csv_path = os.path.join(out_dir, f"freesurfer_stats_{hemisphere}_combined.csv")
+# hemisphere = "l"
+# sashb_file = os.path.join(root_dir, "SASHB", f"freesurfer_stats_{hemisphere}_SASHB.csv")
+# afirm_file = os.path.join(root_dir, "AFIRM", f"freesurfer_stats_{hemisphere}_AFIRM.csv")
+# nexpo_file = os.path.join(root_dir, "NEXPO", f"freesurfer_stats_{hemisphere}_NEXPO.csv")
+# combined_csv_path = os.path.join(out_dir, f"freesurfer_stats_{hemisphere}_combined.csv")
 
-# hemisphere = "R"
-# sashb_file = os.path.join(root_dir, "SASHB", f"t1_stats_destrieux_SASHB_{hemisphere}.csv")
-# afirm_file = os.path.join(root_dir, "AFIRM", f"t1_stats_destrieux_AFIRM_{hemisphere}.csv")
-# nexpo_file = os.path.join(root_dir, "NEXPO", f"t1_stats_destrieux_NEXPO_{hemisphere}.csv")
-# combined_csv_path = os.path.join(out_dir, f"t1_stats_destrieux_combined_{hemisphere}.csv")
+hemisphere = "R"
+sashb_file = os.path.join(root_dir, "SASHB", f"t1_stats_destrieux_SASHB_{hemisphere}.csv")
+afirm_file = os.path.join(root_dir, "AFIRM", f"t1_stats_destrieux_AFIRM_{hemisphere}.csv")
+nexpo_file = os.path.join(root_dir, "NEXPO", f"t1_stats_destrieux_NEXPO_{hemisphere}.csv")
+combined_csv_path = os.path.join(out_dir, f"t1_stats_destrieux_combined_{hemisphere}.csv")
 
 # Load both CSV files
 df_sashb = pd.read_csv(sashb_file)

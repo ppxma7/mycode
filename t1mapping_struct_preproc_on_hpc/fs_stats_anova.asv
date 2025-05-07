@@ -62,7 +62,7 @@ for ii = 1:length(regions)
     region_name = regions{ii};
     disp(region_name)
 
-    %thisRegion = theTable.StructName(ii); % this region for this loop
+    thisRegion = theTable.StructName(ii); % this region for this loop
     %idxRegion = strcmpi(theTable.StructName,thisRegion); % get indices of each subject's region
 
     idxRegion = strcmpi(theTable.StructName, region_name);
