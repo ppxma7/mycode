@@ -4,8 +4,14 @@ import matplotlib.pyplot as plt
 import sys
 # Define root directory where all subject FreeSurfer stats files are stored
 group_name = "NEXPO"
-root_dir = os.path.join("/Users/spmic/data/",group_name,"outputs")
+#root_dir = os.path.join("/Users/spmic/data/",group_name,"outputs")
+
+# Where the output will be saved
 out_dir = os.path.join("/Users/spmic/data/",group_name)
+
+# Where the freesurfer folders are
+root_dir = "/Volumes/DRS-GBPerm/other/outputs/"
+
 #subjects = ["16469-002A", "16500-002B", "16501-002b", "16521-001b3", "16523_002b", "16602-002B", "16707-002A", "16708-03A"]  # Add more subjects here
 #subjects = ["16905_004", "16905_005", "17880001", "17880002"]
 subjects = [
@@ -40,11 +46,15 @@ subjects = [
 print(f"Number of subjects: {len(subjects)}")
 
 
-# Define the stats file relative path
-
+# Run this twice, change hemisphere to "r" for right hemisphere
+# hemisphere = "r"
+# hemisphere = "l"  # Left hemisphere
 hemisphere = "l"
 
-stats_filename = f"analysis/anatMRI/T1/processed/FreeSurfer/stats/{hemisphere}h.aparc.a2009s.stats"
+# Define the stats file relative path
+#stats_filename = f"analysis/anatMRI/T1/processed/FreeSurfer/stats/{hemisphere}h.aparc.a2009s.stats"
+
+stats_filename = f"stats/{hemisphere}h.aparc.a2009s.stats"
 
 # Initialize empty list to store DataFrames
 all_data = []

@@ -2,17 +2,22 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 
 # Define root directory and file path
-#group_name = "AFIRM"
+group_name = "NEXPO"
 #root_dir = "/Users/spmic/data/"
 #root_dir = os.path.join("/Users/spmic/data/",group_name)
 root_dir = "/Users/spmic/data/san"
 
 hemisphere = "l"
 
-fs_filename = os.path.join(root_dir, f"freesurfer_stats_{hemisphere}_combined.csv")
-#fs_filename = os.path.join(root_dir,"debugg.csv")
+#fs_filename = os.path.join(root_dir, f"freesurfer_stats_{hemisphere}_combined.csv")
+fs_filename = os.path.join(root_dir, f"freesurfer_stats_{hemisphere}_{group_name}.csv")
+
+print(fs_filename)
+
+#sys.exit(0)
 
 # Load FreeSurfer stats CSV
 df = pd.read_csv(fs_filename)
