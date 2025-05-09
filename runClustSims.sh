@@ -8,7 +8,7 @@ for meas in thickness volume; do
       dir="${hemi}.${meas}.${study}.${smoothness}.glmdir"
       mri_glmfit-sim \
         --glmdir "${dir}" \
-        --cache 3 abs \
+        --cache 3 pos \
         --cwp 0.05 \
         --2spaces
     done
