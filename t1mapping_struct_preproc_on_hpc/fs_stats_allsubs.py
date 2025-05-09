@@ -5,15 +5,15 @@ import numpy as np
 import sys
 
 # Define root directory and file path
-group_name = "NEXPO"
+#group_name = "NEXPO"
 #root_dir = "/Users/spmic/data/"
 #root_dir = os.path.join("/Users/spmic/data/",group_name)
 root_dir = "/Users/spmic/data/san"
 
-hemisphere = "l"
+hemisphere = "r"
 
-#fs_filename = os.path.join(root_dir, f"freesurfer_stats_{hemisphere}_combined.csv")
-fs_filename = os.path.join(root_dir, f"freesurfer_stats_{hemisphere}_{group_name}.csv")
+fs_filename = os.path.join(root_dir, f"freesurfer_stats_{hemisphere}_combined.csv")
+#fs_filename = os.path.join(root_dir, f"freesurfer_stats_{hemisphere}_{group_name}.csv")
 
 print(fs_filename)
 
@@ -95,8 +95,8 @@ ymin_thick, ymax_thick = 1.0, 5.0  # Thickness limits
 
 # Plot GMV
 plot_grouped_bars(df_gmv, "GrayVol", "Gray Matter Volume Across Brain Regions and Groups",
-                   f"GMV_region_comparison_{hemisphere}.png",ymin_gmv,ymax_gmv)
+                   f"GMV_region_comparison_{hemisphere}_dots.png",ymin_gmv,ymax_gmv)
 
 # Plot Cortical Thickness
 plot_grouped_bars(df_thickness, "ThickAvg", "Cortical Thickness Across Brain Regions and Groups",
-                   f"Cortical_Thickness_region_comparison_{hemisphere}.png", ymin_thick, ymax_thick)
+                   f"Cortical_Thickness_region_comparison_{hemisphere}_dots.png", ymin_thick, ymax_thick)

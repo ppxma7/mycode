@@ -39,7 +39,7 @@ subjects = [
     "17348_002", "17364_002", "17394_002", "17395_002", "17449_002", "17453_002", "17456_002", "17491_002",
     "17492_002", "17532_002", "17577_002", "17580_002", "17581_002", "17589_002", "17594_002", "17596_002",
     "17606_002", "17607_002", "17610_002", "17617_002", "17698_002", "17704_002", "17706_002", "17723_002",
-    "17765_002", "17769_002", "17930_002", "18031_002", "18038_002", "18076_002", "18094_002"
+    "17765_002", "17769_002", "17930_002", "18031_002", "18038_002", "18076_002", "18089_002", "18094_002"
 ]
 
 
@@ -49,7 +49,7 @@ print(f"Number of subjects: {len(subjects)}")
 # Run this twice, change hemisphere to "r" for right hemisphere
 # hemisphere = "r"
 # hemisphere = "l"  # Left hemisphere
-hemisphere = "l"
+hemisphere = "r"
 
 # Define the stats file relative path
 #stats_filename = f"analysis/anatMRI/T1/processed/FreeSurfer/stats/{hemisphere}h.aparc.a2009s.stats"

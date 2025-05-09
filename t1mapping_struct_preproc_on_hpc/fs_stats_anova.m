@@ -9,13 +9,13 @@ clc
 %cd(mypath)
 savedir = '/Users/spmic/data/san/';
 
-hemisphere = 'l';
+hemisphere = 'r';
 
 myFile = [savedir 'freesurfer_stats_' hemisphere '_combined.csv'];
 
 theTable = readtable(myFile);
 
-whichCol = 'gmv';
+whichCol = 'cth';
 plotdir = fullfile('/Users/spmic/data/san/plotdir/',whichCol);
 
 
