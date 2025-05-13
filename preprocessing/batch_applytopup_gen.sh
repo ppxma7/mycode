@@ -2,9 +2,12 @@
 
 echo "Hey, you. You're finally awake..."
 
+SECONDS=0  # Start timing
+
+
 mypath="/Volumes/nemosine/"
-mysub="digitmap_14359_020525"
-mydata="topup/"
+mysub="digitmap_14359_120525"
+mydata="topup/MB2S3/"
 # myscans="parrec_FAST_rsfMRI_20221117112738_6_nordic.nii
 #     parrec_FAST_rsfMRI_20221117112738_7_nordic.nii
 #     parrec_FAST_rsfMRI_20221117112738_22_nordic.nii
@@ -24,8 +27,8 @@ mydata="topup/"
 # myscans=("digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_11_nordic_clv" \
 # 	"digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_12_nordic_clv")
 
-myscans=("digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_12_nordic_clv" \
-	"digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_11_nordic_clv")
+myscans=("digitmap_14359_120525_WIPMB2_SENSE3_1p25_42slc_20250512141134_7_nordic" \
+	"digitmap_14359_120525_WIPMB2_SENSE3_1p25_42slc_20250512141134_9_nordic")
 
 
 
@@ -47,8 +50,9 @@ myscans=("digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_12_nordic
 # tgi_sub_04_12778_221124_WIPTGI1_20221124145248_4_nordic_clv
 # tgi_sub_04_12778_221124_WIPTGI2_20221124145248_5_nordic_clv"
 
-topupscan="digitmap_14359_020525_WIPTOPUP_A_20250502152646_13_clv"
-mergescan="digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_11_nordic_clv"
+mergescan="digitmap_14359_120525_WIPMB2_SENSE3_1p25_42slc_20250512141134_7_nordic"
+
+topupscan="digitmap_14359_120525_WIPMB2_SENSE3_1p25_42slc_topupA_20250512141134_10_clv"
 
 numDyn=5
 
@@ -81,6 +85,9 @@ do
 
 done
 echo "Task complete, shutting down..."
+
+duration=$SECONDS
+echo "Script ran for $(($duration / 60)) minutes and $(($duration % 60)) seconds."
 
 # cd ${mypath}${mydata}/
 

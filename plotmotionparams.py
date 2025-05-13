@@ -8,7 +8,7 @@ import os
 #input_folder = '/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/spm_check_motion/'
 #input_folder = '/Users/spmic/data/canapi_sub03_180325/spm_analysis/'
 #input_folder = '/Volumes/nemosine/canapi_sub04_280425/spm_analysis/'
-input_folder = '/Volumes/nemosine/digitmap_14359_020525/spmanalysis/'
+input_folder = '/Volumes/nemosine/digitmap_14359_120525/spm_analysis/'
 
 output_folder = os.path.join(input_folder, "motion_plots")  # Output folder for saving plots
 os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exist
@@ -22,8 +22,12 @@ os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exi
 # ]
 
 input_files = [
-    "rp_digitmap_14359_020525_FWD_11_nordic_clv_toppedup",
-    "rp_digitmap_14359_020525_REV_12_nordic_clv_toppedup"
+    "rp_digitmap_14359_120525_WIPMB2_SENSE3_1p25_42slc_20250512141134_7_nordic_toppedup_clv",
+    "rp_digitmap_14359_120525_WIPMB2_SENSE3_1p25_42slc_20250512141134_9_nordic_toppedup_clv",
+    "rp_digitmap_14359_120525_WIPMB2_SENSE1p8_HS0p8_1p25_32slc_20250512141134_15_nordic_toppedup_clv",
+    "rp_digitmap_14359_120525_WIPMB2_SENSE1p8_HS0p8_1p25_32slc_20250512141134_17_nordic_toppedup_clv",
+    "rp_digitmap_14359_120525_WIPMB2_SENSE2_HS0p9_1p25_32slc_20250512141134_19_nordic_toppedup_clv",
+    "rp_digitmap_14359_120525_WIPMB2_SENSE2_HS0p9_1p25_32slc_20250512141134_20_nordic_toppedup_clv"
 ]
 
 
