@@ -8,7 +8,7 @@ for hemi in lh rh; do
       # Start building the command
       cmd="mri_glmfit \
         --y ${hemi}.${meas}.${study}.${smoothness}.mgh \
-        --fsgd FSGD/${study}.fsgd \
+        --fsgd FSGD/${study}.fsgd doss \
         --surf fsaverage ${hemi} \
         --cortex"
 
