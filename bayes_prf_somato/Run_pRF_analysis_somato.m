@@ -37,7 +37,7 @@ load(fullfile(top_dir, stim_files{1}));  % Loads variable 'ApFrm'
 % Use your somato-specific preparation function. This function should take
 % the 4x4x96 ApFrm matrix and return a structure U with fields 'x' and 'y'
 % where x and y reflect the grid locations (e.g., with the center at 0,0)
-U = prepare_inputs_polar_samsrf_somato(ApFrm, TR, nmicrotime, stim_duration);
+U = prepare_inputs_somato(ApFrm, TR, nmicrotime, stim_duration);
 
 %% Step 1: Load Surface Geometry
 % This loads Srf with fields: Voxels, Vertices, etc.
@@ -87,11 +87,11 @@ SPM = SPM.SPM;
 SPM.swd = glm_dir;  % Update working directory
 
 % pRF specification options using your somatosensory model
-options = struct('TE', 0.055, ...        % Echo time (adjust as needed)
+options = struct('TE', 30, ...        % Echo time (adjust as needed)
                  'voxel_wise', true, ...
                  'name', [Srf.Hemisphere '_Somato_example'], ...
                  'model', 'spm_prf_fcn_gaussian_somato', ... % Use somato pRF model
-                 'B0', 3);
+                 'B0', 7);
 
 % Specify the pRF model. The output file will be saved in the GLM directory.
 PRF = spm_prf_analyse('specify', SPM, xY, U, options);
