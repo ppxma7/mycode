@@ -73,7 +73,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
     affine_t1_to_mprage = os.path.join(sub_dir, f"{subject}_T1_to_MPRAGE.mat")
 
     mprage_to_mni = os.path.join(sub_dir,f"{subject}_MPRAGE_to_MNI_linear.nii.gz")
-    affine_mprage_to_mni = os.path.join(sub_dir,f"{subject}_MPRAGE_to_MNI_linear.mat")
+    affine_mprage_to_mni = os.path.join(sub_dir,f"{subject}_MPRAGE_to_MNI.mat")
 
     mprage_to_mni_nonlin = os.path.join(sub_dir, f"{subject}_MPRAGE_to_MNI_nonlin.nii.gz")
     fnirt_coeff = os.path.join(sub_dir,f"{subject}_MPRAGE_to_MNI_nonlin_coeff.nii.gz")
@@ -89,7 +89,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
 
 
 
-    if not os.path.exists(t1_to_mprage):
+    if os.path.exists(t1_to_mprage):
         # Step 1: Register T1 to MPRAGE (native space)
         print("running T1 to native MPRAGE now")
         subprocess.run([
@@ -160,7 +160,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
     combined_affine = os.path.join(sub_dir, f"{subject}_T1_to_MNI_linear.mat")
     t1_to_mni_linear = os.path.join(sub_dir, f"{subject}_T1_to_MNI_linear_1mm.nii.gz")
 
-    if not os.path.exists(t1_to_mni_linear):
+    if os.path.exists(t1_to_mni_linear):
         print("combining T1→MPRAGE and MPRAGE→MNI affines…")
         # 1) build the single combined affine
         subprocess.run([
