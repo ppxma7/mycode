@@ -25,7 +25,8 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
 
     # Step 0: Perform Brain Extraction (BET)
     t1_raw = os.path.join(sub_dir, f"{subject}_T1.nii.gz")
-    t1_brain = os.path.join(sub_dir, f"{subject}_T1_brain.nii.gz")
+    #t1_brain = os.path.join(sub_dir, f"{subject}_T1_brain.nii.gz")
+    t1_brain = os.path.join(sub_dir, f"{subject}_T1_brain_flipx.nii.gz")
 
     print(f"{t1_raw}")
     
@@ -72,12 +73,20 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
     affine_t1_to_mprage = os.path.join(sub_dir, f"{subject}_T1_to_MPRAGE.mat")
 
     mprage_to_mni = os.path.join(sub_dir,f"{subject}_MPRAGE_to_MNI_linear.nii.gz")
-    affine_mprage_to_mni = os.path.join(sub_dir,f"{subject}_MPRAGE_to_MNI.mat")
+    affine_mprage_to_mni = os.path.join(sub_dir,f"{subject}_MPRAGE_to_MNI_linear.mat")
 
     mprage_to_mni_nonlin = os.path.join(sub_dir, f"{subject}_MPRAGE_to_MNI_nonlin.nii.gz")
     fnirt_coeff = os.path.join(sub_dir,f"{subject}_MPRAGE_to_MNI_nonlin_coeff.nii.gz")
 
     t1_mni_output = os.path.join(sub_dir,f"{subject}_T1_MNI_1mm.nii.gz")
+
+
+    print("mprage_brain =", mprage_brain)
+    print("t1_brain =", t1_brain)
+    print("MNI_TEMPLATE =", MNI_TEMPLATE)
+    print("mprage_to_mni =", mprage_to_mni)
+    #print("affine_mprage_to_mni =", affine_mprage_to_mni)
+
 
 
     if not os.path.exists(t1_to_mprage):
@@ -108,42 +117,43 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
             "-ref", MNI_TEMPLATE,
             "-omat", affine_mprage_to_mni,
             "-out", mprage_to_mni,
+            "-bins", "256",
             "-dof", "6",
             "-cost", "corratio",
             "-searchrx", "-90", "90",
             "-searchry", "-90", "90",
             "-searchrz", "-90", "90",
-            "-interp","spline"
+            "-interp", "trilinear"
         ], check=True)
         print(f"✅ {subject} FLIRT: MPRAGE map registered to MNI 1mm space.")
 
     # **Refine MPRAGE to MNI using FNIRT (nonlinear)**
-    if not os.path.exists(mprage_to_mni_nonlin):
-        print("running fnirt MPRAGE to MNI now")
-        subprocess.run([
-            f"{FSLDIR}/bin/fnirt",
-            f"--in={mprage_file}",
-            f"--ref={MNI_TEMPLATE}",
-            f"--aff={affine_mprage_to_mni}",
-            f"--config={MY_CONFIG_DIR}/config/bb_fnirt.cnf",
-            f"--cout={fnirt_coeff}",
-            f"--iout={mprage_to_mni_nonlin}",
-            f"--refmask={FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz",
-            "--interp=spline"
-        ], check=True)
-        print(f"✅ {subject} FNIRT: MPRAGE map registered to MNI 1mm space.")
+    # if not os.path.exists(mprage_to_mni_nonlin):
+    #     print("running fnirt MPRAGE to MNI now")
+    #     subprocess.run([
+    #         f"{FSLDIR}/bin/fnirt",
+    #         f"--in={mprage_file}",
+    #         f"--ref={MNI_TEMPLATE}",
+    #         f"--aff={affine_mprage_to_mni}",
+    #         f"--config={MY_CONFIG_DIR}/config/bb_fnirt.cnf",
+    #         f"--cout={fnirt_coeff}",
+    #         f"--iout={mprage_to_mni_nonlin}",
+    #         f"--refmask={FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz",
+    #         "--interp=spline"
+    #     ], check=True)
+    #     print(f"✅ {subject} FNIRT: MPRAGE map registered to MNI 1mm space.")
 
-    # **Apply the same transformation to the T1 map**
-    subprocess.run([
-        f"{FSLDIR}/bin/applywarp",
-        f"--in={t1_brain}",
-        f"--ref={MNI_TEMPLATE}",
-        f"--warp={fnirt_coeff}",
-        f"--premat={affine_t1_to_mprage}",
-        f"--out={t1_mni_output}",
-        "--interp=spline"
-    ], check=True)
-    print(f"✅ {subject} T1 map successfully registered to MNI 1mm space.")
+    #     # **Apply the same transformation to the T1 map**
+    #     subprocess.run([
+    #         f"{FSLDIR}/bin/applywarp",
+    #         f"--in={t1_brain}",
+    #         f"--ref={MNI_TEMPLATE}",
+    #         f"--warp={fnirt_coeff}",
+    #         f"--premat={affine_t1_to_mprage}",
+    #         f"--out={t1_mni_output}",
+    #         "--interp=spline"
+    #     ], check=True)
+    #     print(f"✅ {subject} T1 map successfully registered to MNI 1mm space.")
 
 
     # paths for your linear-T1→MNI outputs
