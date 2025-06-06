@@ -3,12 +3,12 @@ close all
 clear all
 clc
 
-savedir = '/Users/spmic/data/NEXPO/';
+savedir = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_plots/';
 
 hemisphere = 'R';
 whichCol = 't1';
 myFile = [savedir 't1_stats_destrieux_NEXPO_' hemisphere '_with_groups.csv'];
-plotdir = fullfile('/Users/spmic/data/NEXPO/anova_stats/');
+plotdir = fullfile(savedir,'anova_stats/');
 
 theTable = readtable(myFile);
 
