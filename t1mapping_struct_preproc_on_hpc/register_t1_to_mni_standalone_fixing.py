@@ -89,7 +89,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
 
 
 
-    if os.path.exists(t1_to_mprage):
+    if not os.path.exists(t1_to_mprage):
         # Step 1: Register T1 to MPRAGE (native space)
         print("running T1 to native MPRAGE now")
         subprocess.run([
@@ -98,11 +98,11 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
             "-ref", mprage_brain,
             "-omat", affine_t1_to_mprage,
             "-out", t1_to_mprage,
-            "-cost", "mutualinfo",  # Use MI instead of default corratio mutualinfo
+            "-cost", "normmi",  # Use MI instead of default corratio mutualinfo
             "-dof", "6",
-            "-searchrx", "0", "0",
-            "-searchry", "0", "0",
-            "-searchrz", "0", "0",
+            "-searchrx", "-90", "90",
+            "-searchry", "-90", "90",
+            "-searchrz", "-90", "90",
             "-usesqform"
         ], check=True)
         print(f"✅ {subject} FLIRT: T1 map registered to MPRAGE.")
@@ -127,6 +127,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
         ], check=True)
         print(f"✅ {subject} FLIRT: MPRAGE map registered to MNI 1mm space.")
 
+    # Just skip the FNIRT for now    
     # **Refine MPRAGE to MNI using FNIRT (nonlinear)**
     # if not os.path.exists(mprage_to_mni_nonlin):
     #     print("running fnirt MPRAGE to MNI now")
@@ -160,7 +161,9 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
     combined_affine = os.path.join(sub_dir, f"{subject}_T1_to_MNI_linear.mat")
     t1_to_mni_linear = os.path.join(sub_dir, f"{subject}_T1_to_MNI_linear_1mm.nii.gz")
 
-    if os.path.exists(t1_to_mni_linear):
+    ## Careful, this bit is applying both transforms to the raw T1 which is technically fine
+    ## but if we already have the t1 in mprage space, then dont need to use it right?
+    if not os.path.exists(t1_to_mni_linear):
         print("combining T1→MPRAGE and MPRAGE→MNI affines…")
         # 1) build the single combined affine
         subprocess.run([
@@ -183,6 +186,23 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
         ], check=True)
 
         print(f"✅ {subject} FLIRT: T1 map linearly registered to MNI 1mm space.")
+
+
+    # if not os.path.exists(t1_to_mni_linear):
+    #     print("Applying MPRAGE→MNI transform to T1 already in MPRAGE space...")
+        
+    #     subprocess.run([
+    #         f"{FSLDIR}/bin/flirt",
+    #         "-in", t1_to_mprage,  # Already resampled to MPRAGE space
+    #         "-ref", MNI_TEMPLATE,
+    #         "-applyxfm",
+    #         "-init", affine_mprage_to_mni,
+    #         "-out", t1_to_mni_linear,
+    #         "-interp", "spline"
+    #     ], check=True)
+
+    #     print(f"✅ {subject} T1 mapped to MNI using existing T1→MPRAGE resample and MPRAGE→MNI transform.")
+
 
 
 def main(data_dir, output_dir, subject):

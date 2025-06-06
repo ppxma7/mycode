@@ -13,7 +13,7 @@ os.makedirs(output_dir, exist_ok=True)
 
 # Load subject-to-group mapping
 df = pd.read_excel(group_file)
-#df = df.iloc[115:181]
+#df = df.iloc[150:192]
 #df = df.head(50) # just look at 50 subjects first
 
 df["Subject"] = df["Subject"].astype(str).str.strip()
@@ -50,8 +50,8 @@ cov_paths = {}
 
 # Compute mean/std for each group
 for group, imgs in group_images.items():
-    if group != 1:
-        continue
+    #if group != 1:
+    #    continue
 
 
     if not imgs:
