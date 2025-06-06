@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import nibabel as nib
+from matplotlib.cm import ScalarMappable
+from matplotlib.colors import Normalize
 
 def plot_slices_grid(img_data, slice_gap=10, vmax=None, cmap=None, save_path=None):
     """
@@ -51,6 +53,9 @@ def plot_slices_grid(img_data, slice_gap=10, vmax=None, cmap=None, save_path=Non
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(n_cols*3, n_rows*3))
     axes = axes.flatten()
 
+    # Use the first image as a reference for the colorbar
+    im = None  # Placeholder
+
     for i, sl in enumerate(selected_slices):
         ax = axes[i]
         slice_data = img_data[:, :, sl]
@@ -63,9 +68,17 @@ def plot_slices_grid(img_data, slice_gap=10, vmax=None, cmap=None, save_path=Non
         axes[j].axis('off')
 
 
-    
-    plt.tight_layout()
-    
+    fig.subplots_adjust(right=0.88)
+    cbar_ax = fig.add_axes([0.9, 0.15, 0.02, 0.7])
+
+    # Add colorbar — make sure it's outside the grid
+    norm = Normalize(vmin=0, vmax=vmax)
+    sm = ScalarMappable(norm=norm, cmap=cmap)
+    fig.colorbar(sm, cax=cbar_ax)
+
+    plt.tight_layout(rect=[0, 0, 0.88, 1])  # keep layout tight excluding colorbar area
+
+        
     if save_path:
         plt.savefig(save_path, dpi=300)
         print(f"✅ Saved slice grid figure to: {save_path}")
@@ -80,8 +93,8 @@ img_dir = "/Volumes/r15/DRS-GBPerm/other/t1mapping_out/group_averages_python"
 
 # Example: load all mean maps for groups 1 to 4
 group_nums = [1, 2, 3, 4]
-image_types = ["mean"]  # could be ['mean', 'std', 'median', 'iqr', 'cov']
-cmap = "viridis"
+image_types = ["std"]  # could be ['mean', 'std', 'median', 'iqr', 'cov']
+cmap = "inferno"
 
 # Build dictionary of group_name -> image data
 imgs_data = {}
@@ -102,5 +115,5 @@ out_dir = "/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUnivers
 for group_name, img_data in imgs_data.items():
     save_file = os.path.join(out_dir, f"{group_name}_slices.png")
     # Optional: set vmax so all plots have same color scale, e.g. 4000
-    plot_slices_grid(img_data, slice_gap=5, vmax=3500, cmap=cmap, save_path=save_file)
+    plot_slices_grid(img_data, slice_gap=5, vmax=3000, cmap=cmap, save_path=save_file)
 

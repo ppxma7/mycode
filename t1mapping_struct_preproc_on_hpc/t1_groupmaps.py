@@ -14,7 +14,7 @@ os.makedirs(output_dir, exist_ok=True)
 # Load subject-to-group mapping
 df = pd.read_excel(group_file)
 #df = df.iloc[150:192]
-#df = df.head(50) # just look at 50 subjects first
+#df = df.head(5) # just look at 50 subjects first
 
 df["Subject"] = df["Subject"].astype(str).str.strip()
 df["Group2"] = df["Group2"].astype(int)
@@ -22,6 +22,10 @@ df["Group2"] = df["Group2"].astype(int)
 # Dictionary to hold images per group
 group_images = {1: [], 2: [], 3: [], 4: []}
 template_img = None  # To hold header/affine info for saving
+
+# for later masking
+mask_img = nib.load("/usr/local/fsl/data/standard/MNI152_T1_1mm_brain_mask_dil.nii.gz")
+mask_data = mask_img.get_fdata().astype(bool)
 
 # Load each subject's T1 map
 for _, row in df.iterrows():
@@ -60,14 +64,21 @@ for group, imgs in group_images.items():
 
     stack = np.stack(imgs, axis=-1)  # Shape: (X, Y, Z, N)
     mean_img = np.mean(stack, axis=-1)
+
+    masked_mean = np.where(mask_data, mean_img, 0)
+
     # Threshold mean map: set values > 3000 to 0
-    #mean_img[mean_img > 3000] = 0
+    #mean_img[mean_img > 3500] = 0
 
     std_img = np.std(stack, axis=-1)
 
+    masked_std = np.where(mask_data, mean_img, 0)
+
+    #std_img[std_img > 3500] = 0
+
     # Save output
-    mean_nii = nib.Nifti1Image(mean_img, template_img.affine, template_img.header)
-    std_nii = nib.Nifti1Image(std_img, template_img.affine, template_img.header)
+    mean_nii = nib.Nifti1Image(masked_mean, template_img.affine, template_img.header)
+    std_nii = nib.Nifti1Image(masked_std, template_img.affine, template_img.header)
 
     mean_path = os.path.join(output_dir, f"group{group}_mean.nii.gz")
     std_path = os.path.join(output_dir, f"group{group}_std.nii.gz")
