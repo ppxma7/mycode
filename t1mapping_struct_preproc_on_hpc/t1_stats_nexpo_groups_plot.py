@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Define file paths
-root_dir = "/Users/spmic/data/NEXPO"
-hemisphere = "L"
+root_dir = "/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_plots"
+hemisphere = "R"
 fs_filename = os.path.join(root_dir, f"t1_stats_destrieux_NEXPO_{hemisphere}_with_groups.csv")
 
 # Load the data

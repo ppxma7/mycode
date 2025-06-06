@@ -2,7 +2,7 @@ import os
 import pandas as pd
 
 # Define paths
-root_dir = "/Users/spmic/data/NEXPO"
+root_dir = "/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_plots"
 hemisphere = "R"
 input_csv = os.path.join(root_dir, f"t1_stats_destrieux_NEXPO_{hemisphere}.csv")
 group_mapping_file = os.path.join(root_dir, "t1_groups_n196.xlsx")
