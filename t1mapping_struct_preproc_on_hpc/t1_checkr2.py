@@ -10,6 +10,7 @@ from scipy.stats import mode  # Add this at the top of your script
 root_dir = "/Volumes/DRS-GBPerm/other/t1mapping_out"
 out_dir = "/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_plots"
 group_name = "NEXPO"
+csv_path = os.path.join(out_dir, f"{group_name}_r2_qc_stats.csv")
 
 # Subject list
 
@@ -40,64 +41,102 @@ subjects = [
     "17723_002", "17765_002", "17769_002", "17930_002", "18031_002", "18038_002", "18076_002", "18094_002"
 ]
 
+#print(f"Number of subjects: {len(subjects)}")
 
 
-print(f"Number of subjects: {len(subjects)}")
+# === Load or compute ===
+if os.path.exists(csv_path):
+    print(f"📄 Found existing CSV: {csv_path}")
+    df = pd.read_csv(csv_path)
 
+
+else:
 # Prepare dataframe to hold stats
-stats_list = []
+    stats_list = []
 
-print(f"Number of subjects: {len(subjects)}")
+    print(f"Number of subjects: {len(subjects)}")
 
-for subject in subjects:
-    print(f"⏳ Processing {subject}")
-    r2_img_path = os.path.join(root_dir, subject, f"{subject}_R2.nii.gz")
+    for subject in subjects:
+        print(f"⏳ Processing {subject}")
+        r2_img_path = os.path.join(root_dir, subject, f"{subject}_R2.nii.gz")
 
-    if not os.path.exists(r2_img_path):
-        print(f"❌ File not found: {r2_img_path}")
-        continue
+        if not os.path.exists(r2_img_path):
+            print(f"❌ File not found: {r2_img_path}")
+            continue
 
-    # Load R2 map
-    r2_img = nib.load(r2_img_path)
-    r2_data = r2_img.get_fdata()
-    r2_data = r2_data[np.isfinite(r2_data)]  # Remove NaNs/Infs
+        # Load R2 map
+        r2_img = nib.load(r2_img_path)
+        r2_data = r2_img.get_fdata()
+        r2_data = r2_data[np.isfinite(r2_data)]  # Remove NaNs/Infs
 
-    if r2_data.size == 0:
-        print(f"⚠️ No valid R2 values in {subject}")
-        continue
+        if r2_data.size == 0:
+            print(f"⚠️ No valid R2 values in {subject}")
+            continue
 
-    # Compute statistics
+        # Compute statistics
 
-    r2_nonzero = r2_data[r2_data > 0]
+        r2_nonzero = r2_data[r2_data > 0]
 
-    mode_val = mode(r2_nonzero, keepdims=False).mode
-    stats = {
-        "subject": subject,
-        "mean": np.mean(r2_nonzero),
-        "median": np.median(r2_nonzero),
-        "mode": mode_val,
-        "std": np.std(r2_nonzero),
-        "iqr": np.percentile(r2_nonzero, 75) - np.percentile(r2_nonzero, 25),
-        "min": np.min(r2_nonzero),
-        "max": np.max(r2_nonzero),
-        "n_voxels": len(r2_nonzero)
-    }
-    stats_list.append(stats)
+        mode_val = mode(r2_nonzero, keepdims=False).mode
+        stats = {
+            "subject": subject,
+            "mean": np.mean(r2_nonzero),
+            "median": np.median(r2_nonzero),
+            "mode": mode_val,
+            "std": np.std(r2_nonzero),
+            "iqr": np.percentile(r2_nonzero, 75) - np.percentile(r2_nonzero, 25),
+            "min": np.min(r2_nonzero),
+            "max": np.max(r2_nonzero),
+            "n_voxels": len(r2_nonzero)
+        }
+        stats_list.append(stats)
 
-# Save to CSV
-df = pd.DataFrame(stats_list)
-csv_path = os.path.join(out_dir, f"{group_name}_r2_qc_stats.csv")
-df.to_csv(csv_path, index=False)
-print(f"✅ Stats saved to: {csv_path}")
+    # Save to CSV
+    df = pd.DataFrame(stats_list)
+    df.to_csv(csv_path, index=False)
+    print(f"✅ Stats saved to: {csv_path}")
 
-# Plot distributions
+ # === Identify outliers ===
+Q1_med = df["median"].quantile(0.25)
+Q3_med = df["median"].quantile(0.75)
+IQR_med = Q3_med - Q1_med
+df["median_outlier"] = (df["median"] < (Q1_med - 1.5 * IQR_med)) | (df["median"] > (Q3_med + 1.5 * IQR_med))
+
+df["mode_outlier"] = False
+df_mode = df.dropna(subset=["mode"])
+df.loc[df_mode.index, "mode_z"] = (df_mode["mode"] - df_mode["mode"].mean()) / df_mode["mode"].std()
+df.loc[df_mode.index, "mode_outlier"] = df.loc[df_mode.index, "mode_z"].abs() > 2.5
+
+csv_path2 = os.path.join(out_dir, f"{group_name}_r2_qc_stats_outliers.csv")
+
+if os.path.exists(csv_path2):
+    print(f"📄 Found existing CSV: {csv_path2}")
+    df = pd.read_csv(csv_path2)
+else:   
+    print(f"📄 Saving outlier stats to: {csv_path2}")
+    df.to_csv(csv_path2, index=False)
+
+# Combine all outlier subjects
+outlier_subjects = df[df["median_outlier"] | df["mode_outlier"]]["subject"].unique()
+
+# Save to text file
+outlier_txt_path = os.path.join(out_dir, f"{group_name}_r2_outlier_subjects.txt")
+with open(outlier_txt_path, "w") as f:
+    for subj in outlier_subjects:
+        f.write(f"{subj}\n")
+
+print(f"📄 Outlier subject list saved to:\n{outlier_txt_path}")
+
 plt.figure(figsize=(12, 6))
-sns.boxplot(data=df[["mean", "median", "std", "iqr"]], palette="pastel")
-# Overlay individual points
-sns.stripplot(data=df[["mean", "median", "std", "iqr"]],
+
+# Add "mode" to the list of columns
+columns_to_plot = ["mean", "median", "mode", "std", "iqr"]
+
+sns.boxplot(data=df[columns_to_plot], palette="pastel")
+sns.stripplot(data=df[columns_to_plot],
               jitter=True, color='black', size=4, alpha=0.6)
 
-plt.title("R2 Distribution Statistics Across Subjects")
+plt.title("R2 Distribution Statistics Across Subjects (with Mode)")
 plt.ylabel("R2 Value")
 plt.grid(True)
 plt.tight_layout()
@@ -105,4 +144,3 @@ plt.tight_layout()
 plot_path = os.path.join(out_dir, f"{group_name}_r2_qc_plot.png")
 plt.savefig(plot_path)
 print(f"📊 Boxplot saved to: {plot_path}")
-#plt.show()
