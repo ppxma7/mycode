@@ -4,10 +4,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 root_dir = "/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_plots/anova_stats/"
-hemisphere = "L"
+hemisphere = "R"
 fs_filename = os.path.join(root_dir, f"mult_{hemisphere}_t1_tbldombig.xlsx")
 output_csv = os.path.join(root_dir, f"mult_{hemisphere}_t1_tbldombig_summary.csv")
-output_mat = os.path.join(root_dir, f"mult_{hemisphere}_t1_tbldombig_summary_mat.xlsx")
+output_mat = os.path.join(root_dir, f"mult_{hemisphere}_t1_tbldombig_summary_mat.csv")
 plot_filename = os.path.join(root_dir, f"mult_{hemisphere}_t1_tbldombig_summary_plot.png")
 
 df = pd.read_excel(fs_filename)
@@ -27,7 +27,7 @@ df['Direction'] = df['A-B'].apply(lambda x: '↑' if x > 0 else '↓')
 # Pivot to Region × Comparison with direction
 heatmap = df.pivot_table(index='Region', columns='Comparison', values='Direction', aggfunc='first')
 # Export to CSV or display
-heatmap.to_excel(output_mat)
+heatmap.to_csv(output_mat)
 
 
 # === Pivot table: Rows = Region, Columns = Comparison, Values = A-B ===
