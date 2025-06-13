@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-iter=6
+iter=5
 # --- USER EDIT THESE ---
 TSTAT="t1_rand_results_tstat${iter}.nii.gz"
 CORRP="t1_rand_results_tfce_corrp_tstat${iter}.nii.gz"
