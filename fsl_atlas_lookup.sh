@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-iter=5
+iter=2
 # --- USER EDIT THESE ---
 TSTAT="t1_rand_results_tstat${iter}.nii.gz"
 CORRP="t1_rand_results_tfce_corrp_tstat${iter}.nii.gz"
@@ -19,6 +19,10 @@ MASKED_STAT="masked_tstat${iter}.nii.gz"
 PEAKS="cluster_peaks_tstat${iter}.txt"
 OUTPUT="cluster_region_table_tstat${iter}.txt"
 
+OUTPUT_cluster="cluster_index_map${iter}.nii.gz"
+OUTPUT_cluster_max="cluster_max_map${iter}.nii.gz"
+
+
 echo "1) Thresholding corrp map at p<0.05 (corrp>0.95) → $MASK"
 fslmaths "$CORRP" -thr $P_THRESH -bin "$MASK"
 
@@ -27,7 +31,18 @@ fslmaths "$TSTAT" -mas "$MASK" "$MASKED_STAT"
 
 echo "3) Running cluster on masked stat map → peaks in $PEAKS"
 # threshold >0 picks up any non-zero voxel as cluster
-cluster --in="$MASKED_STAT" --thresh=0.0001 --olmax="$PEAKS" --mm
+#cluster --in="$MASKED_STAT" --thresh=0.0001 --olmax="$PEAKS" --mm
+
+cluster --in="$MASKED_STAT" \
+        --thresh=0.0001 \
+        --mm \
+        --olmax="$PEAKS" \
+        --peakdist=8 \
+        --minextent=10 \
+        --connectivity=6 \
+        --num=30 \
+        --oindex="$OUTPUT_cluster" \
+        --omax="$OUTPUT_cluster_max"
 
 # Write header
 printf 'Cluster\tPeakTFCE\tX\tY\tZ\tRegion\n' > "$OUTPUT"
@@ -43,14 +58,17 @@ tail -n +2 "$PEAKS" | while read -r CLUST STAT X Y Z; do
   echo "cortical atlas"
   # Try cortical atlas first
   RAW_OUTPUT=$(atlasquery -a "Harvard-Oxford Cortical Structural Atlas" -c "$COORD" 2>/dev/null)
-  REGION=$(echo "$RAW_OUTPUT" | sed -n 's/^.*<br>//p')
+  #REGION=$(echo "$RAW_OUTPUT" | sed -n 's/^.*<br>//p')
+  REGION=$(echo "$RAW_OUTPUT" | sed -n 's/^.*<br>//p' | tr -d '\n')
+
 
   # Check if the output says "No label found!" (case-insensitive, safe for various FSL versions)
   if [[ "$REGION" == *"No label found!"* ]]; then
     echo "subcortical atlas"
     # Try subcortical atlas
-    RAW_OUTPUT=$(atlasquery -a "Harvard-Oxford Subcortical Structural Atlas" -c "$COORD" 2>/dev/null)
-    REGION=$(echo "$RAW_OUTPUT" | sed -n 's/^.*<br>//p')
+    RAW_OUTPUT2=$(atlasquery -a "Harvard-Oxford Subcortical Structural Atlas" -c "$COORD" 2>/dev/null)
+    #REGION=$(echo "$RAW_OUTPUT" | sed -n 's/^.*<br>//p')
+    REGION=$(echo "$RAW_OUTPUT2" | sed -n 's/^.*<br>//p' | tr -d '\n')
   fi
 
   # Fallback if nothing useful
