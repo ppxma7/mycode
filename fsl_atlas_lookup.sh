@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-iter=2
+iter=6
 # --- USER EDIT THESE ---
 TSTAT="t1_rand_results_tstat${iter}.nii.gz"
 CORRP="t1_rand_results_tfce_corrp_tstat${iter}.nii.gz"
@@ -40,7 +40,7 @@ cluster --in="$MASKED_STAT" \
         --peakdist=8 \
         --minextent=10 \
         --connectivity=6 \
-        --num=30 \
+        --num=50 \
         --oindex="$OUTPUT_cluster" \
         --omax="$OUTPUT_cluster_max"
 
@@ -81,8 +81,26 @@ tail -n +2 "$PEAKS" | while read -r CLUST STAT X Y Z; do
     "$CLUST" "$STAT" "$X" "$Y" "$Z" "$REGION" >> "$OUTPUT"
 done
 
+# this is complicated code but it serves to delete repeats from the text file
+gawk -F'\t' '
+BEGIN {
+    IGNORECASE = 1
+}
+NR == 1 {
+    print; next
+}
+{
+    # Extract region name after percentage
+    match($6, /[0-9]+%[ ]*([^,]+)/, arr)
+    region = tolower(arr[1])
+    if (!(region in seen)) {
+        seen[region] = 1
+        print
+    }
+}' "$OUTPUT" > "${OUTPUT%.txt}_norepeats.txt"
+
+
 echo "Done! See $OUTPUT"
-
-
+echo "Done! See $OUTPUT"
 echo "Done! See $OUTPUT for cluster table."
 
