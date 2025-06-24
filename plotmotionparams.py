@@ -8,7 +8,7 @@ import os
 #input_folder = '/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/spm_check_motion/'
 #input_folder = '/Users/spmic/data/canapi_sub03_180325/spm_analysis/'
 #input_folder = '/Volumes/nemosine/canapi_sub04_280425/spm_analysis/'
-input_folder = '/Volumes/nemosine/digitmap_14359_120525/spm_analysis/'
+input_folder = '/Volumes/nemosine/caitlin_data/Map01/spmanalysis/'
 
 output_folder = os.path.join(input_folder, "motion_plots")  # Output folder for saving plots
 os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exist
@@ -22,12 +22,8 @@ os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exi
 # ]
 
 input_files = [
-    "rp_digitmap_14359_120525_WIPMB2_SENSE3_1p25_42slc_20250512141134_7_nordic_toppedup_clv",
-    "rp_digitmap_14359_120525_WIPMB2_SENSE3_1p25_42slc_20250512141134_9_nordic_toppedup_clv",
-    "rp_digitmap_14359_120525_WIPMB2_SENSE1p8_HS0p8_1p25_32slc_20250512141134_15_nordic_toppedup_clv",
-    "rp_digitmap_14359_120525_WIPMB2_SENSE1p8_HS0p8_1p25_32slc_20250512141134_17_nordic_toppedup_clv",
-    "rp_digitmap_14359_120525_WIPMB2_SENSE2_HS0p9_1p25_32slc_20250512141134_19_nordic_toppedup_clv",
-    "rp_digitmap_14359_120525_WIPMB2_SENSE2_HS0p9_1p25_32slc_20250512141134_20_nordic_toppedup_clv"
+    "rp_Map01_Motor_TW_fwd_20230607123527_18_nordic_NoNoise_toppedup_clv",
+    "rp_Map01_Motor_TW_rev_20230607123527_19_nordic_NoNoise_toppedup_clv",
 ]
 
 
@@ -50,7 +46,8 @@ for file in input_files:
     #timepoints_seconds = [21, 51, 81, 111, 141] #PUSH
     #timepoints_seconds = [21, 61, 101, 141, 181, 221, 261, 301, 341, 381] #TAP
 
-    timepoints_seconds = [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220] #TW
+    #timepoints_seconds = [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220] #TW
+    timepoints_seconds = [0, 16, 32, 48, 64, 80, 96, 112] #TW
 
     timepoints_dynamics = [int(t / tr) for t in timepoints_seconds]
 

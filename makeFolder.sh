@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Array of directories to be created
-dirs=("json" "magnitude" "phase" "parrec")
+dirs=("json" "magnitude" "phase" "parrec" "structurals" "DTI" "qa_outputs" "spm_analysis")
 
 # Create directories if they don't exist
 for dir in "${dirs[@]}"; do
@@ -19,7 +19,28 @@ else
     echo "No JSON files to move."
 fi
 
-# Move phase files (*_ph.nii.gz)
+# Move 
+if ls *MPRAGE*.nii.gz &>/dev/null; then
+    mv -i *MPRAGE*.nii.gz structurals/
+else
+    echo "No mprage files to move."
+fi
+
+# Move 
+if ls *FLAIR*.nii.gz &>/dev/null; then
+    mv -i *FLAIR*.nii.gz structurals/
+else
+    echo "No flair files to move."
+fi
+
+# Move 
+if ls *DTI*.nii.gz &>/dev/null; then
+    mv -i *DTI*.nii.gz DTI/
+else
+    echo "No dti files to move."
+fi
+
+# Move 
 if ls *_ph.nii.gz &>/dev/null; then
     mv -i *_ph.nii.gz phase/
 else

@@ -47,7 +47,7 @@ print(f"Number of subjects: {len(subjects)}")
 
 
 #sys.exit()
-hemisphere = "L"  # Change to "R" for right hemisphere analysis
+hemisphere = "R"  # Change to "R" for right hemisphere analysis
 
 
 # Initialize empty list to store DataFrames
