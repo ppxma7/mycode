@@ -7,24 +7,24 @@ import os
 #input_folder = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_030225/'
 #input_folder = '/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/spm_check_motion/'
 #input_folder = '/Users/spmic/data/canapi_sub03_180325/spm_analysis/'
-#input_folder = '/Volumes/nemosine/canapi_sub04_280425/spm_analysis/'
-input_folder = '/Volumes/nemosine/caitlin_data/Map01/spmanalysis/'
+input_folder = '/Volumes/nemosine/canapi_sub06_240625/spm_analysis/'
+#input_folder = '/Volumes/nemosine/caitlin_data/Map01/spmanalysis/'
 
 output_folder = os.path.join(input_folder, "motion_plots")  # Output folder for saving plots
 os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exist
 
 #List of input files
-# input_files = [
-#     "rp_canapi_sub02_180325_WIP1bar_TAP_R_20250318153536_6_nordic_clv",
-#     "rp_canapi_sub02_180325_WIPlow_TAP_R_20250318153536_7_nordic_clv",
-#     "rp_canapi_sub02_180325_WIP1bar_TAP_L_20250318153536_8_nordic_clv",
-#     "rp_canapi_sub02_180325_WIPlow_TAP_L_20250318153536_9_nordic_clv"
-# ]
-
 input_files = [
-    "rp_Map01_Motor_TW_fwd_20230607123527_18_nordic_NoNoise_toppedup_clv",
-    "rp_Map01_Motor_TW_rev_20230607123527_19_nordic_NoNoise_toppedup_clv",
+    "rp_canapi_sub06_240625_WIP1bar_TAP_L_20250624134205_6_nordic_clv",
+    "rp_canapi_sub06_240625_WIPlow_TAP_L_20250624134205_7_nordic_clv",
+    "rp_canapi_sub06_240625_WIP1bar_TAP_R_20250624134205_4_nordic_clv",
+    "rp_canapi_sub06_240625_WIPlow_TAP_R_20250624134205_5_nordic_clv"
 ]
+
+# input_files = [
+#     "rp_Map01_Motor_TW_fwd_20230607123527_18_nordic_NoNoise_toppedup_clv",
+#     "rp_Map01_Motor_TW_rev_20230607123527_19_nordic_NoNoise_toppedup_clv",
+# ]
 
 
 # Loop through each file
