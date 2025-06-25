@@ -9,10 +9,12 @@ import os
 #subfolders_to_search = ['scan1_vs_scan2', 'kiwi_vs_mtx','red_vs_green','red_vs_mtx']  # List the specific subfolders you want to search
 #subfolders_to_search = ['cttouch']  # List the specific subfolders you want to search
 #subfolders_to_search = ['lowpush','1barpush','lowtap','1bartap']
-root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Pain Relief Grant - General/PFP_results/figures_mar_25/'
+#root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Pain Relief Grant - General/PFP_results/figures_mar_25/'
 
-#subfolders_to_search = ['1bar_rvl','1bar_lvr']
-subfolders_to_search = ['hvw','wvh','hvw_antins','hvw_postins']
+
+root_folder_path = '/Volumes/nemosine/canapi_level2/'
+subfolders_to_search = ['1barR']
+#subfolders_to_search = ['hvw','wvh','hvw_antins','hvw_postins']
 
 
 # Create an empty DataFrame to store all data
