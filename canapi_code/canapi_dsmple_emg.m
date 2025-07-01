@@ -6,16 +6,24 @@
 close all
 clear variables
 clc
-dataset = 'canapi_sub06_240625';
-mypath='/Volumes/nemosine/canapi_sub06_240625/EMG/Export/';
+dataset = 'canapi_sub08_010725';
+mypath=['/Volumes/nemosine/' dataset '/EEG/Export/'];
 userName = char(java.lang.System.getProperty('user.name'));
-savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_240625/plots05/'];
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_010725/plots08/'];
 
-myfiles = {'CANAPI_sub06_LL_1bar_Rectify.dat','CANAPI_sub06_LL_15per_Rectify.dat',...
-    'CANAPI_sub06_RL_1bar2_Rectify.dat','CANAPI_sub06_RL_15per_Rectify.dat',...
+myfiles = {'CANAPI_sub08_RL_1bar2_Rectify.dat','CANAPI_sub08_RL_15per_Rectify.dat',...
+    'CANAPI_sub08_LL_1bar_Rectify.dat','CANAPI_sub08_LL_15per_Rectify.dat',...
     };
-markerFiles = {'CANAPI_sub06_LL_1bar_Rectify_marker.txt','CANAPI_sub06_LL_15per_Rectify_marker.txt',...
-    'CANAPI_sub06_RL_1bar2_Rectify_marker.txt','CANAPI_sub06_RL_15per_Rectify_marker.txt'};
+
+markerFiles = cell(1,4);
+for ii = 1:4
+    markerFiles{ii} = [extractBefore(myfiles{ii},'.') '_marker.txt'];
+end
+
+% 
+% 
+% markerFiles = {'CANAPI_sub08_RL_1bar2_Rectify_marker.txt','CANAPI_sub08_RL_15per_Rectify_marker.txt',...
+%     'CANAPI_sub08_LL_1bar_Rectify_marker.txt','CANAPI_sub08_LL_15per_Rectify_marker.txt'};
 
 Fs = 2500;
 num_channels = 2;
