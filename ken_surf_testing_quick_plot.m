@@ -3,13 +3,19 @@ close all
 clc
 
 subjectPath = '/Volumes/DRS-Touchmap/ma_ares_backup/TOUCH_REMAP/exp016/freesurfer/';
+%subjectPath = '/Volumes/r15/DRS-TOUCHMAP/ma_ares_backup/subs/';
 setenv('SUBJECTS_DIR',subjectPath);
 
 dataPath = '/Volumes/nemosine/ken/';
+%dataPath = '/Volumes/r15/DRS-TOUCHMAP/ma_ares_backup/nemosine/DigitAtlasv2/';
 
 subs = {'026',...
     '059'
     };
+
+
+%subs = {'14001'};
+
 
 % should be where your subject's digit data are
 %mypath = '/Users/spmic/data/ken_surf_testing/';
@@ -34,6 +40,8 @@ for iSub = 1:length(subs)
 
     for ii = 1:5
         thisFile = ['LD' num2str(ii) '_' subs{iSub} '.mgz'];
+        %thisFile = ['LD' num2str(ii) '.mgh'];
+        %theFile = MRIread(fullfile(dataPath, subs{iSub}, '2mm/', thisFile));
         theFile = MRIread(fullfile(dataPath, subs{iSub}, thisFile));
         data(:,ii) = theFile.vol(:);
 
@@ -66,15 +74,7 @@ for iSub = 1:length(subs)
         [~, max_inds(d)] = max(data_thresh(:, d));
     end
 
-    %data_single_col = mean(data,2);
 
-    % seqmap = [27,158,119;...
-    %     217,95,2;...
-    %     117,112,179;...
-    %     231,41,138;...
-    %     102,166,30];
-    % seqmap = seqmap/255;
-    %
     close all
     figure
     go_paint_freesurfer(data_single_col,...
@@ -121,14 +121,17 @@ for iSub = 1:length(subs)
     print(fullfile(savedir, [subs{iSub} '_LD_digits_bin']), '-dpdf', '-r600')
     print(fullfile(savedir, [subs{iSub} '_LD_digits_bin']), '-dpng', '-r600')
 
+    figure
+    go_paint_freesurfer(data_labels,...
+        subs{iSub},'r','range',...
+        [0.1 5], 'cbar','colormap',seqmap,'nchips',5,'customcmap','warp')
+    camzoom(zf)
+
+    print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_warped']), '-dpdf', '-r600')
+    print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_warped']), '-dpng', '-r600')
+
 
 end
-
-
-
-
-
-
 
 
 
