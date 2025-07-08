@@ -1,7 +1,12 @@
-magData = 'fMRI_somato_pilot3_WIPFLASH_MB0_74slc_CS4_20250529142302_13.nii';
-phData = 'fMRI_somato_pilot3_WIPFLASH_MB0_74slc_CS4_20250529142302_13_ph.nii';
-json_name = 'fMRI_somato_pilot3_WIPFLASH_MB0_74slc_CS4_20250529142302_13.json';
-json_ph_name = 'fMRI_somato_pilot3_WIPFLASH_MB0_74slc_CS4_20250529142302_13_ph.json';
+close all
+clear variables
+clc
+
+mypath = '/Volumes/nemosine/fMRI_airstim_pilot01_080725/veinmasking';
+magData = fullfile(mypath,'fMRI_airstim_pilot01_080725_WIPFLASH_MB0_74slc_CS4_20250708095430_13.nii');
+phData = fullfile(mypath, 'fMRI_airstim_pilot01_080725_WIPFLASH_MB0_74slc_CS4_20250708095430_13_ph.nii');
+json_name = [extractBefore(magData,'.') '.json'];
+json_ph_name = [extractBefore(phData,'.') '.json'];
 
 
 json = jsondecode(fileread(json_name));
@@ -77,8 +82,8 @@ disp(min(ph_data_d_div(:)));
 disp(max(ph_data_d_div(:)));
 
  
-outname_ph = 'flash_fixed_ph';
-outname = 'flash_fixed';
+outname_ph = fullfile(mypath, 'flash_fixed_ph');
+outname = fullfile(mypath,'flash_fixed');
 
 %% saving
 info_mag = make_nii(mag_data_d_div);
@@ -90,6 +95,15 @@ info_ph = make_nii(ph_data_d_div);
 info_ph.hdr.hist = magDataFile.hdr.hist;
 info_ph.hdr.hist.originator = [0 0 0 0 0 ];
 save_nii(info_ph,outname_ph)
+
+%%
+n = 5;
+pause(n)
+thecommand = ['fslchfiletype NIFTI ' outname];
+unix(thecommand);
+thecommand2 = ['fslchfiletype NIFTI ' outname_ph];
+unix(thecommand2);
+
 
 
 

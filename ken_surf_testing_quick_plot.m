@@ -12,6 +12,7 @@ dataPath = '/Volumes/nemosine/ken/';
 subs = {'026',...
     '059'
     };
+subs = {'026'};
 
 
 %subs = {'14001'};
