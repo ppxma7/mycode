@@ -1,7 +1,7 @@
 clear all
 close all
 clc
-
+whichMac = char(java.lang.System.getProperty('user.name'));
 subjectPath = '/Volumes/DRS-Touchmap/ma_ares_backup/TOUCH_REMAP/exp016/freesurfer/';
 %subjectPath = '/Volumes/r15/DRS-TOUCHMAP/ma_ares_backup/subs/';
 setenv('SUBJECTS_DIR',subjectPath);
@@ -19,7 +19,8 @@ subs = {'026',...
 
 % should be where your subject's digit data are
 %mypath = '/Users/spmic/data/ken_surf_testing/';
-savedir = dataPath;
+savedir = ['/Users/' whichMac '/Library/CloudStorage/OneDrive-TheUniversityofNottingham/kv_digitatlas_figures/'];
+
 
 hemisphere = 'r';
 surface = 'inflated'; 
@@ -30,46 +31,56 @@ myalpha = 1;
 zf = 1.8;
 
 tryPerCol = 1;
-
+dofsavg = 0;
 mythresh = 0.046;
 % set to where your freesurfer dirs are, e.g. 020 in this case
 % subdir='/Users/spmic/data/subs/';
 % setenv('SUBJECTS_DIR',subdir);
+
+
 %%
 cmap = {'#FF0000', '#0080FF', '#FF7F00', '#407F04', '#F500FF'};
 cmapped = validatecolor(cmap,'multiple');
 
-
-
+% fix for fsavg fpm maxpeaks
+fshemisphere = 'rh';  % or 'rh'
+fsavgdir = '/Applications/freesurfer/subjects/';
+[ave, ~] = read_surf(fullfile(fsavgdir, 'fsaverage', 'surf', [fshemisphere '.sphere.reg']));
 
 for iSub = 1:length(subs)
     clear data data_bin data_thresh
 
-    [vertices, faces] = read_surf(fullfile(subjectPath, subs{iSub}, 'surf', 'rh.inflated'));
-
     for ii = 1:5
         thisFile = ['LD' num2str(ii) '_' subs{iSub} '.mgz'];
-        %thisFile = ['LD' num2str(ii) '.mgh'];
-        %theFile = MRIread(fullfile(dataPath, subs{iSub}, '2mm/', thisFile));
         theFile = MRIread(fullfile(dataPath, subs{iSub}, thisFile));
         data(:,ii) = theFile.vol(:);
-
         binariseData = data(:,ii)>0;
-
-        %data_bin(:,ii) = binariseData .* ii;
-
     end
 
-    %data_thresh = data;
+    % Load subject and fsaverage sphere.reg surfaces
+    [ind, ~] = read_surf(fullfile(subjectPath, subs{iSub}, 'surf', [fshemisphere '.sphere.reg']));
+    
+    % Compute subject-to-fsaverage vertex mapping
+    ind2ave = knnsearch(ind, ave);
+
+    % Warp data to fsaverage
+    data_fsavg = data(ind2ave, :);  % size: [n_vertices_fsavg × 5]
+
 
     % we want 50% of max as well
 
-    % Step 1: Find max per digit (column)
+    % : Find max per digit (column)
     digit_max = max(data, [], 1);  % 1×5 vector
     digit_thresh = 0.5 * digit_max;
 
-    % Step 3: Apply per-digit threshold
-    data_thresh = data;
+    % : Apply per-digit threshold
+    if dofsavg
+        data_thresh = data_fsavg;
+        [vertices, faces] = read_surf('/Applications/freesurfer/subjects/fsaverage/surf/rh.inflated');
+    else
+        data_thresh = data;
+        [vertices, faces] = read_surf(fullfile(subjectPath, subs{iSub}, 'surf', 'rh.inflated'));
+    end
 
     if tryPerCol
         for dx = 1:5
@@ -80,8 +91,6 @@ for iSub = 1:length(subs)
         data_thresh(data < mythresh) = 0;  % Only keep probabilities ≥ X
         printThresh = ['p' extractAfter(num2str(mythresh),'.')];
     end
-
-    
 
     % this creates a binary map, so setting each column to 1-5 
     %Find the maximum probability and the digit it came from
@@ -103,7 +112,9 @@ for iSub = 1:length(subs)
         [~, max_inds(d)] = max(data_thresh(:, d));
     end
 
+    %% now plotting
 
+    % first do FPMs
     close all
     figure
     go_paint_freesurfer(data_single_col,...
@@ -114,7 +125,6 @@ for iSub = 1:length(subs)
     % Plot dots at max digit points, adjusting marker size and color as you like
     %colors = digits(5);  % distinct colors for digits
 
-
     [xs, ys, zs] = sphere(20); % sphere coordinates
     h_sph = gobjects(5,1);  % to store handles for legend
     r = 1.5; % radius of small sphere
@@ -124,20 +134,16 @@ for iSub = 1:length(subs)
             r*zs + vertices(max_inds(d),3), ...
             'FaceColor', cmapped(d,:), 'EdgeColor', 'none');
     end
-
     legend(h_sph, {'D1', 'D2', 'D3', 'D4', 'D5'}, 'Location', 'northwestoutside')
-
     hold off
-
-
     camzoom(1.6)
- 
+
     print(fullfile(savedir, [subs{iSub} '_LD_digits_fpm_thr' printThresh]), '-dpdf', '-r600')
     print(fullfile(savedir, [subs{iSub} '_LD_digits_fpm_thr' printThresh]), '-dpng', '-r600')
 
-%
     %seqmap = digits(5);
     % plot this
+    %% now plot binary digits
     clc
     close all
 
