@@ -12,7 +12,7 @@ dataPath = '/Volumes/nemosine/ken/';
 subs = {'026',...
     '059'
     };
-subs = {'026'}
+%subs = {'026'}
 
 %subs = {'14001'};
 
@@ -32,6 +32,12 @@ zf = 1.8
 % subdir='/Users/spmic/data/subs/';
 % setenv('SUBJECTS_DIR',subdir);
 %%
+cmap = {'#FF0000', '#0080FF', '#FF7F00', '#407F04', '#F500FF'};
+cmapped = validatecolor(cmap,'multiple');
+
+
+mythresh = 0.046;
+printThresh = ['p' extractAfter(num2str(mythresh),'.')];
 
 for iSub = 1:length(subs)
     clear data data_bin data_thresh
@@ -52,7 +58,7 @@ for iSub = 1:length(subs)
     end
 
     data_thresh = data;
-    data_thresh(data < 0.2) = 0;  % Only keep probabilities ≥ 0.2
+    data_thresh(data < mythresh) = 0;  % Only keep probabilities ≥ 0.2
 
     % this creates a binary map, so setting each column to 1-5 
     %Find the maximum probability and the digit it came from
@@ -83,7 +89,7 @@ for iSub = 1:length(subs)
 
     hold on
     % Plot dots at max digit points, adjusting marker size and color as you like
-    colors = digits(5);  % distinct colors for digits
+    %colors = digits(5);  % distinct colors for digits
 
 
     [xs, ys, zs] = sphere(20); % sphere coordinates
@@ -93,7 +99,7 @@ for iSub = 1:length(subs)
         h_sph(d) = surf(r*xs + vertices(max_inds(d),1), ...
             r*ys + vertices(max_inds(d),2), ...
             r*zs + vertices(max_inds(d),3), ...
-            'FaceColor', colors(d,:), 'EdgeColor', 'none');
+            'FaceColor', cmapped(d,:), 'EdgeColor', 'none');
     end
 
     legend(h_sph, {'D1', 'D2', 'D3', 'D4', 'D5'}, 'Location', 'northwestoutside')
@@ -103,11 +109,11 @@ for iSub = 1:length(subs)
 
     camzoom(1.6)
  
-    print(fullfile(savedir, [subs{iSub} '_LD_digits_fpm']), '-dpdf', '-r600')
-    print(fullfile(savedir, [subs{iSub} '_LD_digits_fpm']), '-dpng', '-r600')
+    print(fullfile(savedir, [subs{iSub} '_LD_digits_fpm_thr' printThresh]), '-dpdf', '-r600')
+    print(fullfile(savedir, [subs{iSub} '_LD_digits_fpm_thr' printThresh]), '-dpng', '-r600')
 
 %
-    seqmap = digits(5);
+    %seqmap = digits(5);
     % plot this
     clc
     close all
@@ -115,24 +121,25 @@ for iSub = 1:length(subs)
     figure
     go_paint_freesurfer(data_labels,...
         subs{iSub},'r','range',...
-        [0.1 5], 'cbar','colormap',seqmap,'nchips',5,'customcmap')
+        [0.1 5], 'cbar','colormap',cmapped,'nchips',5,'customcmap')
     camzoom(zf)
 
-    print(fullfile(savedir, [subs{iSub} '_LD_digits_bin']), '-dpdf', '-r600')
-    print(fullfile(savedir, [subs{iSub} '_LD_digits_bin']), '-dpng', '-r600')
+    print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_thr' printThresh]), '-dpdf', '-r600')
+    print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_thr' printThresh]), '-dpng', '-r600')
 
     figure
     go_paint_freesurfer(data_labels,...
         subs{iSub},'r','range',...
-        [0.1 5], 'cbar','colormap',seqmap,'nchips',5,'customcmap','warp')
+        [0.1 5], 'cbar','colormap',cmapped,'nchips',5,'customcmap','warp')
     camzoom(zf)
 
-    print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_warped']), '-dpdf', '-r600')
-    print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_warped']), '-dpng', '-r600')
+    print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_warped_thr' printThresh]), '-dpdf', '-r600')
+    print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_warped_thr' printThresh]), '-dpng', '-r600')
 
 
 end
 
+keyboard
 
 
 %% testing this works
