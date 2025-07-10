@@ -27,7 +27,11 @@ map = 'viridis';
 nchips = 256;
 mymin = 0.5;
 myalpha = 1;
-zf = 1.8
+zf = 1.8;
+
+tryPerCol = 1;
+
+mythresh = 0.046;
 % set to where your freesurfer dirs are, e.g. 020 in this case
 % subdir='/Users/spmic/data/subs/';
 % setenv('SUBJECTS_DIR',subdir);
@@ -36,8 +40,7 @@ cmap = {'#FF0000', '#0080FF', '#FF7F00', '#407F04', '#F500FF'};
 cmapped = validatecolor(cmap,'multiple');
 
 
-mythresh = 0.046;
-printThresh = ['p' extractAfter(num2str(mythresh),'.')];
+
 
 for iSub = 1:length(subs)
     clear data data_bin data_thresh
@@ -57,8 +60,28 @@ for iSub = 1:length(subs)
 
     end
 
+    %data_thresh = data;
+
+    % we want 50% of max as well
+
+    % Step 1: Find max per digit (column)
+    digit_max = max(data, [], 1);  % 1×5 vector
+    digit_thresh = 0.5 * digit_max;
+
+    % Step 3: Apply per-digit threshold
     data_thresh = data;
-    data_thresh(data < mythresh) = 0;  % Only keep probabilities ≥ 0.2
+
+    if tryPerCol
+        for dx = 1:5
+            data_thresh(data(:, dx) < digit_thresh(dx), dx) = 0;
+        end
+        printThresh = '50prc';
+    else
+        data_thresh(data < mythresh) = 0;  % Only keep probabilities ≥ X
+        printThresh = ['p' extractAfter(num2str(mythresh),'.')];
+    end
+
+    
 
     % this creates a binary map, so setting each column to 1-5 
     %Find the maximum probability and the digit it came from
