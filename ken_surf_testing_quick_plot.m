@@ -30,12 +30,14 @@ mymin = 0.5;
 myalpha = 1;
 zf = 1.8;
 
-tryPerCol = 1;
-dofsavg = 0;
-mythresh = 0.046;
-% set to where your freesurfer dirs are, e.g. 020 in this case
-% subdir='/Users/spmic/data/subs/';
-% setenv('SUBJECTS_DIR',subdir);
+tryPerCol = 0;
+dofsavg = 1; % you cant do fsavg and trypercol at the same time
+
+if dofsavg
+    mythresh = 0; % this fixes a bug where the patch doesnt show
+else
+    mythresh = 0.046;
+end
 
 
 %%
@@ -50,41 +52,41 @@ fsavgdir = '/Applications/freesurfer/subjects/';
 for iSub = 1:length(subs)
     clear data data_bin data_thresh
 
+
+    % here we load the digits and binarise
     for ii = 1:5
         thisFile = ['LD' num2str(ii) '_' subs{iSub} '.mgz'];
         theFile = MRIread(fullfile(dataPath, subs{iSub}, thisFile));
         data(:,ii) = theFile.vol(:);
         binariseData = data(:,ii)>0;
     end
-
-    % Load subject and fsaverage sphere.reg surfaces
-    [ind, ~] = read_surf(fullfile(subjectPath, subs{iSub}, 'surf', [fshemisphere '.sphere.reg']));
     
-    % Compute subject-to-fsaverage vertex mapping
-    ind2ave = knnsearch(ind, ave);
 
-    % Warp data to fsaverage
-    data_fsavg = data(ind2ave, :);  % size: [n_vertices_fsavg × 5]
-
-
-    % we want 50% of max as well
-
-    % : Find max per digit (column)
-    digit_max = max(data, [], 1);  % 1×5 vector
-    digit_thresh = 0.5 * digit_max;
-
-    % : Apply per-digit threshold
+    % now check if we want to show FPM on fsavg or not
+    % we have to do it this way not via 'warp'
+    % because we need the maxes for the peaks in fsavg space
     if dofsavg
+        [ind, ~] = read_surf(fullfile(subjectPath, subs{iSub}, 'surf', [fshemisphere '.sphere.reg']));
+        ind2ave = knnsearch(ind, ave);
+        data_fsavg = data(ind2ave, :);
+        digit_max = max(data_fsavg, [], 1);  % 1×5 vector
+        
         data_thresh = data_fsavg;
         [vertices, faces] = read_surf('/Applications/freesurfer/subjects/fsaverage/surf/rh.inflated');
     else
+        % this is just regular native space
+        digit_max = max(data, [], 1);
         data_thresh = data;
         [vertices, faces] = read_surf(fullfile(subjectPath, subs{iSub}, 'surf', 'rh.inflated'));
     end
 
     if tryPerCol
+        digit_thresh = 0.5 * digit_max; % 50% of each column
         for dx = 1:5
-            data_thresh(data(:, dx) < digit_thresh(dx), dx) = 0;
+            data_thresh(data(:, dx) < digit_thresh(dx), dx) = 0; %ccomplicated here
+            %Looks at that digit's column.
+            %Finds all voxel rows where the value is < 50% of that digit%s max.
+            %Sets those entries to 0 only in that column.
         end
         printThresh = '50prc';
     else
@@ -107,6 +109,7 @@ for iSub = 1:length(subs)
     data_single_col = max(data_thresh, [], 2);
 
     % Find max voxel index per digit
+    % for the spheres
     max_inds = zeros(5,1);
     for d = 1:5
         [~, max_inds(d)] = max(data_thresh(:, d));
@@ -117,9 +120,15 @@ for iSub = 1:length(subs)
     % first do FPMs
     close all
     figure
-    go_paint_freesurfer(data_single_col,...
-        subs{iSub},'r','range',...
-        [0.1 1], 'cbar','colormap',map)
+    if dofsavg
+        go_paint_freesurfer(data_single_col,...
+            'fsaverage','r','range',...
+            [0.1 1], 'cbar','colormap',map)
+    else
+        go_paint_freesurfer(data_single_col,...
+            subs{iSub},'r','range',...
+            [0.1 1], 'cbar','colormap',map)
+    end
 
     hold on
     % Plot dots at max digit points, adjusting marker size and color as you like
@@ -138,33 +147,39 @@ for iSub = 1:length(subs)
     hold off
     camzoom(1.6)
 
-    print(fullfile(savedir, [subs{iSub} '_LD_digits_fpm_thr' printThresh]), '-dpdf', '-r600')
-    print(fullfile(savedir, [subs{iSub} '_LD_digits_fpm_thr' printThresh]), '-dpng', '-r600')
+    if dofsavg
+        print(fullfile(savedir, [subs{iSub} '_LD_digits_fpm_warped']), '-dpdf', '-r600')
+        print(fullfile(savedir, [subs{iSub} '_LD_digits_fpm_warped']), '-dpng', '-r600')
+    else
+        print(fullfile(savedir, [subs{iSub} '_LD_digits_fpm_thr' printThresh]), '-dpdf', '-r600')
+        print(fullfile(savedir, [subs{iSub} '_LD_digits_fpm_thr' printThresh]), '-dpng', '-r600')
+    end
 
     %seqmap = digits(5);
     % plot this
     %% now plot binary digits
     clc
     close all
+    
+    if ~dofsavg
+        figure
+        go_paint_freesurfer(data_labels,...
+            subs{iSub},'r','range',...
+            [0.1 5], 'cbar','colormap',cmapped,'nchips',5,'customcmap')
+        camzoom(zf)
 
-    figure
-    go_paint_freesurfer(data_labels,...
-        subs{iSub},'r','range',...
-        [0.1 5], 'cbar','colormap',cmapped,'nchips',5,'customcmap')
-    camzoom(zf)
+        print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_thr' printThresh]), '-dpdf', '-r600')
+        print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_thr' printThresh]), '-dpng', '-r600')
 
-    print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_thr' printThresh]), '-dpdf', '-r600')
-    print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_thr' printThresh]), '-dpng', '-r600')
+        figure
+        go_paint_freesurfer(data_labels,...
+            subs{iSub},'r','range',...
+            [0.1 5], 'cbar','colormap',cmapped,'nchips',5,'customcmap','warp')
+        camzoom(zf)
 
-    figure
-    go_paint_freesurfer(data_labels,...
-        subs{iSub},'r','range',...
-        [0.1 5], 'cbar','colormap',cmapped,'nchips',5,'customcmap','warp')
-    camzoom(zf)
-
-    print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_warped_thr' printThresh]), '-dpdf', '-r600')
-    print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_warped_thr' printThresh]), '-dpng', '-r600')
-
+        print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_warped_thr' printThresh]), '-dpdf', '-r600')
+        print(fullfile(savedir, [subs{iSub} '_LD_digits_bin_warped_thr' printThresh]), '-dpng', '-r600')
+    end
 
 end
 
@@ -217,6 +232,9 @@ handAreaR = sum(pRD_FPM,2);
 handAreaL = sum(pLD_FPM,2);
 
 %%
+whichMac = char(java.lang.System.getProperty('user.name'));
+
+savedir = ['/Users/' whichMac '/Library/CloudStorage/OneDrive-TheUniversityofNottingham/kv_digitatlas_figures/'];
 
 close all
 
@@ -227,9 +245,8 @@ go_paint_freesurfer(handAreaL, ...
     'cbar', 'colormap', 'viridis', ...
     'OutlineOnly',1)
 %camzoom(zf)
-print(fullfile(savedir, 'digitatlasLDnozzom'), '-dpdf', '-r600')
-
-%print(fullfile(savedir, 'digitatlasLD'), '-dpng', '-r600')
+print(fullfile(savedir, 'digitatlasLD'), '-dpdf', '-r600')
+print(fullfile(savedir, 'digitatlasLD'), '-dpng', '-r600')
 %print(fullfile(savedir, 'digitatlasLD'), '-dpdf', '-r600')
 
 figure
@@ -239,9 +256,8 @@ go_paint_freesurfer(handAreaR, ...
     'cbar', 'colormap', 'viridis', ...
     'OutlineOnly',1)
 %camzoom(zf)
-print(fullfile(savedir, 'digitatlasRDnozzom'), '-dpdf', '-r600')
-
-%print(fullfile(savedir, 'digitatlasRD'), '-dpng', '-r600')
+print(fullfile(savedir, 'digitatlasRD'), '-dpdf', '-r600')
+print(fullfile(savedir, 'digitatlasRD'), '-dpng', '-r600')
 %print(fullfile(savedir, 'digitatlasRD'), '-dpdf', '-r600')
 
 
