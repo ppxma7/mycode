@@ -2,9 +2,9 @@ function[myMat]=canapi_custom_regressor()
 
 % look at lines 276 in spm_fMRI_design.m
 
-%mypath='/Volumes/nemosine/canapi_sub02_180325/EMG/Export/';
-mypath='/Volumes/nemosine/canapi_sub08_010725/EEG/Export/';
-%mypath='/Volumes/nemosine/canapi_sub06_240625/EMG/Export/';
+%mypath='/Volumes/kratos/canapi_sub02_180325/EMG/Export/';
+mypath='/Volumes/kratos/canapi_sub08_010725/EEG/Export/';
+%mypath='/Volumes/kratos/canapi_sub06_240625/EMG/Export/';
 
 %myfiles = {'1bar_ch1_dsmpled.txt','30prc_ch1_dsmpled.txt','50prc_ch1_dsmpled.txt'};
 %myfiles = {'1bar_LL_ch2_dsmpled.txt','30prc_LL_ch2_dsmpled.txt','50prc_LL_ch2_dsmpled.txt','70prc_LL_ch2_dsmpled.txt'}; %left leg

@@ -7,7 +7,7 @@ close all
 clear variables
 clc
 dataset = 'canapi_sub08_010725';
-mypath=['/Volumes/nemosine/' dataset '/EEG/Export/'];
+mypath=['/Volumes/kratos/' dataset '/EEG/Export/'];
 userName = char(java.lang.System.getProperty('user.name'));
 savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_010725/plots08/'];
 

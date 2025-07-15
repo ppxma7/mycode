@@ -7,7 +7,7 @@ import os
 #input_folder = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_030225/'
 #input_folder = '/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/spm_check_motion/'
 #input_folder = '/Users/spmic/data/canapi_sub03_180325/spm_analysis/'
-input_folder = '/Volumes/nemosine/fMRI_airstim_pilot01_080725/spm_analysis/'
+input_folder = '/Volumes/kratos/fMRI_airstim_pilot01_080725/spm_analysis/'
 #input_folder = '/Volumes/nemosine/caitlin_data/Map01/spmanalysis/'
 
 output_folder = os.path.join(input_folder, "motion_plots")  # Output folder for saving plots
