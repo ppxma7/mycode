@@ -7,7 +7,7 @@ import os
 #input_folder = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_030225/'
 #input_folder = '/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/spm_check_motion/'
 #input_folder = '/Users/spmic/data/canapi_sub03_180325/spm_analysis/'
-input_folder = '/Volumes/nemosine/canapi_sub08_010725/spm_analysis/'
+input_folder = '/Volumes/nemosine/fMRI_airstim_pilot01_080725/spm_analysis/'
 #input_folder = '/Volumes/nemosine/caitlin_data/Map01/spmanalysis/'
 
 output_folder = os.path.join(input_folder, "motion_plots")  # Output folder for saving plots
@@ -15,10 +15,12 @@ os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exi
 
 #List of input files
 input_files = [
-    "rp_canapi_sub08_010725_WIP1bar_TAP_R_20250701123418_3_nordic_clv",
-    "rp_canapi_sub08_010725_WIPlow_TAP_R_20250701123418_4_nordic_clv",
-    "rp_canapi_sub08_010725_WIP1bar_TAP_L_20250701123418_5_nordic_clv",
-    "rp_canapi_sub08_010725_WIPlow_TAP_L_20250701123418_6_nordic_clv"
+    "rp_fMRI_airstim_pilot01_080725_WIPMB0_S3_1p5_FWD_20250708095430_6_nordic_clv",
+    "rp_fMRI_airstim_pilot01_080725_WIPMB0_S3_1p5_REV_20250708095430_7_nordic_clv",
+    "rp_fMRI_airstim_pilot01_080725_WIPMB0_S3_1p5_ONOFF_20250708095430_8_nordic_clv",
+    "rp_fMRI_airstim_pilot01_080725_WIPMB0_S3_1p5_ONOFF_20250708095430_9_nordic_clv",
+    "rp_fMRI_airstim_pilot01_080725_WIPMB0_S3_1p5_AIRSTIMON_20250708095430_10_nordic_clv",
+    "rp_fMRI_airstim_pilot01_080725_WIPMB0_S3_1p5_AIRSTIMON_20250708095430_11_nordic_clv"
 ]
 
 # input_files = [

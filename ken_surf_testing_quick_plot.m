@@ -31,7 +31,7 @@ myalpha = 1;
 zf = 1.8;
 
 tryPerCol = 0;
-dofsavg = 1; % you cant do fsavg and trypercol at the same time
+dofsavg = 0; % you cant do fsavg and trypercol at the same time
 
 if dofsavg
     mythresh = 0; % this fixes a bug where the patch doesnt show
@@ -56,6 +56,7 @@ for iSub = 1:length(subs)
     % here we load the digits and binarise
     for ii = 1:5
         thisFile = ['LD' num2str(ii) '_' subs{iSub} '.mgz'];
+        %thisFile = ['LD' num2str(ii) '_' subs{iSub} '_fsbrain.mgz'];
         theFile = MRIread(fullfile(dataPath, subs{iSub}, thisFile));
         data(:,ii) = theFile.vol(:);
         binariseData = data(:,ii)>0;
@@ -108,6 +109,17 @@ for iSub = 1:length(subs)
     % we also want the FPM map combined
     data_single_col = max(data_thresh, [], 2);
 
+
+    % Both should mark the *same* vertices
+    mask_labels = data_labels > 0;
+    mask_single = data_single_col > 0;
+
+    % Compare
+    fprintf('Labels set: %d voxels\n', sum(mask_labels));
+    fprintf('Single col set: %d voxels\n', sum(mask_single));
+    fprintf('Overlap: %d voxels\n', sum(mask_labels & mask_single));
+
+
     % Find max voxel index per digit
     % for the spheres
     max_inds = zeros(5,1);
@@ -123,11 +135,11 @@ for iSub = 1:length(subs)
     if dofsavg
         go_paint_freesurfer(data_single_col,...
             'fsaverage','r','range',...
-            [0.1 1], 'cbar','colormap',map)
+            [0.0000001 1], 'cbar','colormap',map)
     else
         go_paint_freesurfer(data_single_col,...
             subs{iSub},'r','range',...
-            [0.1 1], 'cbar','colormap',map)
+            [0.0000001 1], 'cbar','colormap',map)
     end
 
     hold on
@@ -143,7 +155,7 @@ for iSub = 1:length(subs)
             r*zs + vertices(max_inds(d),3), ...
             'FaceColor', cmapped(d,:), 'EdgeColor', 'none');
     end
-    legend(h_sph, {'D1', 'D2', 'D3', 'D4', 'D5'}, 'Location', 'northwestoutside')
+    %legend(h_sph, {'D1', 'D2', 'D3', 'D4', 'D5'}, 'Location', 'northwestoutside')
     hold off
     camzoom(1.6)
 
@@ -244,6 +256,7 @@ go_paint_freesurfer(handAreaL, ...
     'range', [0.1 max(handAreaL)], ...
     'cbar', 'colormap', 'viridis', ...
     'OutlineOnly',1)
+camzoom(zf)
 %camzoom(zf)
 print(fullfile(savedir, 'digitatlasLD'), '-dpdf', '-r600')
 print(fullfile(savedir, 'digitatlasLD'), '-dpng', '-r600')
@@ -255,6 +268,7 @@ go_paint_freesurfer(handAreaR, ...
     'range', [0.1 max(handAreaR)], ...
     'cbar', 'colormap', 'viridis', ...
     'OutlineOnly',1)
+camzoom(zf)
 %camzoom(zf)
 print(fullfile(savedir, 'digitatlasRD'), '-dpdf', '-r600')
 print(fullfile(savedir, 'digitatlasRD'), '-dpng', '-r600')

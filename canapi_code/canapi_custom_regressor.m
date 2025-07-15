@@ -3,7 +3,7 @@ function[myMat]=canapi_custom_regressor()
 % look at lines 276 in spm_fMRI_design.m
 
 %mypath='/Volumes/nemosine/canapi_sub02_180325/EMG/Export/';
-mypath='/Volumes/nemosine/canapi_sub06_240625/EMG/Export/';
+mypath='/Volumes/nemosine/canapi_sub08_010725/EEG/Export/';
 %mypath='/Volumes/nemosine/canapi_sub06_240625/EMG/Export/';
 
 %myfiles = {'1bar_ch1_dsmpled.txt','30prc_ch1_dsmpled.txt','50prc_ch1_dsmpled.txt'};
@@ -21,9 +21,12 @@ mypath='/Volumes/nemosine/canapi_sub06_240625/EMG/Export/';
 % myfiles = {'CANAPI_sub05_LL_1bar_r2_Rectify_rectify_ch5_dsmpled.txt','CANAPI_sub05_LL_15per_Rectify_rectify_ch5_dsmpled.txt',...
 %     'CANAPI_sub05_RL_1bar_Rectify_rectify_ch1_dsmpled.txt','CANAPI_sub05_RL_15per_Rectify_rectify_ch1_dsmpled.txt'};
 
-myfiles = {'CANAPI_sub06_LL_1bar_Rectify_rectify_ch2_dsmpled.txt','CANAPI_sub06_LL_15per_Rectify_rectify_ch2_dsmpled.txt',...
-    'CANAPI_sub06_RL_1bar2_Rectify_rectify_ch1_dsmpled.txt','CANAPI_sub06_RL_15per_Rectify_rectify_ch1_dsmpled.txt'};
+% myfiles = {'CANAPI_sub07_RL_1barreal_Rectify_rectify_ch5_dsmpled.txt','CANAPI_sub07_RL_15per_Rectify_rectify_ch1_dsmpled.txt',...
+%     'CANAPI_sub07_LL_1bar_Rectify_rectify_ch5_dsmpled.txt','CANAPI_sub07_LL_15per_Rectify_rectify_ch1_dsmpled.txt'};
 
+% 
+myfiles = {'CANAPI_sub08_RL_1bar2_Rectify_rectify_ch1_dsmpled.txt','CANAPI_sub08_RL_15per_Rectify_rectify_ch1_dsmpled.txt',...
+    'CANAPI_sub08_LL_1bar_Rectify_rectify_ch5_dsmpled.txt','CANAPI_sub08_LL_15per_Rectify_rectify_ch5_dsmpled.txt'};
 
 
 for ii = 1:length(myfiles)
