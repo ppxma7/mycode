@@ -6,13 +6,13 @@
 close all
 clear variables
 clc
-dataset = 'canapi_sub08_010725';
+dataset = 'canapi_sub10_160725';
 mypath=['/Volumes/kratos/' dataset '/EEG/Export/'];
 userName = char(java.lang.System.getProperty('user.name'));
-savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_010725/plots08/'];
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/canapi_160725/'];
 
-myfiles = {'CANAPI_sub08_RL_1bar2_Rectify.dat','CANAPI_sub08_RL_15per_Rectify.dat',...
-    'CANAPI_sub08_LL_1bar_Rectify.dat','CANAPI_sub08_LL_15per_Rectify.dat',...
+myfiles = {'CANAPI_sub10_RL_1bar_Rectify.dat','CANAPI_sub10_RL_15per_Rectify.dat',...
+    'CANAPI_sub10_LL_1bar_Rectify.dat','CANAPI_sub10_LL_15per_Rectify.dat',...
     };
 
 markerFiles = cell(1,4);
