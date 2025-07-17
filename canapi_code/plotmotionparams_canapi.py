@@ -5,8 +5,9 @@ import glob
 import re
 
 # Main CANAPI directory
-main_dir = "/Volumes/DRS-TOUCHMAP/ma_ares_backup/CANAPI/"
-savedir = "/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/grouplevel_results/"
+main_dir = "/Volumes/kratos/"
+#savedir = "/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/grouplevel_results/"
+savedir = "/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/grouplevel_results/"
 
 
 # Main CANAPI directory

@@ -14,8 +14,8 @@ import seaborn as sns
 import re
 
 # ==== CONFIG ====
-root_path = "/Volumes/DRS-TOUCHMAP/ma_ares_backup/CANAPI/"
-savedir = "/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/grouplevel_results/"
+root_path = "/Volumes/kratos/"
+savedir = "/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/grouplevel_results/"
 mode = 'doroi'  # 'dogen' for whole image, 'doroi' for ROI
 ROI = 1 if mode == 'doroi' else 0
 tSNRmax = 100
