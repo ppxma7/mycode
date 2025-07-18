@@ -12,8 +12,9 @@ import os
 #root_folder_path = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Pain Relief Grant - General/PFP_results/figures_mar_25/'
 
 
-root_folder_path = '/Volumes/nemosine/canapi_level2/'
-subfolders_to_search = ['1barR']
+#root_folder_path = '/Volumes/nemosine/canapi_level2/'
+root_folder_path = '/Volumes/DRS-Touchmap/ma_ares_backup/CANAPI/canapi_level2'
+subfolders_to_search = ['1barR', 'lowR', '1barL', 'lowL','RvL','LvR']
 #subfolders_to_search = ['hvw','wvh','hvw_antins','hvw_postins']
 
 
