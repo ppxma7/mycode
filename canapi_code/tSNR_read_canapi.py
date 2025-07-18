@@ -18,7 +18,7 @@ root_path = "/Volumes/kratos/"
 savedir = "/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/grouplevel_results/"
 mode = 'doroi'  # 'dogen' for whole image, 'doroi' for ROI
 ROI = 1 if mode == 'doroi' else 0
-tSNRmax = 100
+tSNRmax = 150
 tSNRmin = 0
 slice_index = 18  # slice to take for ROI
 
@@ -46,7 +46,7 @@ for subj in subject_folders:
         continue
     subj_id = f"sub{subj_match.group(1)}"
 
-    qa_dir = os.path.join(root_path, subj, 'qa_outputs')
+    qa_dir = os.path.join(root_path, subj, 'qa_outputs_nordic')
     if not os.path.exists(qa_dir):
         continue
 
@@ -131,7 +131,7 @@ for subj in subject_folders:
             )
 
             # Save the figure in the scan folder
-            roi_vis_path = roi_vis_path = os.path.join(savedir, f"slice_with_tsnr_{scan}.png")
+            roi_vis_path = roi_vis_path = os.path.join(savedir, f"slice_with_tsnr_{scan}_nordic.png")
             plt.savefig(roi_vis_path, dpi=300, bbox_inches='tight')
             plt.close(fig)
             print(f"ROI visual saved to {roi_vis_path}")
@@ -219,7 +219,7 @@ ax.set_ylim(tSNRmin, tSNRmax)
 ax.grid(axis='y', linestyle='--', alpha=0.5)
 
 # === Save ===
-output_path = os.path.join(savedir, "tSNR_grouped_bar_chart.png")
+output_path = os.path.join(savedir, "tSNR_grouped_bar_chart_nordic.png")
 plt.tight_layout()
 plt.savefig(output_path, dpi=300)
 plt.close()
@@ -244,7 +244,7 @@ print("\n=== ANOVA Results ===")
 print(anova_table)
 
 # Save ANOVA table
-anova_csv_path = os.path.join(savedir, "anova_tsnr_by_subject.csv")
+anova_csv_path = os.path.join(savedir, "anova_tsnr_by_subject_nordic.csv")
 anova_table.to_csv(anova_csv_path)
 print(f"ANOVA table saved to {anova_csv_path}")
 
@@ -261,6 +261,6 @@ tukey_df = pd.DataFrame(
     columns=tukey.summary().data[0]
 )
 
-tukey_csv_path = os.path.join(savedir, "tukey_tsnr_by_subject.csv")
+tukey_csv_path = os.path.join(savedir, "tukey_tsnr_by_subject_nordic.csv")
 tukey_df.to_csv(tukey_csv_path, index=False)
 print(f"Tukey HSD results saved to {tukey_csv_path}")
