@@ -3,7 +3,7 @@ function[myMat]=canapi_custom_regressor()
 % look at lines 276 in spm_fMRI_design.m
 
 %mypath='/Volumes/kratos/canapi_sub02_180325/EMG/Export/';
-mypath='/Volumes/kratos/canapi_sub08_010725/EEG/Export/';
+mypath='/Volumes/kratos/canapi_sub05_240625/EEG/Export/';
 %mypath='/Volumes/kratos/canapi_sub06_240625/EMG/Export/';
 
 %myfiles = {'1bar_ch1_dsmpled.txt','30prc_ch1_dsmpled.txt','50prc_ch1_dsmpled.txt'};
@@ -18,15 +18,23 @@ mypath='/Volumes/kratos/canapi_sub08_010725/EEG/Export/';
 % myfiles = {'CANAPI_sub02_R_1BAR_Rectify_rectify_ch1_dsmpled.txt','CANAPI_sub02_R_15per_Rectify_rectify_ch1_dsmpled.txt',...
 %     'CANAPI_sub02_L_1BAR_Rectify_rectify_ch2_dsmpled.txt','CANAPI_sub02_L_15per_Rectify_rectify_ch2_dsmpled.txt'};
 
+myfiles = {'CANAPI_sub05_RL_1bar_Rectify_rectify_ch1_dsmpled.txt','CANAPI_sub05_RL_15per_Rectify_rectify_ch1_dsmpled.txt',...
+    'CANAPI_sub05_LL_1bar_r2_Rectify_rectify_ch5_dsmpled.txt','CANAPI_sub05_LL_15per_Rectify_rectify_ch5_dsmpled.txt'};
+
 % myfiles = {'CANAPI_sub05_LL_1bar_r2_Rectify_rectify_ch5_dsmpled.txt','CANAPI_sub05_LL_15per_Rectify_rectify_ch5_dsmpled.txt',...
 %     'CANAPI_sub05_RL_1bar_Rectify_rectify_ch1_dsmpled.txt','CANAPI_sub05_RL_15per_Rectify_rectify_ch1_dsmpled.txt'};
+
 
 % myfiles = {'CANAPI_sub07_RL_1barreal_Rectify_rectify_ch5_dsmpled.txt','CANAPI_sub07_RL_15per_Rectify_rectify_ch1_dsmpled.txt',...
 %     'CANAPI_sub07_LL_1bar_Rectify_rectify_ch5_dsmpled.txt','CANAPI_sub07_LL_15per_Rectify_rectify_ch1_dsmpled.txt'};
 
 % 
-myfiles = {'CANAPI_sub08_RL_1bar2_Rectify_rectify_ch1_dsmpled.txt','CANAPI_sub08_RL_15per_Rectify_rectify_ch1_dsmpled.txt',...
-    'CANAPI_sub08_LL_1bar_Rectify_rectify_ch5_dsmpled.txt','CANAPI_sub08_LL_15per_Rectify_rectify_ch5_dsmpled.txt'};
+% myfiles = {'CANAPI_sub09_RL_1bar_Rectify_rectify_ch1_dsmpled.txt','CANAPI_sub09_RL_15per_Rectify_rectify_ch1_dsmpled.txt',...
+%     'CANAPI_sub09_LL_1bar_Rectify_rectify_ch1_dsmpled.txt','CANAPI_sub09_LL_15per_Rectify_rectify_ch1_dsmpled.txt'};
+
+
+% myfiles = {'CANAPI_sub10_RL_1bar_Rectify_rectify_ch5_dsmpled.txt','CANAPI_sub10_RL_15per_Rectify_rectify_ch5_dsmpled.txt',...
+%     'CANAPI_sub10_LL_1bar_Rectify_rectify_ch5_dsmpled.txt','CANAPI_sub10_LL_15per_Rectify_rectify_ch5_dsmpled.txt'};
 
 
 for ii = 1:length(myfiles)

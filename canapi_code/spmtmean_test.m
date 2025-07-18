@@ -2,7 +2,7 @@ close all
 clear all
 clc
 
-mypath = '/Volumes/nemosine/canapi_level2/1barR_overlap';
+mypath = '/Volumes/kratos/canapi_level2/1barR_overlap';
 %mypath = '/Volumes/nemosine/canapi_level2/1barL_overlap';
 
 mask = MRIread(fullfile(mypath,'prepostsmaCG_bin.nii'));

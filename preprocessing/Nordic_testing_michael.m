@@ -9,14 +9,14 @@ clc
 %dirname = '/Volumes/nemosine/postDUST_QUAD_SEEPI_MBSHIFTS_2mm/';
 %dirname = '/Users/spmic/data/postDUST_QUAD_SEEPI_MBSHIFTS_2mm/';
 
-dirname = '/Volumes/kratos/canapi_sub09_160825/';
-%dirname = '/Volumes/kratos/canapi_sub10_160825/';
+dirname = '/Volumes/kratos/canapi_sub10_160725/';
+%dirname = '/Volumes/kratos/canapi_sub10_160725/';
 
 files ={
-    'canapi_sub09_160825_WIPlow_TAP_R_20250318153536_7.nii.gz',...
-    'canapi_sub09_160825_WIP1bar_TAP_R_20250318153536_6.nii.gz',...
-    'canapi_sub09_160825_WIPlow_TAP_L_20250318153536_9.nii.gz',...
-    'canapi_sub09_160825_WIP1bar_TAP_L_20250318153536_8.nii.gz',...
+    'canapi_sub10_160725_WIP1bar_TAP_R_20250716134752_3.nii.gz',...
+    'canapi_sub10_160725_WIPlow_TAP_R_20250716134752_4.nii.gz',...
+    'canapi_sub10_160725_WIP1bar_TAP_L_20250716134752_5.nii.gz',...
+    'canapi_sub10_160725_WIPlow_TAP_L_20250716134752_6.nii.gz',...
     };
 
 % files = {'fMRI_airstim_pilot01_080725_WIPMB0_S3_1p5_FWD_20250708095430_6.nii.gz',...
@@ -115,7 +115,7 @@ for nn = 1:length(filelist)
         figure, histogram(bs_noise_vec,100)
         title(sprintf('Unique values: %d',unique_values))
         fprintf('\nThere are %d unique values, still gonna run NORDIC, but just be careful...\n',unique_values)
-        saveas(gcf,[data_path,fn_out,'_noise_hist.png'])
+        %saveas(gcf,[data_path,fn_out,'_noise_hist.png'])
     end
 
 
