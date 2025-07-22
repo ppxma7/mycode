@@ -381,100 +381,181 @@ toc
 disp('...done!')
 
 keyboard
+%% run correlations
+% Assume your cell array is called `emg_data`, size 4x5x10
+correlations = zeros(4, 5, 10);  % Preallocate
 
-
-
-
-
-%% plot
-close all
-% figure('Position',[0 400 1600 800])
-% tiledlayout(2,4)
-% for jj = 1:length(myfiles)
-%     nexttile
-%     plot(saveMat_noconv{jj,1},'linewidth',2)
-%     hold on
-%     plot(saveMat_noconv{jj,2},'linewidth',2)
-%     plot(signal)
-%     %legend('Trispect force','ideal block','Location','best')
-%     legend('ch1','ch2','ideal block')
-%
-% %     if jj<5%4
-% %         title([extractBefore(myfiles{jj},'.') ' 1 bar'])
-% %     elseif jj>4%3
-% %         title([extractBefore(myfiles{jj},'_') ' 30 prc'])
-% %     end
-%      title([extractBefore(myfiles{jj},'.')],'Interpreter','none'))
-%
-% end
-%[FILEPATH,NAME,EXT] = fileparts(myfile1);
-t = datetime('now','TimeZone','local','Format','dd-MM-yyyy-HH-mm-ss');
-filename1 = [savedir 'emg_dwnsmpl-LL' dataset '-' char(t)];
-%filename2 = [savedir 'emg_dwnsmpl-RL' dataset '-' char(t)];
-figure('Position',[0 0 1400 800])
-tiledlayout(2,2)
-
-flays = 4; %[2 5 4 6];
-for jj = 1:flays
-    nexttile
-    plot(saveMat_noconv{jj,1},'linewidth',2,'Color','#1f78b4')
-    hold on
-    plot(saveMat_noconv{jj,2},'linewidth',1,'Color','#d95f02')
-    hold on
-    plot(signal)
-    %legend('Trispect force','ideal block','Location','best')
-    legend('ch1','ch2','ideal block')
-    title([extractBefore(myfiles{jj},'.')],'Interpreter','none')
-    ylim([0 1])
-end
-
-
-h = gcf;
-set(h, 'PaperOrientation', 'landscape');
-set(h, 'PaperUnits', 'inches');
-set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
-set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
-print(h, '-dpdf', filename1, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
-
-%% try plotting with acclereomercr
-
-if size(thisFile,1) == 5
-
-    close all
-    t = datetime('now','TimeZone','local','Format','dd-MM-yyyy-HH-mm-ss');
-    filename1 = [savedir 'accel_emg_dwnsmpl-LL' dataset '-' char(t)];
-    %filename2 = [savedir 'emg_dwnsmpl-RL' dataset '-' char(t)];
-    figure('Position',[0 0 1400 800])
-    tiledlayout(2,2)
-
-    flays = 4; %[2 5 4 6];
-    for jj = 1:flays
-        nexttile
-        plot(saveMat_noconv{jj,3},'linewidth',1,'Color','#1b9e77')
-        hold on
-        plot(saveMat_noconv{jj,4},'linewidth',1,'Color','#d95f02')
-        hold on
-        plot(saveMat_noconv{jj,5},'linewidth',1,'Color','#7570b3')
-        hold on
-        plot(signal,'Color','#EDB120')
-        %legend('Trispect force','ideal block','Location','best')
-        legend('x','y','z','ideal block')
-        title([extractBefore(myfiles{jj},'.')],'Interpreter','none')
-        ylim([0 1])
+% Loop over runs, channels, subjects
+for subj = 2:10
+    for ch = 1:5
+        for run = 1:4
+            emg_trace = opMatsubs{run, ch, subj};  % 1x227 double
+            r = corr(emg_trace(:), signal(:));    % Pearson correlation
+            correlations(run, ch, subj) = r;
+        end
     end
-
-
-    h = gcf;
-    set(h, 'PaperOrientation', 'landscape');
-    set(h, 'PaperUnits', 'inches');
-    set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
-    set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
-    print(h, '-dpdf', filename1, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
-
 end
 
-%% we need to correlate
+% Assume `correlations` is now 4x5x10
+% Remove subject 1
+correlations = correlations(:, :, 2:10);  % Now 4x5x9
 
+% Predefine labels
+subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 2:10, 'UniformOutput', false);
+run_labels = {'1barR', 'lowR', '1barL', 'lowL'};
+channel_labels = {'EMG ch1', 'EMG ch2', 'Accel X', 'Accel Y', 'Accel Z'};
+
+% Get sizes
+[nRuns, nChans, nSubj] = size(correlations);
+
+% Initialize label vectors
+subj_vec = cell(nRuns * nChans * nSubj, 1);
+run_vec = cell(size(subj_vec));
+chan_vec = cell(size(subj_vec));
+corr_vec = zeros(size(subj_vec));
+
+% Fill in
+idx = 1;
+for subj = 1:9
+    for chan = 1:5
+        for run = 1:4
+            subj_vec{idx} = subject_labels{subj};
+            run_vec{idx} = run_labels{run};
+            chan_vec{idx} = channel_labels{chan};
+            corr_vec(idx) = correlations(run, chan, subj);
+            idx = idx + 1;
+        end
+    end
+end
+
+
+
+% Flatten manually
+corr_flat = [];
+for subj = 1:9
+    for chan = 1:5
+        for run = 1:4
+            corr_flat(end+1,1) = correlations(run, chan, subj);
+        end
+    end
+end
+
+% Compare with default MATLAB vectorization
+isequal(corr_flat, correlations(:))  % Should return true
+%%
+clear g
+close all
+figure
+g = gramm('x', chan_vec, 'y', corr_vec, 'color', run_vec);
+g.stat_summary('geom', {'bar', 'black_errorbar'}, 'type', 'sem');
+g.set_names('x','Channel','y','Correlation','color','Run');
+g.set_title('Correlation of EMG/Accel signals with boxcar');
+g.axe_property('YLim', [0 1]);  % Optional: fix y-axis
+g.draw()
+
+filename = ('corr_vec_1');
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
+
+clear g
+figure
+g = gramm('x', run_vec, 'y', corr_vec, 'color', chan_vec);
+g.stat_summary('geom', {'bar', 'black_errorbar'}, 'type', 'sem');
+g.set_names('x','Run','y','Correlation','color','Channel');
+g.set_title('Boxcar correlations grouped by run');
+g.axe_property('YLim', [0 1]);
+g.draw()
+filename = ('corr_vec_2');
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
+
+clear g
+figure
+g = gramm('x', chan_vec, 'y', corr_vec, 'color', subj_vec);
+g.geom_jitter2('dodge', 0.6);  % adds subject dots
+g.stat_summary('geom', {'point', 'line'}, 'dodge', 0.6);  % mean over subjects
+g.set_names('x','Channel','y','Correlation','color','Subject');
+g.set_title('Subject-level boxcar correlations');
+g.axe_property('YLim', [-0.1 1]);
+g.draw();
+filename = ('corr_vec_3');
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
+
+
+
+
+
+%% what about channel 1 to 2
+nRuns = 4;
+nSubjects = 9;
+
+ch1vch2_corrs = zeros(nRuns, nSubjects);  % run × subject
+
+for subj = 2:10
+    subj_idx = subj - 1;  % shift index since we drop subject 1
+    for run = 1:nRuns
+        trace1 = opMatsubs{run, 1, subj};  % channel 1
+        trace2 = opMatsubs{run, 2, subj};  % channel 2
+
+        ch1vch2_corrs(run, subj_idx) = corr(trace1(:), trace2(:));
+    end
+end
+run_labels = {'1barR', 'lowR', '1barL', 'lowL'};
+subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 2:10, 'UniformOutput', false);
+
+corr_vec = [];
+run_vec = {};
+subj_vec = {};
+
+for subj = 1:nSubjects
+    for run = 1:nRuns
+        corr_vec(end+1,1) = ch1vch2_corrs(run, subj);
+        run_vec{end+1,1} = run_labels{run};
+        subj_vec{end+1,1} = subject_labels{subj};
+    end
+end
+
+% Flatten manually
+manual_flat = [];
+for subj = 1:nSubjects
+    for run = 1:nRuns
+        manual_flat(end+1,1) = ch1vch2_corrs(run, subj);
+    end
+end
+
+% Confirm order
+isequal(manual_flat, ch1vch2_corrs(:)) 
+
+
+clear g
+close all
+figure('Position',[100 100 1200 800])
+
+g = gramm('x', run_vec, 'y', corr_vec);
+g.stat_summary('geom', {'bar', 'black_errorbar'}, 'type', 'sem');
+g.set_names('x','Run','y','Ch1 ↔ Ch2 corr');
+g.set_title('Correlation between EMG ch1 and ch2 across runs');
+g.axe_property('YLim', [-0.2 1.2]);
+g.set_text_options('Font','Helvetica', 'base_size', 16)
+g.set_point_options('base_size',12)
+g.draw();
+g.update('y',corr_vec,'color', subj_vec)
+g.geom_jitter2('dodge', 0.6);  % Optional: show individual subjects
+
+g.draw();
+
+filename = ('corr_vec_channel_1_2');
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
 
 
 
