@@ -9,7 +9,7 @@ elseif nargin==0
     no_wave = 0;
 end
 % Define parameters
-n_timepoints = 228;  % Total number of timepoints
+n_timepoints = 227;  % Total number of timepoints
 TR = 1.5;            % Time resolution in seconds
 time = (1:n_timepoints) * TR;  % Time vector from 1 to 150 seconds
 
