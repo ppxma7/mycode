@@ -20,6 +20,8 @@ dataset = {'canapi_sub01_030225', 'canapi_sub02_180325', 'canapi_sub03_180325',.
     'canapi_sub07_010725', 'canapi_sub08_010725', 'canapi_sub09_160725', ...
     'canapi_sub10_160725'};
 
+saveem = 0;
+
 userName = char(java.lang.System.getProperty('user.name'));
 savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/EMGplots/'];
 
@@ -286,84 +288,60 @@ for iSub = 1:length(dataset)
 
     %% save text files to enter later into SPM GLM - per subject
 
-    for kk = 1:4
+    if saveem
 
-        thisSlice = mySlices{iSub}(kk);
+        for kk = 1:4
 
-        thisRow = saveMat{kk,1}';
-        thisRowName = [mypath extractBefore(myfiles{thisSlice},'.') '_rectify_ch1_dsmpled.txt'];
-        writematrix(thisRow,thisRowName,'Delimiter','\t');
+            thisSlice = mySlices{iSub}(kk);
 
-        thisRow = saveMat{kk,2}';
-        thisRowName = [mypath extractBefore(myfiles{thisSlice},'.') '_rectify_ch2_dsmpled.txt'];
-        writematrix(thisRow,thisRowName,'Delimiter','\t');
-
-        %optional save accel traces if emg looks bad
-
-        if size(thisFile,1) == 5
-            thisRow = saveMat{kk,3}';
-            thisRowName = [mypath extractBefore(myfiles{thisSlice},'.') '_rectify_ch3_dsmpled.txt'];
+            thisRow = saveMat{kk,1}';
+            thisRowName = [mypath extractBefore(myfiles{thisSlice},'.') '_rectify_ch1_dsmpled.txt'];
             writematrix(thisRow,thisRowName,'Delimiter','\t');
 
-            thisRow = saveMat{kk,4}';
-            thisRowName = [mypath extractBefore(myfiles{thisSlice},'.') '_rectify_ch4_dsmpled.txt'];
+            thisRow = saveMat{kk,2}';
+            thisRowName = [mypath extractBefore(myfiles{thisSlice},'.') '_rectify_ch2_dsmpled.txt'];
             writematrix(thisRow,thisRowName,'Delimiter','\t');
 
-            thisRow = saveMat{kk,5}';
-            thisRowName = [mypath extractBefore(myfiles{thisSlice},'.') '_rectify_ch5_dsmpled.txt'];
-            writematrix(thisRow,thisRowName,'Delimiter','\t');
+            %optional save accel traces if emg looks bad
+
+            if size(thisFile,1) == 5
+                thisRow = saveMat{kk,3}';
+                thisRowName = [mypath extractBefore(myfiles{thisSlice},'.') '_rectify_ch3_dsmpled.txt'];
+                writematrix(thisRow,thisRowName,'Delimiter','\t');
+
+                thisRow = saveMat{kk,4}';
+                thisRowName = [mypath extractBefore(myfiles{thisSlice},'.') '_rectify_ch4_dsmpled.txt'];
+                writematrix(thisRow,thisRowName,'Delimiter','\t');
+
+                thisRow = saveMat{kk,5}';
+                thisRowName = [mypath extractBefore(myfiles{thisSlice},'.') '_rectify_ch5_dsmpled.txt'];
+                writematrix(thisRow,thisRowName,'Delimiter','\t');
+            end
+
         end
-
     end
     
     %% plotting
-    close all
-    t = datetime('now','TimeZone','local','Format','dd-MM-yyyy-HH-mm-ss');
-    filename1 = [savedir 'emg_dwnsmpl_' dataset{iSub} '-' char(t)];
-    figure('Position',[0 0 1400 800])
-    tiledlayout(2,2)
-
-    flays = 4; %[2 5 4 6];
-    for jj = 1:flays
-        nexttile
-        plot(saveMat_noconv{jj,1},'linewidth',2,'Color','#1f78b4')
-        hold on
-        plot(saveMat_noconv{jj,2},'linewidth',1,'Color','#d95f02')
-        hold on
-        plot(signal)
-        legend('ch1','ch2','ideal block')
-        title([extractBefore(myfiles{jj},'.')],'Interpreter','none')
-        ylim([0 1])
-    end
-
-    h = gcf;
-    set(h, 'PaperOrientation', 'landscape');
-    set(h, 'PaperUnits', 'inches');
-    set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
-    set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
-    print(h, '-dpdf', filename1, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
-
-    if size(thisFile,1) == 5
-        
+    if saveem
+        close all
         t = datetime('now','TimeZone','local','Format','dd-MM-yyyy-HH-mm-ss');
-        filename1 = [savedir 'accel_emg_dwnsmpl_' dataset{iSub} '-' char(t)];
+        filename1 = [savedir 'emg_dwnsmpl_' dataset{iSub} '-' char(t)];
         figure('Position',[0 0 1400 800])
         tiledlayout(2,2)
 
         flays = 4; %[2 5 4 6];
         for jj = 1:flays
             nexttile
-            plot(saveMat_noconv{jj,3},'linewidth',1,'Color','#1b9e77')
+            plot(saveMat_noconv{jj,1},'linewidth',2,'Color','#1f78b4')
             hold on
-            plot(saveMat_noconv{jj,4},'linewidth',1,'Color','#d95f02')
+            plot(saveMat_noconv{jj,2},'linewidth',1,'Color','#d95f02')
             hold on
-            plot(saveMat_noconv{jj,5},'linewidth',1,'Color','#7570b3')
-            hold on
-            plot(signal,'Color','#EDB120')
-            legend('x','y','z','ideal block')
+            plot(signal)
+            legend('ch1','ch2','ideal block')
             title([extractBefore(myfiles{jj},'.')],'Interpreter','none')
             ylim([0 1])
         end
+
         h = gcf;
         set(h, 'PaperOrientation', 'landscape');
         set(h, 'PaperUnits', 'inches');
@@ -371,8 +349,36 @@ for iSub = 1:length(dataset)
         set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
         print(h, '-dpdf', filename1, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
 
-    end
+        if size(thisFile,1) == 5
 
+            t = datetime('now','TimeZone','local','Format','dd-MM-yyyy-HH-mm-ss');
+            filename1 = [savedir 'accel_emg_dwnsmpl_' dataset{iSub} '-' char(t)];
+            figure('Position',[0 0 1400 800])
+            tiledlayout(2,2)
+
+            flays = 4; %[2 5 4 6];
+            for jj = 1:flays
+                nexttile
+                plot(saveMat_noconv{jj,3},'linewidth',1,'Color','#1b9e77')
+                hold on
+                plot(saveMat_noconv{jj,4},'linewidth',1,'Color','#d95f02')
+                hold on
+                plot(saveMat_noconv{jj,5},'linewidth',1,'Color','#7570b3')
+                hold on
+                plot(signal,'Color','#EDB120')
+                legend('x','y','z','ideal block')
+                title([extractBefore(myfiles{jj},'.')],'Interpreter','none')
+                ylim([0 1])
+            end
+            h = gcf;
+            set(h, 'PaperOrientation', 'landscape');
+            set(h, 'PaperUnits', 'inches');
+            set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
+            set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
+            print(h, '-dpdf', filename1, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
+
+        end
+    end
 
 
 
@@ -382,6 +388,11 @@ disp('...done!')
 
 keyboard
 %% run correlations
+
+[~,signal] = wavySignal(0,1,227);
+signal = signal./2;
+
+
 % Assume your cell array is called `emg_data`, size 4x5x10
 correlations = zeros(4, 5, 10);  % Preallocate
 
@@ -389,7 +400,8 @@ correlations = zeros(4, 5, 10);  % Preallocate
 for subj = 2:10
     for ch = 1:5
         for run = 1:4
-            emg_trace = opMatsubs{run, ch, subj};  % 1x227 double
+            emg_trace = opMatsubs_noconv{run, ch, subj};  % 1x227 double
+            emg_trace = emg_trace(1:length(signal)); % fudge to keep sizes
             r = corr(emg_trace(:), signal(:));    % Pearson correlation
             correlations(run, ch, subj) = r;
         end
@@ -453,7 +465,7 @@ g.set_title('Correlation of EMG/Accel signals with boxcar');
 g.axe_property('YLim', [0 1]);  % Optional: fix y-axis
 g.draw()
 
-filename = ('corr_vec_1');
+filename = ('corr_vec_1_noconv');
 g.export('file_name',filename, ...
     'export_path',...
     savedir,...
@@ -467,7 +479,7 @@ g.set_names('x','Run','y','Correlation','color','Channel');
 g.set_title('Boxcar correlations grouped by run');
 g.axe_property('YLim', [0 1]);
 g.draw()
-filename = ('corr_vec_2');
+filename = ('corr_vec_2_noconv');
 g.export('file_name',filename, ...
     'export_path',...
     savedir,...
@@ -482,7 +494,7 @@ g.set_names('x','Channel','y','Correlation','color','Subject');
 g.set_title('Subject-level boxcar correlations');
 g.axe_property('YLim', [-0.1 1]);
 g.draw();
-filename = ('corr_vec_3');
+filename = ('corr_vec_3_noconv');
 g.export('file_name',filename, ...
     'export_path',...
     savedir,...
@@ -494,21 +506,27 @@ g.export('file_name',filename, ...
 
 %% what about channel 1 to 2
 nRuns = 4;
-nSubjects = 9;
+nSubjects = 10;
 
 ch1vch2_corrs = zeros(nRuns, nSubjects);  % run × subject
 
-for subj = 2:10
-    subj_idx = subj - 1;  % shift index since we drop subject 1
+for subj = 1:10
+    %subj_idx = subj - 1;  % shift index since we drop subject 1
+    subj_idx = subj;  % shift index since we drop subject 1
+
     for run = 1:nRuns
-        trace1 = opMatsubs{run, 1, subj};  % channel 1
-        trace2 = opMatsubs{run, 2, subj};  % channel 2
+        trace1 = opMatsubs_noconv{run, 1, subj};  % channel 1
+        trace2 = opMatsubs_noconv{run, 2, subj};  % channel 2
+
+        trace1 = trace1(1:length(signal));
+        trace2 = trace2(1:length(signal));
 
         ch1vch2_corrs(run, subj_idx) = corr(trace1(:), trace2(:));
     end
 end
 run_labels = {'1barR', 'lowR', '1barL', 'lowL'};
-subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 2:10, 'UniformOutput', false);
+%subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 2:10, 'UniformOutput', false);
+subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 1:10, 'UniformOutput', false);
 
 corr_vec = [];
 run_vec = {};
@@ -551,11 +569,91 @@ g.geom_jitter2('dodge', 0.6);  % Optional: show individual subjects
 
 g.draw();
 
-filename = ('corr_vec_channel_1_2');
+filename = ('corr_vec_channel_1_2_noconv');
 g.export('file_name',filename, ...
     'export_path',...
     savedir,...
     'file_type','pdf')
+
+%% I want to look at amplitudes of the no conv EMG traces
+rms_matrix = zeros(nSubjects, nRuns * nChans);  % 10 x 8 (4 runs × 2 chans)
+labels = {};
+
+idx = 1;
+for run = 1:nRuns
+    for chan = 1:nChans
+        labels{idx} = sprintf('%s - %s', run_labels{run}, channel_labels{chan});
+        for subj = 1:10
+            rms_matrix(subj, idx) = rms(opMatsubs_noconv{run, chan, subj});
+        end
+        idx = idx + 1;
+    end
+end
+
+% RMS imagesc matrix, low = low mag, high = high magnitude
+figure;
+imagesc(rms_matrix);
+colorbar;
+xticks(1:(nRuns*nChans));
+xticklabels(labels);
+yticks(1:nSubjects);
+yticklabels(subject_labels);
+xlabel('Run - Channel');
+ylabel('Subject');
+title('RMS of EMG traces');
+h = gcf;
+thisFilename = [savedir 'rms_matrix_emg'];
+%print(h, '-dpdf', thisFilename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
+print(h, '-dpdf', thisFilename, '-r300');  % -r300 sets the resolution to 300 DPI
+
+
+% Now plot individual traces of EMG plots
+run_idx = 1;  % Choose which run to plot (1 = '1barR', etc.)
+run_label = {'1barR', 'lowR', '1barL', 'lowL'};
+channel_colors = {'#1f78b4', '#d95f02'};  % ch1 = blue, ch2 = orange
+
+for iRun = 1:4
+    % Prepare figure
+    figure('Position', [100 100 1600 600]);
+    tiledlayout(2,5);  % 2 rows × 5 columns
+
+    for subj = 1:10  % subjects 2 to 10 (i.e., 9 subjects)
+        nexttile
+        % Get EMG traces
+        ch1 = opMatsubs_noconv{iRun, 1, subj};
+        ch2 = opMatsubs_noconv{iRun, 2, subj};
+
+        plot(ch1, 'Color', channel_colors{1}, 'LineWidth', 1.2); hold on;
+        plot(ch2, 'Color', channel_colors{2}, 'LineWidth', 1.2);
+
+        title(sprintf('Subject %d', subj));
+        ylim([-0.1 1]);  % Adjust based on range of EMG
+        xlim([1 length(ch1)]);
+        if subj == 2
+            ylabel('Amplitude');
+        end
+        if subj >= 8
+            xlabel('Timepoints');
+        end
+    end
+
+    legend({'EMG ch1','EMG ch2'}, 'Position',[0.85 0.5 0.1 0.1]);  % optional
+    sgtitle(sprintf('Raw EMG traces (Run: %s)', run_label{iRun}));
+
+    thisFilename = [savedir 'emg_traces_per_subj_' run_label{iRun}];
+    h = gcf;
+    set(h, 'PaperOrientation', 'landscape');
+    set(h, 'PaperUnits', 'inches');
+    set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
+    set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
+    print(h, '-dpdf', thisFilename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
+
+
+end
+
+
+
+
 
 
 

@@ -1,15 +1,26 @@
-function[convolved_signal, signal] = wavySignal(noise_val, no_wave)
+function[convolved_signal, signal] = wavySignal(noise_val, no_wave, n_timepoints)
 
 
-if nargin==1
-    %noise_val = 0.5;
-    no_wave = 0;
-elseif nargin==0
-    noise_val = 0.5;
-    no_wave = 0;
+
+% Set default values
+default_noise_val = 0.5;
+default_no_wave = 0;
+default_n_timepoints = 227;
+
+% Override defaults based on number of input arguments
+if nargin < 1
+    noise_val = default_noise_val;
 end
+if nargin < 2
+    no_wave = default_no_wave;
+end
+if nargin < 3
+    n_timepoints = default_n_timepoints;
+end
+
+
 % Define parameters
-n_timepoints = 227;  % Total number of timepoints
+%n_timepoints = 227;  % Total number of timepoints
 TR = 1.5;            % Time resolution in seconds
 time = (1:n_timepoints) * TR;  % Time vector from 1 to 150 seconds
 

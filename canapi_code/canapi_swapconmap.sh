@@ -18,24 +18,23 @@ SUBJECTS=(
 )
 
 # List of subfolders
-FOLDERS=(
-  "first_level"
-  "first_level_accel"
-  "first_level_wemg"
-)
-
 # FOLDERS=(
 #   "first_level"
+#   "first_level_accel"
 #   "first_level_wemg"
 # )
+
+FOLDERS=(
+  "first_level"
+)
 
 # Loop through each subject and subfolder
 for subj in "${SUBJECTS[@]}"; do
   for folder in "${FOLDERS[@]}"; do
     # Construct path
     SUBJ_PATH="$BASE_PATH/$subj/spm_analysis/$folder"
-    INPUT_FILE="$SUBJ_PATH/con_0008.nii"
-    OUTPUT_FILE="$SUBJ_PATH/con_0008_flipped.nii.gz"
+    INPUT_FILE="$SUBJ_PATH/con_0010.nii"
+    OUTPUT_FILE="$SUBJ_PATH/con_0010_flipped.nii.gz"
 
     # Check file exists
     if [[ -f "$INPUT_FILE" ]]; then
