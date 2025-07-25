@@ -5,6 +5,7 @@ clc
 
 % Locate data
 mypath = '/Volumes/arianthe/PAIN/';
+%mypath = '/Volumes/r15/DRS-TOUCHMAP/ma_ares_backup/PAIN/';
 cd(mypath)
 
 userName = char(java.lang.System.getProperty('user.name'));
@@ -17,6 +18,10 @@ mysubs_3t = {'tgi_sub_01_13676_221124','tgi_sub_02_15435_221124','tgi_sub_03_143
     'tgi_sub_04_12778_221124','tgi_sub_05_15874_230622'};
 
 nps_timeseries = 0;
+
+addpath(genpath('/Users/ppzma/Documents/MATLAB/CanlabCore/'));
+addpath(genpath('/Users/ppzma/Documents/MATLAB/NPS_share/'));
+
 
 %%
 theOrder_7T = {'Pre Hand run1','Pre Hand run2','Pre Arm run1','Pre Arm run2'};
@@ -138,8 +143,8 @@ details = {'thermode_hand','thermode_arm',...
 details_stack = repmat(details,1,length(dataList));
 details_stack = details_stack(:);
 
-details_cond = {'heat','heat',...
-    'warm','warm'}';
+details_cond = {'Noxious heat','Noxious heat',...
+    'Innocuous heat','Innocuous heat'}';
 details_cond_stack = repmat(details_cond,1,length(dataList));
 details_cond_stack = details_cond_stack(:);
 
@@ -153,6 +158,23 @@ end
 
 data = data(:);
 
+% save as a table for excel
+% Flatten subject list
+% Repeat each subject name 4 times
+subject_col = repmat(mysubs_7t(:), 1, 4)';  % 4 rows per subject
+subject_col = subject_col(:);    
+% Sanity check
+if length(subject_col) ~= length(data)
+    error('Mismatch in subject IDs and data length.');
+end
+
+% Make table
+T = table(subject_col, details_stack, details_cond_stack, data, ...
+    'VariableNames', {'Subject', 'Details', 'Condition', 'NPS'});
+writetable(T,[savedir 'nps_table_7T_noTGICAP'],'FileType','spreadsheet')
+
+
+
 thisFont = 'Helvetica';
 myfontsize = 16;
 mycmap = [0.8 0.8 0.8];
@@ -160,7 +182,7 @@ mycmap = [0.8 0.8 0.8];
 figure('Position',[100 100 800 600])
 g = gramm('x',details_cond_stack,'y',data);
 %g.stat_summary('type','std','geom',{'bar','black_errorbar'})
-g.stat_boxplot('width', 0.5, 'dodge', 5, 'alpha', 0, 'linewidth', 2, 'drawoutlier',0)
+g.stat_boxplot2('width', 0.5, 'dodge', 5, 'alpha', 0, 'linewidth', 2, 'drawoutlier',0)
 g.set_text_options('font', thisFont, 'base_size', myfontsize)
 g.set_names('x','Stimulation', 'y', 'Condition')
 g.axe_property('YLim',[-15 30],'XGrid','on','YGrid','on');
@@ -176,14 +198,14 @@ g.set_color_options('map','lch')
 g.draw()
 
 % add this fudgey bit to include values from Jo PFP
-g.update('x',{'heat'; 'warm'},'y',[3.71; 500])
-g.geom_jitter('edgewidth',2)
+g.update('x',{'Noxious heat'; 'Innocuous heat'},'y',[3.71; 500])
+g.geom_jitter2('edgewidth',2)
 g.set_point_options('base_size',12)
 g.set_color_options('map',[1 1 0])
 g.draw
 % 
-g.update('x',{'heat'; 'warm'},'y',[500; -2.03])
-g.geom_jitter('edgewidth',2)
+g.update('x',{'Noxious heat'; 'Innocuous heat'},'y',[500; -2.03])
+g.geom_jitter2('edgewidth',2)
 g.set_point_options('base_size',12)
 g.set_color_options('map',[1 1 0])
 g.draw
@@ -349,10 +371,13 @@ details = {'thermode_hand','thermode_arm',...
     }';
 details_stack = repmat(details,1,length(dataList));
 details_stack = details_stack(:);
+% 
+% details_cond = {'heat','heat',...
+%     'warm','warm',...
+%     }';
 
-details_cond = {'heat','heat',...
-    'warm','warm',...
-    }';
+details_cond = {'Noxious heat','Noxious heat',...
+    'Innocuous heat','Innocuous heat'}';
 details_cond_stack = repmat(details_cond,1,length(dataList));
 details_cond_stack = details_cond_stack(:);
 
@@ -367,6 +392,22 @@ end
 
 data = data(:);
 
+% save as a table for excel
+% Flatten subject list
+% Repeat each subject name 4 times
+subject_col = repmat(mysubs_3t(:), 1, 4)';  % 4 rows per subject
+subject_col = subject_col(:);    
+% Sanity check
+if length(subject_col) ~= length(data)
+    error('Mismatch in subject IDs and data length.');
+end
+
+% Make table
+T = table(subject_col, details_stack, details_cond_stack, data, ...
+    'VariableNames', {'Subject', 'Details', 'Condition', 'NPS'});
+writetable(T,[savedir 'nps_table_3T_noTGICAP'],'FileType','spreadsheet')
+
+
 thisFont = 'Helvetica';
 myfontsize = 16;
 mycmap = [0.8 0.8 0.8];
@@ -374,7 +415,7 @@ mycmap = [0.8 0.8 0.8];
 figure('Position',[100 100 800 600])
 g = gramm('x',details_cond_stack,'y',data);
 %g.stat_summary('type','std','geom',{'bar','black_errorbar'})
-g.stat_boxplot('width', 0.5, 'dodge', 5, 'alpha', 0, 'linewidth', 2, 'drawoutlier',0)
+g.stat_boxplot2('width', 0.5, 'dodge', 5, 'alpha', 0, 'linewidth', 2, 'drawoutlier',0)
 g.set_text_options('font', thisFont, 'base_size', myfontsize)
 g.set_names('x','Stimulation', 'y', 'Condition')
 g.axe_property('YLim',[-50 140],'XGrid','on','YGrid','on');
@@ -391,14 +432,14 @@ g.draw()
 
 
 % %add this fudgey bit to include values from Jo PFP
-g.update('x',{'heat';'warm'},'y',[46.29; 500])
-g.geom_jitter('edgewidth',2)
+g.update('x',{'Noxious heat';'Innocuous heat'},'y',[46.29; 500])
+g.geom_jitter2('edgewidth',2)
 g.set_point_options('base_size',12)
 g.set_color_options('map',[1 1 0])
 g.draw
 % 
-g.update('x',{'heat';'warm'},'y',[500; 14.07])
-g.geom_jitter('edgewidth',2)
+g.update('x',{'Noxious heat';'Innocuous heat'},'y',[500; 14.07])
+g.geom_jitter2('edgewidth',2)
 g.set_point_options('base_size',12)
 g.set_color_options('map',[1 1 0])
 g.draw
