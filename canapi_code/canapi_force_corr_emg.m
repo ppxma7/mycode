@@ -6,7 +6,7 @@ clc
 dataset = {'canapi_sub10_160725'};
 
 userName = char(java.lang.System.getProperty('user.name'));
-savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/forceplot/'];
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/forceplots/'];
 
 
 myfiles = {
@@ -90,6 +90,10 @@ for iSub = 1:length(dataset)
         ch1_clv_dt_nrm_dsmpl = resample(ch1_clv_dt_nrm, target_num_samples,thisLen);
         ch2_clv_dt_nrm_dsmpl = resample(ch2_clv_dt_nrm, target_num_samples,thisLen_ch2);
 
+
+        ch1_clv_dt_nrm_dsmpl = ch1_clv_dt_nrm_dsmpl(1:target_num_samples);
+        ch2_clv_dt_nrm_dsmpl = ch2_clv_dt_nrm_dsmpl(1:target_num_samples);
+
         %%
         forcepath = ['/Volumes/kratos/' dataset{iSub} '/forceplot/'];
 
@@ -118,11 +122,34 @@ for iSub = 1:length(dataset)
 %         plot(frc_clv_nrm)
 %         nexttile
 %         plot(frc_clv_nrm_rs)
-
+        
+        r(ii,iSub) = corr(frc_clv_nrm_rs, ch1_clv_dt_nrm_dsmpl');
+        disp(r(ii,iSub))
+        
         figure('Position',[100 100 1000 400])
-        plot(frc_clv_nrm_rs)
+        plot(frc_clv_nrm_rs,'linewidth',2)
         hold on
-        plot(ch1_clv_dt_nrm_dsmpl)
+        plot(ch1_clv_dt_nrm_dsmpl,'linewidth',2)
+        ylabel('Pearson Correlation')
+        legend('Force trace','EMG LL 1bar','location','southeast')
+        title(['r: ' num2str(r(ii,iSub))])
+    
+
+
+        t = datetime('now','TimeZone','local','Format','dd-MM-yyyy-HH-mm-ss');
+        filename = [savedir 'forcetrace_v_emg-' dataset{iSub} '-' char(t)];
+
+        h = gcf;
+        set(h, 'PaperOrientation', 'landscape');
+        set(h, 'PaperUnits', 'inches');
+        set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
+        set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
+        print(h, '-dpdf', filename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
+
+
+        
+
+
 
         %%
 
