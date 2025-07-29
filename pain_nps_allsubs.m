@@ -18,6 +18,9 @@ mysubs_3t = {'tgi_sub_01_13676_221124','tgi_sub_02_15435_221124','tgi_sub_03_143
 
 nps_timeseries = 0;
 
+addpath(genpath('/Users/ppzma/Documents/MATLAB/CanlabCore/'));
+addpath(genpath('/Users/ppzma/Documents/MATLAB/NPS_share/'));
+
 %%
 theOrder_7T = {'Pre Hand run1','Pre Hand run2','Pre Arm run1','Pre Arm run2','Post Arm run1','Post Arm run2'};
 
@@ -145,8 +148,11 @@ details = {'thermode_hand_pre','thermode_arm_pre','thermode_arm_post',...
 details_stack = repmat(details,1,length(dataList));
 details_stack = details_stack(:);
 
-details_cond = {'heat','heat','heat',...
-    'warm','warm','warm'}';
+% details_cond = {'heat','heat','heat',...
+%     'warm','warm','warm'}';
+
+details_cond = {'Noxious heat','Noxious heat','Noxious heat',...
+    'Innocuous heat','Innocuous heat','Innocuous heat'}';
 details_cond_stack = repmat(details_cond,1,length(dataList));
 details_cond_stack = details_cond_stack(:);
 
@@ -159,6 +165,19 @@ for ii = 1:length(dataList)
 end
 
 data = data(:);
+nrows = 6;
+subject_col = repmat(mysubs_7t(:), 1, nrows)';  % 4 rows per subject
+subject_col = subject_col(:);    
+% Sanity check
+if length(subject_col) ~= length(data)
+    error('Mismatch in subject IDs and data length.');
+end
+
+% Make table
+T = table(subject_col, details_stack, details_cond_stack, data, ...
+    'VariableNames', {'Subject', 'Details', 'Condition', 'NPS'});
+writetable(T,[savedir 'nps_table_7T'],'FileType','spreadsheet')
+
 
 thisFont = 'Helvetica';
 myfontsize = 16;
@@ -167,7 +186,7 @@ mycmap = [0.8 0.8 0.8];
 figure('Position',[100 100 800 600])
 g = gramm('x',details_cond_stack,'y',data);
 %g.stat_summary('type','std','geom',{'bar','black_errorbar'})
-g.stat_boxplot('width', 0.5, 'dodge', 5, 'alpha', 0, 'linewidth', 2, 'drawoutlier',0)
+g.stat_boxplot2('width', 0.5, 'dodge', 5, 'alpha', 0, 'linewidth', 2, 'drawoutlier',0)
 g.set_text_options('font', thisFont, 'base_size', myfontsize)
 g.set_names('x','Stimulation', 'y', 'Condition')
 g.axe_property('YLim',[-15 30],'XGrid','on','YGrid','on');
@@ -176,21 +195,21 @@ g.set_color_options('map',mycmap)
 g.set_title('7T NPS Scalar values')
 g.draw()
 g.update('color',details_stack)
-g.geom_jitter
+g.geom_jitter2
 g.set_point_options('base_size',10)
 g.set_order_options('x',0,'color',0)
 g.set_color_options('map','lch')
 g.draw()
 
 % add this fudgey bit to include values from Jo PFP
-g.update('x',{'heat'; 'warm'},'y',[3.71; 500])
-g.geom_jitter('edgewidth',2)
+g.update('x',{'Noxious heat'; 'Innocuous heat'},'y',[3.71; 500])
+g.geom_jitter2('edgewidth',2)
 g.set_point_options('base_size',12)
 g.set_color_options('map',[1 1 0])
 g.draw
 % 
-g.update('x',{'heat'; 'warm'},'y',[500; -2.03])
-g.geom_jitter('edgewidth',2)
+g.update('x',{'Noxious heat'; 'Innocuous heat'},'y',[500; -2.03])
+g.geom_jitter2('edgewidth',2)
 g.set_point_options('base_size',12)
 g.set_color_options('map',[1 1 0])
 g.draw
@@ -365,6 +384,8 @@ details_stack = details_stack(:);
 details_cond = {'heat','heat','tgi','tgi',...
     'warm','warm','tgi_warm','tgi_warm',...
     'tgi_cold','tgi_cold'}';
+
+
 details_cond_stack = repmat(details_cond,1,length(dataList));
 details_cond_stack = details_cond_stack(:);
 
@@ -378,6 +399,19 @@ for ii = 1:length(dataList)
 end
 
 data = data(:);
+nrows = 6;
+subject_col = repmat(mysubs_3t(:), 1, nrows)';  % 4 rows per subject
+subject_col = subject_col(:);    
+% Sanity check
+if length(subject_col) ~= length(data)
+    error('Mismatch in subject IDs and data length.');
+end
+
+% Make table
+T = table(subject_col, details_stack, details_cond_stack, data, ...
+    'VariableNames', {'Subject', 'Details', 'Condition', 'NPS'});
+writetable(T,[savedir 'nps_table_3T'],'FileType','spreadsheet')
+
 
 thisFont = 'Helvetica';
 myfontsize = 16;
