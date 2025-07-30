@@ -94,6 +94,18 @@ for iSub = 1:length(dataset)
         ch1_clv_dt_nrm_dsmpl = ch1_clv_dt_nrm_dsmpl(1:target_num_samples);
         ch2_clv_dt_nrm_dsmpl = ch2_clv_dt_nrm_dsmpl(1:target_num_samples);
 
+        % get z trace
+        ch5_clv = thisFile(5,startMark:endMark);
+        thisLen5 = length(ch5_clv);
+        [myupper5, mylower5] = envelope(ch5_clv,winLen,'rms');
+        ch5_clv_dt_nrm = normalize(myupper5,'range');
+        ch5_clv_dt_nrm_dsmpl = resample(ch5_clv_dt_nrm, target_num_samples,thisLen5);
+        ch5_clv_dt_nrm_dsmpl = ch5_clv_dt_nrm_dsmpl(1:target_num_samples);
+
+        ch1_clv_dt_nrm_dsmpl = transpose(ch1_clv_dt_nrm_dsmpl);
+        ch5_clv_dt_nrm_dsmpl = transpose(ch5_clv_dt_nrm_dsmpl);
+
+
         %%
         forcepath = ['/Volumes/kratos/' dataset{iSub} '/forceplot/'];
 
@@ -111,39 +123,54 @@ for iSub = 1:length(dataset)
         frc_clv_nrm = normalize(myupperfrc,'range');
 
         frc_clv_nrm_rs = resample(frc_clv_nrm, target_num_samples,length(frc_clv_nrm));
-
+        %%
         close all
-% 
-%         figure('Position',[100 100 1000 400])
-%         tiledlayout(1,3)
-%         nexttile
-%         plot(myupperfrc)
-%         nexttile
-%         plot(frc_clv_nrm)
-%         nexttile
-%         plot(frc_clv_nrm_rs)
         
-        r(ii,iSub) = corr(frc_clv_nrm_rs, ch1_clv_dt_nrm_dsmpl');
-        disp(r(ii,iSub))
+        r_frc_emg(ii,iSub) = corr(frc_clv_nrm_rs, ch1_clv_dt_nrm_dsmpl);
+        r_frc_acc(ii,iSub) = corr(frc_clv_nrm_rs, ch5_clv_dt_nrm_dsmpl);
+        r_emg_acc(ii,iSub) = corr(ch1_clv_dt_nrm_dsmpl, ch5_clv_dt_nrm_dsmpl);
+
+        disp(['frc v emg: ' num2str(r_frc_emg(ii,iSub))])
+        disp(['frc v accel: ' num2str(r_frc_acc(ii,iSub))])
+        disp(['accel v emg: ' num2str(r_emg_acc(ii,iSub))])
         
-        figure('Position',[100 100 1000 400])
+        figure('Position',[100 100 1200 700])
+        tiledlayout(2,2)
+        nexttile
         plot(frc_clv_nrm_rs,'linewidth',2)
         hold on
         plot(ch1_clv_dt_nrm_dsmpl,'linewidth',2)
         ylabel('Pearson Correlation')
         legend('Force trace','EMG LL 1bar','location','southeast')
-        title(['r: ' num2str(r(ii,iSub))])
-    
+        title(['Force vs EMG r: ' num2str(r_frc_emg(ii,iSub))])
 
+        nexttile
+        plot(frc_clv_nrm_rs,'linewidth',2)
+        hold on
+        plot(ch5_clv_dt_nrm_dsmpl,'linewidth',2)
+        ylabel('Pearson Correlation')
+        legend('Force trace','Accel Z','location','southoutside')
+        title(['Force vs Accel r: ' num2str(r_frc_acc(ii,iSub))])
 
-        t = datetime('now','TimeZone','local','Format','dd-MM-yyyy-HH-mm-ss');
-        filename = [savedir 'forcetrace_v_emg-' dataset{iSub} '-' char(t)];
+        nexttile
+        plot(ch1_clv_dt_nrm_dsmpl,'linewidth',2)
+        hold on
+        plot(ch5_clv_dt_nrm_dsmpl,'linewidth',2)
+        ylabel('Pearson Correlation')
+        legend('EMG LL 1bar','Accel Z','location','southeast')
+        title(['EMG vs Accel r: ' num2str(r_emg_acc(ii,iSub))])
+
+        %t = datetime('now','TimeZone','local','Format','dd-MM-yyyy-HH-mm-ss');
+        filename = [savedir 'forcetrace_v_emg_v_accel-' dataset{iSub}];
 
         h = gcf;
+        a = 20;
+        b = 12;
+
         set(h, 'PaperOrientation', 'landscape');
         set(h, 'PaperUnits', 'inches');
-        set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
-        set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
+        set(h, 'PaperSize', [a b]);  % Increase the paper size to 20x12 inches
+        set(h, 'PaperPosition', [0 0 a b]);  % Adjust paper position to fill the paper size
         print(h, '-dpdf', filename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
 
 
