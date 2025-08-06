@@ -528,7 +528,7 @@ run_labels = {'1barR', 'lowR', '1barL', 'lowL'};
 %subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 2:10, 'UniformOutput', false);
 subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 1:10, 'UniformOutput', false);
 
-corr_vec = [];
+corr_vec = []; % remaking this to include subject 1
 run_vec = {};
 subj_vec = {};
 
@@ -566,7 +566,7 @@ g.set_point_options('base_size',12)
 g.draw();
 g.update('y',corr_vec,'color', subj_vec)
 g.geom_jitter2('dodge', 0.6);  % Optional: show individual subjects
-
+g.set_order_options('color',0)
 g.draw();
 
 filename = ('corr_vec_channel_1_2_noconv');
@@ -576,12 +576,14 @@ g.export('file_name',filename, ...
     'file_type','pdf')
 
 %% I want to look at amplitudes of the no conv EMG traces
+
+nChans = 2;  % Only EMG 1 and 2
 rms_matrix = zeros(nSubjects, nRuns * nChans);  % 10 x 8 (4 runs × 2 chans)
 labels = {};
 
 idx = 1;
 for run = 1:nRuns
-    for chan = 1:nChans
+    for chan = 1:nChans % Only EMG 1 and 2
         labels{idx} = sprintf('%s - %s', run_labels{run}, channel_labels{chan});
         for subj = 1:10
             rms_matrix(subj, idx) = rms(opMatsubs_noconv{run, chan, subj});
@@ -607,7 +609,78 @@ thisFilename = [savedir 'rms_matrix_emg'];
 print(h, '-dpdf', thisFilename, '-r300');  % -r300 sets the resolution to 300 DPI
 
 
-% Now plot individual traces of EMG plots
+%% correlation vs RMS of ch1 and ch2
+emg1 = rms_matrix(:, 1:2:end);  % Channel 1 for all runs → size 10 × 4 - get odd cols
+emg2 = rms_matrix(:, 2:2:end);  % Channel 2 for all runs → size 10 × 4 - get even cols
+
+% fix to match corr vec
+rms_vals_ch1 = transpose(emg1);
+rms_vals_ch1 = rms_vals_ch1(:);
+
+rms_vals_ch2 = transpose(emg2);
+rms_vals_ch2 = rms_vals_ch2(:);
+% rms_vals_ch1 = emg1(:);
+% rms_vals_ch2 = emg2(:);
+mean_rms = (rms_vals_ch1 + rms_vals_ch2) / 2;
+
+% careful because subject and runs are different here in rms matrix
+% compared to corr_vec!!!
+
+%rmssub = repmat(subject_labels(:),1,4);
+%transpose(rmssub)
+
+mymark = {'d','s','o','p'};
+% Plot
+close all
+clear g
+figure('Position',[100 100 800 600]);
+
+g = gramm('x', mean_rms, 'y', corr_vec, 'color', subj_vec,'marker',run_vec);
+g.geom_point();
+%g.stat_glm();  % Fit regression line
+g.set_names('x','Mean RMS','y','Correlation','color','Subject');
+g.set_title('Correlation vs RMS');
+g.set_text_options('Font','Helvetica','base_size',12);
+%.set_point_options('base_size',10)
+g.set_point_options("markers",mymark, 'base_size',12)
+g.set_order_options('color',0)
+
+g.draw();
+
+filename = ('rms_corr_trend_gramm');
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
+
+% corr_vec is the correlation matrix from earlier 
+figure;
+scatter(mean_rms, corr_vec, 60, 'filled')
+xlabel('Mean RMS (CH1 & CH2)')
+ylabel('Correlation (CH1 vs CH2)')
+title('Correlation vs Amplitude (RMS)')
+grid on
+% Fit linear model: corr = beta0 + beta1 * RMS
+p = polyfit(mean_rms, corr_vals, 1);  % Degree 1 = linear
+
+% Generate fit line
+x_fit = linspace(min(mean_rms), max(mean_rms), 100);
+y_fit = polyval(p, x_fit);
+
+hold on;
+plot(x_fit, y_fit, 'r-', 'LineWidth', 2)
+legend('Data', sprintf('Linear Fit: y = %.2fx + %.2f', p(1), p(2)),'Location','best')
+h = gcf;
+thisFilename = [savedir 'rms_corr_trend'];
+%print(h, '-dpdf', thisFilename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
+print(h, '-dpdf', thisFilename, '-r300');  % -r300 sets the resolution to 300 DPI
+% Optional: stats
+mdl = fitlm(mean_rms, corr_vals);
+disp(mdl)  % Gives R², p-value, CI, etc.
+
+
+
+%% Now plot individual traces of EMG plots
 run_idx = 1;  % Choose which run to plot (1 = '1barR', etc.)
 run_label = {'1barR', 'lowR', '1barL', 'lowL'};
 channel_colors = {'#1f78b4', '#d95f02'};  % ch1 = blue, ch2 = orange

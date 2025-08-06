@@ -40,7 +40,7 @@ g.set_point_options('base_size',8)
 g.set_order_options('x',0)
 g.draw()
 g.update('y',MVCs,'color',subj);
-g.geom_jitter('dodge', 0.6);  % adds subject dots
+g.geom_jitter2('dodge', 0.6);  % adds subject dots
 %g.no_legend
 
 g.set_order_options('x',0)
@@ -53,4 +53,17 @@ g.export('file_name',filename, ...
     'export_path',...
     savedir,...
     'file_type','pdf')
+
+%% can we stats on this
+
+[P, ANOVATAB, STATS] = anova1(MVCs,grp);
+
+[COMPARISON,MEANS,H,GNAMES] = multcompare(STATS);
+tbldom = array2table(COMPARISON,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A")=GNAMES(tbldom.("Group A"));
+tbldom.("Group B")=GNAMES(tbldom.("Group B"));
+writetable(tbldom,[savedir 'MVCplot_stats'],'FileType','spreadsheet')
+
+
 
