@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # Set base directory containing the glmdir folders
-base_dir="/Volumes/r15/DRS-GBPerm/other/outputs/etiv_doss/"  # Change this to the actual path
+base_dir="/Volumes/r15/DRS-GBPerm/other/outputs/etiv_doss_wcov/"  # Change this to the actual path
 
 # Set export directory
-export_dir="/Users/ppzma/Library/CloudStorage/OneDrive-TheUniversityofNottingham/stage/nexpo_screenshots/eTIV_groups_doss"
+export_dir="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_screenshots/eTIV_groups_doss_wcov"
 
 # List of GLM folders
 glmdir_list=(
-  "lh.thickness.NexpoStudy_eTIV.10.glmdir"
-  "lh.volume.NexpoStudy_eTIV.10.glmdir"
-  "rh.thickness.NexpoStudy_eTIV.10.glmdir"
-  "rh.volume.NexpoStudy_eTIV.10.glmdir"
+  "lh.thickness.NexpoStudy_eTIV_wcov.10.glmdir"
+  "lh.volume.NexpoStudy_eTIV_wcov.10.glmdir"
+  "rh.thickness.NexpoStudy_eTIV_wcov.10.glmdir"
+  "rh.volume.NexpoStudy_eTIV_wcov.10.glmdir"
 )
 
 # Loop through each GLM dir
