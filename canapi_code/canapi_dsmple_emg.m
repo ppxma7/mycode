@@ -21,6 +21,7 @@ dataset = {'canapi_sub01_030225', 'canapi_sub02_180325', 'canapi_sub03_180325',.
     'canapi_sub10_160725'};
 
 saveem = 0;
+ch2normch1 = 1;
 
 userName = char(java.lang.System.getProperty('user.name'));
 savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/EMGplots/'];
@@ -163,13 +164,42 @@ for iSub = 1:length(dataset)
         [myupper, mylower] = envelope(ch1_clv,winLen,'rms');
         [myupper2, mylower2] = envelope(ch2_clv,winLen,'rms');
 
-        ch1_clv_dt_nrm = normalize(myupper,'range');
-        ch2_clv_dt_nrm = normalize(myupper2,'range');
+        if ch2normch1
+            disp('Doing norm of ch2 to ch1, not within')
+            baselineX = 100000;
+            baseline1 = mean(myupper(1:baselineX));
+            baseline2 = mean(myupper2(1:baselineX));
+            % Remove baseline
+            ch1_zero = myupper - baseline1;
+            ch2_zero = myupper2 - baseline2;
+            % Normalize
+            if ii == 1 || ii == 2
+                ch1_clv_dt_nrm = ch1_zero / max(ch1_zero);         % 0–1
+                ch2_clv_dt_nrm = ch2_zero / max(ch1_zero);
+            elseif ii == 3 || ii == 4
+                ch1_clv_dt_nrm = ch1_zero / max(ch2_zero);         % 0–1
+                ch2_clv_dt_nrm = ch2_zero / max(ch2_zero);
+            end
 
-        % downsample the signal, to the desired target, here it is 114
-        disp('resampling')
-        ch1_clv_dt_nrm_dsmpl = resample(ch1_clv_dt_nrm, target_num_samples,thisLen);
-        ch2_clv_dt_nrm_dsmpl = resample(ch2_clv_dt_nrm, target_num_samples,thisLen_ch2);
+            % downsample the signal, to the desired target, here it is 114
+            disp('resampling')
+            ch1_clv_dt_nrm_dsmpl = resample(ch1_clv_dt_nrm, target_num_samples,thisLen);
+            ch2_clv_dt_nrm_dsmpl = resample(ch2_clv_dt_nrm, target_num_samples,thisLen_ch2);
+
+            ch1_clv_dt_nrm_dsmpl = ch1_clv_dt_nrm_dsmpl / max(ch1_clv_dt_nrm_dsmpl);
+            ch2_clv_dt_nrm_dsmpl = ch2_clv_dt_nrm_dsmpl / max(ch1_clv_dt_nrm_dsmpl);  % still relative to ch1
+        else
+            disp('Reg norm')
+            ch1_clv_dt_nrm = normalize(myupper,'range');
+            ch2_clv_dt_nrm = normalize(myupper2,'range');
+            ch1_clv_dt_nrm_dsmpl = normalize(ch1_clv_dt_nrm_dsmpl,'range');
+            ch2_clv_dt_nrm_dsmpl = normalize(ch2_clv_dt_nrm_dsmpl,'range');
+        end
+    
+%         figure
+%         plot(ch1_clv_dt_nrm_dsmpl)
+%         hold on
+%         plot(ch2_clv_dt_nrm_dsmpl)
 
         % convolve signal
         ch1_clv_dt_nrm_dsmpl_conv = conv(ch1_clv_dt_nrm_dsmpl, hrf);
@@ -619,64 +649,120 @@ rms_vals_ch1 = rms_vals_ch1(:);
 
 rms_vals_ch2 = transpose(emg2);
 rms_vals_ch2 = rms_vals_ch2(:);
-% rms_vals_ch1 = emg1(:);
-% rms_vals_ch2 = emg2(:);
-mean_rms = (rms_vals_ch1 + rms_vals_ch2) / 2;
-
-% careful because subject and runs are different here in rms matrix
-% compared to corr_vec!!!
-
-%rmssub = repmat(subject_labels(:),1,4);
-%transpose(rmssub)
 
 mymark = {'d','s','o','p'};
-% Plot
+% look at instructed leg actually only
+
+% A linear positive trend (points going up with RMS) means:
+% the stronger they move the instructed leg, the more the uninstructed leg tends to come along for the ride.
+% e.g. look at sub01
+% When moving the right leg, they put in strong effort (high RMS) and the left leg coactivates (high corr).
+% When moving the left leg, they either don’t activate as strongly (low RMS), or manage to keep the right leg quiet (low corr).
+
+for i = 1:length(corr_vec)
+    thisRun = run_vec{i};  % extract string like '1barR' or 'lowL'
+    if contains(thisRun, 'R')   % right leg instructed
+        RMS_instructed(i)   = rms_vals_ch1(i);
+        RMS_uninstructed(i) = rms_vals_ch2(i);
+    elseif contains(thisRun, 'L')   % left leg instructed
+        RMS_instructed(i)   = rms_vals_ch2(i);
+        RMS_uninstructed(i) = rms_vals_ch1(i);
+    end
+end
+
+%RMS_ratio = RMS_uninstructed ./ RMS_instructed;
+
+
 close all
 clear g
 figure('Position',[100 100 800 600]);
 
-g = gramm('x', mean_rms, 'y', corr_vec, 'color', subj_vec,'marker',run_vec);
-g.geom_point();
-%g.stat_glm();  % Fit regression line
-g.set_names('x','Mean RMS','y','Correlation','color','Subject');
-g.set_title('Correlation vs RMS');
+g(1,1) = gramm('x', RMS_instructed, 'y', corr_vec, ...
+               'color', subj_vec, 'marker', run_vec);
+g(1,1).geom_point();
+g(1,1).set_names('x','RMS instructed leg','y','Correlation');
+
+% g(1,2) = gramm('x', RMS_uninstructed, 'y', corr_vec, ...
+%                'color', subj_vec, 'marker', run_vec);
+% g(1,2).geom_point();
+% g(1,2).set_names('x','RMS uninstructed leg','y','Correlation');
+% 
+% g(1,2) = gramm('x', RMS_ratio, 'y', corr_vec, ...
+%                'color', subj_vec, 'marker', run_vec);
+% g(1,2).geom_point();
+% g(1,2).set_names('x','RMS ratio (uninstr./instr.)','y','Correlation');
+% 
+
+
 g.set_text_options('Font','Helvetica','base_size',12);
 %.set_point_options('base_size',10)
 g.set_point_options("markers",mymark, 'base_size',12)
 g.set_order_options('color',0)
 
-g.draw();
+g.draw()
 
-filename = ('rms_corr_trend_gramm');
+filename = ('rms_corr_trend_gramm_instructed');
 g.export('file_name',filename, ...
     'export_path',...
     savedir,...
     'file_type','pdf')
 
-% corr_vec is the correlation matrix from earlier 
-figure;
-scatter(mean_rms, corr_vec, 60, 'filled')
-xlabel('Mean RMS (CH1 & CH2)')
-ylabel('Correlation (CH1 vs CH2)')
-title('Correlation vs Amplitude (RMS)')
-grid on
-% Fit linear model: corr = beta0 + beta1 * RMS
-p = polyfit(mean_rms, corr_vals, 1);  % Degree 1 = linear
 
-% Generate fit line
-x_fit = linspace(min(mean_rms), max(mean_rms), 100);
-y_fit = polyval(p, x_fit);
 
-hold on;
-plot(x_fit, y_fit, 'r-', 'LineWidth', 2)
-legend('Data', sprintf('Linear Fit: y = %.2fx + %.2f', p(1), p(2)),'Location','best')
-h = gcf;
-thisFilename = [savedir 'rms_corr_trend'];
-%print(h, '-dpdf', thisFilename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
-print(h, '-dpdf', thisFilename, '-r300');  % -r300 sets the resolution to 300 DPI
-% Optional: stats
-mdl = fitlm(mean_rms, corr_vals);
-disp(mdl)  % Gives R², p-value, CI, etc.
+%% Plot
+% close all
+% clear g
+% figure('Position',[100 100 1400 600]);
+% 
+% g(1,1) = gramm('x', rms_vals_ch1, 'y', corr_vec, 'color', subj_vec,'marker',run_vec);
+% g(1,1).geom_point();
+% g(1,2) = gramm('x', rms_vals_ch2, 'y', corr_vec, 'color', subj_vec,'marker',run_vec);
+% g(1,2).geom_point();
+% 
+% 
+% %g.geom_point();
+% %g.stat_glm();  % Fit regression line
+% g.set_names('x','Mean RMS','y','Correlation','color','Subject');
+% g.set_title('Correlation vs RMS');
+% g.set_text_options('Font','Helvetica','base_size',12);
+% %.set_point_options('base_size',10)
+% g.set_point_options("markers",mymark, 'base_size',12)
+% g.set_order_options('color',0)
+% 
+% g.draw();
+% 
+% filename = ('rms_corr_trend_gramm');
+% g.export('file_name',filename, ...
+%     'export_path',...
+%     savedir,...
+%     'file_type','pdf')
+
+%% corr_vec is the correlation matrix from earlier 
+% figure;
+% scatter(mean_rms, corr_vec, 60, 'filled')
+% xlabel('Mean RMS (CH1 & CH2)')
+% ylabel('Correlation (CH1 vs CH2)')
+% title('Correlation vs Amplitude (RMS)')
+% grid on
+% % Fit linear model: corr = beta0 + beta1 * RMS
+% p = polyfit(mean_rms, corr_vec, 1);  % Degree 1 = linear
+% 
+% % Generate fit line
+% x_fit = linspace(min(mean_rms), max(mean_rms), 100);
+% y_fit = polyval(p, x_fit);
+% 
+% hold on;
+% plot(x_fit, y_fit, 'r-', 'LineWidth', 2)
+% legend('Data', sprintf('Linear Fit: y = %.2fx + %.2f', p(1), p(2)),'Location','best')
+% h = gcf;
+% thisFilename = [savedir 'rms_corr_trend'];
+% %print(h, '-dpdf', thisFilename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
+% print(h, '-dpdf', thisFilename, '-r300');  % -r300 sets the resolution to 300 DPI
+% % Optional: stats
+% mdl = fitlm(mean_rms, corr_vec);
+% disp(mdl)  % Gives R², p-value, CI, etc.
+
+
 
 
 
@@ -696,11 +782,15 @@ for iRun = 1:4
         ch1 = opMatsubs_noconv{iRun, 1, subj};
         ch2 = opMatsubs_noconv{iRun, 2, subj};
 
+        % rather than raw, can we do % of instructed leg
+%         ch1_pct = 100 * ch1 / max(ch1);   
+%         ch2_pct = 100 * ch2 / max(ch1);
+
         plot(ch1, 'Color', channel_colors{1}, 'LineWidth', 1.2); hold on;
         plot(ch2, 'Color', channel_colors{2}, 'LineWidth', 1.2);
 
         title(sprintf('Subject %d', subj));
-        ylim([-0.1 1]);  % Adjust based on range of EMG
+        %ylim([-0.1 1]);  % Adjust based on range of EMG
         xlim([1 length(ch1)]);
         if subj == 2
             ylabel('Amplitude');
@@ -713,7 +803,7 @@ for iRun = 1:4
     legend({'EMG ch1','EMG ch2'}, 'Position',[0.85 0.5 0.1 0.1]);  % optional
     sgtitle(sprintf('Raw EMG traces (Run: %s)', run_label{iRun}));
 
-    thisFilename = [savedir 'emg_traces_per_subj_' run_label{iRun}];
+    thisFilename = [savedir 'renormemg_traces_per_subj_' run_label{iRun}];
     h = gcf;
     set(h, 'PaperOrientation', 'landscape');
     set(h, 'PaperUnits', 'inches');
