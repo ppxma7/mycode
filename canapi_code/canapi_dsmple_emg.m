@@ -20,6 +20,8 @@ dataset = {'canapi_sub01_030225', 'canapi_sub02_180325', 'canapi_sub03_180325',.
     'canapi_sub07_010725', 'canapi_sub08_010725', 'canapi_sub09_160725', ...
     'canapi_sub10_160725'};
 
+%dataset = {'canapi_sub09_160725'};
+
 saveem = 0;
 ch2normch1 = 1;
 
@@ -82,6 +84,7 @@ myfiles = {'CANAPI01_RL_1BAR_Rectify.dat','CANAPI01_RL_15per_Rectify.dat',...
     'CANAPI_sub10_RL_1bar_Rectify.dat','CANAPI_sub10_RL_15per_Rectify.dat',...
     'CANAPI_sub10_LL_1bar_Rectify.dat','CANAPI_sub10_LL_15per_Rectify.dat',...
     };
+
 
 mySlices = {1:4, 5:8, 9:12, 13:16, 17:20, 21:24, 25:28, 29:32, 33:36, 37:40};
 
@@ -540,7 +543,7 @@ nSubjects = 10;
 
 ch1vch2_corrs = zeros(nRuns, nSubjects);  % run × subject
 
-for subj = 1:10
+for subj = 1:nSubjects
     %subj_idx = subj - 1;  % shift index since we drop subject 1
     subj_idx = subj;  % shift index since we drop subject 1
 
@@ -615,7 +618,7 @@ idx = 1;
 for run = 1:nRuns
     for chan = 1:nChans % Only EMG 1 and 2
         labels{idx} = sprintf('%s - %s', run_labels{run}, channel_labels{chan});
-        for subj = 1:10
+        for subj = 1:nSubjects
             rms_matrix(subj, idx) = rms(opMatsubs_noconv{run, chan, subj});
         end
         idx = idx + 1;
@@ -675,18 +678,18 @@ end
 
 close all
 clear g
-figure('Position',[100 100 800 600]);
+figure('Position',[100 100 1400 600]);
 
 g(1,1) = gramm('x', RMS_instructed, 'y', corr_vec, ...
                'color', subj_vec, 'marker', run_vec);
 g(1,1).geom_point();
 g(1,1).set_names('x','RMS instructed leg','y','Correlation');
 
-% g(1,2) = gramm('x', RMS_uninstructed, 'y', corr_vec, ...
-%                'color', subj_vec, 'marker', run_vec);
-% g(1,2).geom_point();
-% g(1,2).set_names('x','RMS uninstructed leg','y','Correlation');
-% 
+g(1,2) = gramm('x', RMS_uninstructed, 'y', corr_vec, ...
+               'color', subj_vec, 'marker', run_vec);
+g(1,2).geom_point();
+g(1,2).set_names('x','RMS uninstructed leg','y','Correlation');
+
 % g(1,2) = gramm('x', RMS_ratio, 'y', corr_vec, ...
 %                'color', subj_vec, 'marker', run_vec);
 % g(1,2).geom_point();
