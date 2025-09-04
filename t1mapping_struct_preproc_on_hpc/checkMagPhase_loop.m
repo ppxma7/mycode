@@ -2,10 +2,12 @@ clear all
 close all
 clc
 
-parentDir = '/Users/spmic/data/NEXPO/inputs/redo/';
+parentDir = '/Volumes/nemosine/SAN/AFIRM/afirm_new_ins/';
 
 % Get all entries in the directory
 dirInfo = dir(parentDir);
+
+disp(dirInfo)
 
 % Filter out only directories (excluding '.' and '..')
 folderNames = {dirInfo([dirInfo.isdir]).name};

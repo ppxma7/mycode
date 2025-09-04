@@ -2,7 +2,7 @@
 
 - Pull from XNAT
 - Rearrange and dcm2niix folders using `loop_convert_folder.sh`
-- Remove . from mprate `loop_convert_remove_dots.sh`
+- Remove . from mprage `loop_convert_remove_dots.sh`
 - Correct XNAT data (DICOM / philips rescale issue) `checkMagPhase_loop.m`, which calls `checkMagPhase_noprompt.m`
 - Send to HPC (rsync / scp)
 - For MPRAGE, `7Tbrc_pipeline_loop_2.sh` will call the BRC pipeline which runs fastsurfer/freesurfer, ignore T2 flag if that's not there
