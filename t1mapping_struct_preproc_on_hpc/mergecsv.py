@@ -2,10 +2,10 @@ import os
 import pandas as pd
 
 # Define project folders and file paths
-root_dir = "/Users/spmic/data"
-out_dir = "/Users/spmic/data/san"
+root_dir = "/Volumes/nemosine/SAN/"
+out_dir = root_dir
 
-hemisphere = "r"
+hemisphere = "l"
 sashb_file = os.path.join(root_dir, "SASHB", f"freesurfer_stats_{hemisphere}_SASHB.csv")
 afirm_file = os.path.join(root_dir, "AFIRM", f"freesurfer_stats_{hemisphere}_AFIRM.csv")
 nexpo_file = os.path.join(root_dir, "NEXPO", f"freesurfer_stats_{hemisphere}_NEXPO.csv")

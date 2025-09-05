@@ -16,3 +16,19 @@
 - Do the same for T1 mapping
 - `apply_extract_atlas_t1_short.py` for each group, then `merge_csv.py`
 - `t1_stats_allsubs.py` will plot
+
+
+
+- example of copying from hpc to local:
+`rsync -azv ppzma@hpclogin01.ada.nottingham.ac.uk:/spmstore/project/AFIRMBRAIN/AFIRM/outputs /Volumes/nemosine/SAN/AFIRM/afirm_new_outs/`
+
+
+
+- slurm2text.sh moves slurm files to new folder and convert to text
+- moveBuriedToTop.sh moves the FreeSurfer directories to the top subject level.
+
+- For the FreeSurfer data, you need to run runMrisPreproc.sh, runGLMs.sh, runClustSims.sh and clustSimToTable.sh
+- You need to check your FSGD and Contrast files - https://andysbrainbook.readthedocs.io/en/latest/FreeSurfer/FS_ShortCourse/FS_07_FSGD.html
+
+- For the t1 analysis, you should use fsl_randomise https://chatgpt.com/share/68b9ac1e-f01c-800c-8bf0-598a54ad6ac4
+- Look at fslrandomise_notes.txt for help

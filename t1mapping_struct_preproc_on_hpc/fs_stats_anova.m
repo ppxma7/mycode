@@ -2,21 +2,24 @@ clear variables
 close all
 clc
 
-%userName = char(java.lang.System.getProperty('user.name'));
+userName = char(java.lang.System.getProperty('user.name'));
 
-%savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Zespri- fMRI - General/blood_results/'];
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/san/'];
+
+rootdir = '/Volumes/nemosine/SAN/';
 %mypath = savedir;
 %cd(mypath)
-savedir = '/Users/spmic/data/san/';
+%savedir = '/Users/spmic/data/san/';
+%savedir = '/Volumes/nemosine/SAN/';
 
 hemisphere = 'r';
 
-myFile = [savedir 'freesurfer_stats_' hemisphere '_combined.csv'];
+myFile = [rootdir 'freesurfer_stats_' hemisphere '_combined.csv'];
 
 theTable = readtable(myFile);
 
-whichCol = 'cth';
-plotdir = fullfile('/Users/spmic/data/san/plotdir/',whichCol);
+whichCol = 'gmv';
+plotdir = fullfile(savedir,'plotdir',whichCol);
 
 
 alphaval = 0.01;
@@ -186,7 +189,7 @@ flattenedData = Mat;
 subjectData = allGroups;
 region_labels = allRegionLabels;
 
-%%
+%
 clear g
 close all
 

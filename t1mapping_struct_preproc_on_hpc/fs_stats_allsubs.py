@@ -8,9 +8,11 @@ import sys
 #group_name = "NEXPO"
 #root_dir = "/Users/spmic/data/"
 #root_dir = os.path.join("/Users/spmic/data/",group_name)
-root_dir = "/Users/spmic/data/san"
+#root_dir = "/Users/spmic/data/san"
 
-hemisphere = "r"
+root_dir = "/Volumes/nemosine/SAN/"
+
+hemisphere = "l"
 
 fs_filename = os.path.join(root_dir, f"freesurfer_stats_{hemisphere}_combined.csv")
 #fs_filename = os.path.join(root_dir, f"freesurfer_stats_{hemisphere}_{group_name}.csv")
@@ -63,11 +65,11 @@ def plot_grouped_bars(df_grouped, y_label, title, filename, ymin, ymax):
 
     # Overlay individual subject points
     # comment this out if you don't want individual points
-    for _, row in df.iterrows():
-        region_index = np.where(regions == row["StructName"])[0][0]  # Get x position
-        group_offset = list(groups).index(row["Group"]) * bar_width  # Offset for groups
-        plt.scatter(row[y_label], region_index + group_offset, 
-                    color=group_colors[row["Group"]], alpha=0.6, edgecolors="black")
+    # for _, row in df.iterrows():
+    #     region_index = np.where(regions == row["StructName"])[0][0]  # Get x position
+    #     group_offset = list(groups).index(row["Group"]) * bar_width  # Offset for groups
+    #     plt.scatter(row[y_label], region_index + group_offset, 
+    #                 color=group_colors[row["Group"]], alpha=0.6, edgecolors="black")
 
     # Set consistent y-axis limits
     #ymin_gmv, ymax_gmv = 0, 15000  # Example values for GMV

@@ -1,0 +1,13 @@
+
+# genfslmatfile.m creates the .mat file
+# fsl_smooth_and_merge.sh  smoothes the files 
+# fsl_atlas_lookup.sh
+
+
+randomise -i all_subjects_4D.nii.gz \
+          -o t1_rand_results \
+          -d design.mat \
+          -t design.con \
+          -n 5000 \
+          -T \
+          -m $FSLDIR/data/standard/MNI152_T1_1mm_brain_mask.nii.gz
