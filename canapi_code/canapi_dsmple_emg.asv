@@ -419,7 +419,7 @@ end
 toc
 disp('...done!')
 
-
+keyboard
 %% run correlations
 
 [~,signal] = wavySignal(0,1,227);
@@ -671,7 +671,7 @@ disp('Channel 1 vs Channel 2 (%):')
 disp(ch1_vs_ch2)
 
 
-keyboard
+
 
 
 %% correlation vs RMS of ch1 and ch2

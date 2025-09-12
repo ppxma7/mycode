@@ -2,9 +2,13 @@
 
 # Directory
 #DATA_DIR="/Users/spmic/data/NEXPO/inputs"  # Change to your actual data path
-DATA_DIR="/Volumes/DRS-GBPerm/other/inputs/"
+#DATA_DIR="/Volumes/DRS-GBPerm/other/inputs/"
 #OUTPUT_DIR="/Users/spmic/data/NEXPO/t1mapping_out/"
-OUTPUT_DIR="/Volumes/DRS-GBPerm/other/t1mapping_out/"
+#OUTPUT_DIR="/Volumes/DRS-GBPerm/other/t1mapping_out/"
+
+DATA_DIR="/Volumes/nemosine/SAN/AFIRM/afirm_new_ins/"
+OUTPUT_DIR="/Volumes/nemosine/SAN/AFIRM/t1mapping_out/"
+
 
 # List of subjects (update as necessary)
 # SUBJECT=("16469-002A" "16500-002B" "16501-002b" \
@@ -75,7 +79,14 @@ OUTPUT_DIR="/Volumes/DRS-GBPerm/other/t1mapping_out/"
 # 18031_002 18038_002 18076_002 18094_002
 # )
 
-SUBJECT=(16664_002)
+SUBJECT=("1688-002C" "15234-003B" "16469-002A" "16498-002A" \
+"16500-002B" "16501-002b" "16521-001b" "16523_002b" \
+"16602-002B" "16707-002A" "16708-03A" "16797-002C" \
+"16798-002A" "16821-002A" "16835-002A" "16885-002A" \
+"16994-002A" "16999-002B" "17057-002C" "17058-002A" "17059-002a")
+
+
+# SUBJECT=(15234-003B)
 
 # Loop through each subject
 for subject in "${SUBJECT[@]}"; do

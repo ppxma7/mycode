@@ -89,23 +89,23 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
 
 
 
-    if not os.path.exists(t1_to_mprage):
+    #if not os.path.exists(t1_to_mprage):
         # Step 1: Register T1 to MPRAGE (native space)
-        print("running T1 to native MPRAGE now")
-        subprocess.run([
-            f"{FSLDIR}/bin/flirt",
-            "-in", t1_brain,
-            "-ref", mprage_brain,
-            "-omat", affine_t1_to_mprage,
-            "-out", t1_to_mprage,
-            "-cost", "normmi",  # Use MI instead of default corratio mutualinfo
-            "-dof", "6",
-            "-searchrx", "-90", "90",
-            "-searchry", "-90", "90",
-            "-searchrz", "-90", "90",
-            "-usesqform"
-        ], check=True)
-        print(f"✅ {subject} FLIRT: T1 map registered to MPRAGE.")
+    print("running T1 to native MPRAGE now")
+    subprocess.run([
+        f"{FSLDIR}/bin/flirt",
+        "-in", t1_brain,
+        "-ref", mprage_brain,
+        "-omat", affine_t1_to_mprage,
+        "-out", t1_to_mprage,
+        "-cost", "normmi",  # Use MI instead of default corratio mutualinfo
+        "-dof", "6",
+        "-searchrx", "0", "0",
+        "-searchry", "0", "0",
+        "-searchrz", "0", "0",
+        "-usesqform"
+    ], check=True)
+    print(f"✅ {subject} FLIRT: T1 map registered to MPRAGE.")
 
 
     # **Move MPRAGE to MNI 1mm space (linear)**
@@ -163,29 +163,29 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
 
     ## Careful, this bit is applying both transforms to the raw T1 which is technically fine
     ## but if we already have the t1 in mprage space, then dont need to use it right?
-    if not os.path.exists(t1_to_mni_linear):
-        print("combining T1→MPRAGE and MPRAGE→MNI affines…")
-        # 1) build the single combined affine
-        subprocess.run([
-            f"{FSLDIR}/bin/convert_xfm",
-            "-omat", combined_affine,
-            "-concat", affine_mprage_to_mni,  # second
-                        affine_t1_to_mprage  # first
-        ], check=True)
+    #if not os.path.exists(t1_to_mni_linear):
+    print("combining T1→MPRAGE and MPRAGE→MNI affines…")
+    # 1) build the single combined affine
+    subprocess.run([
+        f"{FSLDIR}/bin/convert_xfm",
+        "-omat", combined_affine,
+        "-concat", affine_mprage_to_mni,  # second
+                    affine_t1_to_mprage  # first
+    ], check=True)
 
-        print("applying combined affine to T1…")
-        # 2) apply it to your brain-extracted T1
-        subprocess.run([
-            f"{FSLDIR}/bin/flirt",
-            "-in", t1_brain,
-            "-ref", MNI_TEMPLATE,
-            "-applyxfm",
-            "-init", combined_affine,
-            "-out", t1_to_mni_linear,
-            "-interp", "spline"
-        ], check=True)
+    print("applying combined affine to T1…")
+    # 2) apply it to your brain-extracted T1
+    subprocess.run([
+        f"{FSLDIR}/bin/flirt",
+        "-in", t1_brain,
+        "-ref", MNI_TEMPLATE,
+        "-applyxfm",
+        "-init", combined_affine,
+        "-out", t1_to_mni_linear,
+        "-interp", "spline"
+    ], check=True)
 
-        print(f"✅ {subject} FLIRT: T1 map linearly registered to MNI 1mm space.")
+    print(f"✅ {subject} FLIRT: T1 map linearly registered to MNI 1mm space.")
 
 
     # if not os.path.exists(t1_to_mni_linear):

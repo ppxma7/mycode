@@ -140,20 +140,15 @@ nSubjects = 10;
 subject_labels = compose('sub%02d', 1:nSubjects);
 close all
 clear g
-figure('Position',[100 100 1200 600])
-g(1,1) = gramm('x',emg_1barL,'y',fmri_ratio_1barL) ;
-g(1,1).stat_glm('geom','line');
-g(1,1).set_title(['r=' num2str(r_L) ' p=' num2str(p_L)]);
-
-g(1,2) = gramm('x',emg_1barR,'y',fmri_ratio_1barR);
-g(1,2).stat_glm('geom','line');
-g(1,2).set_title(['r=' num2str(r_R) ' p=' num2str(p_R)]);
-g.draw()
-g(1,1).update('color',subject_labels);
+figure('Position',[100 100 1000 800])
+g(1,1) = gramm('x',emg_1barL,'y',fmri_ratio_1barL,'color',subject_labels);
 g(1,1).geom_point()
-g(1,2).update('color',subject_labels);
-g(1,2).geom_point()
+g(1,1).stat_glm('disp_fit', 1);
 
+
+g(1,2) = gramm('x',emg_1barR,'y',fmri_ratio_1barR,'color',subject_labels);
+g(1,2).geom_point()
+g(1,2).stat_glm('disp_fit', 1,'geom','point');
 
 g.set_text_options('Font','Helvetica', 'base_size', 16)
 g.set_point_options('base_size',12)
