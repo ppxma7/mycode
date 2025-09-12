@@ -78,7 +78,9 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
     mprage_to_mni_nonlin = os.path.join(sub_dir, f"{subject}_MPRAGE_to_MNI_nonlin.nii.gz")
     fnirt_coeff = os.path.join(sub_dir,f"{subject}_MPRAGE_to_MNI_nonlin_coeff.nii.gz")
 
-    t1_mni_output = os.path.join(sub_dir,f"{subject}_T1_MNI_1mm.nii.gz")
+    t1_mni_output = os.path.join(sub_dir,f"{subject}_T1_to_MNI_nonlinear_1mm.nii.gz")
+
+    t1_to_mprage_brain_masked = os.path.join(sub_dir,f"{subject}_T1_to_MPRAGE_masked.nii.gz")
 
 
     print("mprage_brain =", mprage_brain)
@@ -89,23 +91,38 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
 
 
 
-    #if not os.path.exists(t1_to_mprage):
+    if not os.path.exists(t1_to_mprage):
         # Step 1: Register T1 to MPRAGE (native space)
-    print("running T1 to native MPRAGE now")
-    subprocess.run([
-        f"{FSLDIR}/bin/flirt",
-        "-in", t1_brain,
-        "-ref", mprage_brain,
-        "-omat", affine_t1_to_mprage,
-        "-out", t1_to_mprage,
-        "-cost", "normmi",  # Use MI instead of default corratio mutualinfo
-        "-dof", "6",
-        "-searchrx", "0", "0",
-        "-searchry", "0", "0",
-        "-searchrz", "0", "0",
-        "-usesqform"
-    ], check=True)
-    print(f"✅ {subject} FLIRT: T1 map registered to MPRAGE.")
+        print("running T1 to native MPRAGE now")
+        subprocess.run([
+            f"{FSLDIR}/bin/flirt",
+            "-in", t1_brain,
+            "-ref", mprage_brain,
+            "-omat", affine_t1_to_mprage,
+            "-out", t1_to_mprage,
+            "-cost", "normmi",  # Use MI instead of default corratio mutualinfo
+            "-dof", "6",
+            "-searchrx", "0", "0",
+            "-searchry", "0", "0",
+            "-searchrz", "0", "0",
+            "-usesqform"
+        ], check=True)
+        print(f"✅ {subject} FLIRT: T1 map registered to MPRAGE.")
+
+
+    if not os.path.exists(t1_to_mprage_brain_masked):
+        mprage_brain_mask = os.path.join(mprage_dir, f"{subject}_MPRAGE_brain_mask.nii.gz")
+        print("Masking T1 by MPRAGE mask")
+
+        maths_cmd = [
+            "fslmaths",  # assuming you mean fslmaths
+            t1_to_mprage,
+            "-mul", mprage_brain_mask,
+            t1_to_mprage_brain_masked
+        ]
+
+        subprocess.run(maths_cmd, check=True)
+        print(f"✅ {subject} T1 to MPRAGE image masked by MPRAGE brain mask")
 
 
     # **Move MPRAGE to MNI 1mm space (linear)**
@@ -129,25 +146,59 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
 
     # Just skip the FNIRT for now    
     # **Refine MPRAGE to MNI using FNIRT (nonlinear)**
-    # if not os.path.exists(mprage_to_mni_nonlin):
-    #     print("running fnirt MPRAGE to MNI now")
-    #     subprocess.run([
-    #         f"{FSLDIR}/bin/fnirt",
-    #         f"--in={mprage_file}",
-    #         f"--ref={MNI_TEMPLATE}",
-    #         f"--aff={affine_mprage_to_mni}",
-    #         f"--config={MY_CONFIG_DIR}/config/bb_fnirt.cnf",
-    #         f"--cout={fnirt_coeff}",
-    #         f"--iout={mprage_to_mni_nonlin}",
-    #         f"--refmask={FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz",
-    #         "--interp=spline"
-    #     ], check=True)
-    #     print(f"✅ {subject} FNIRT: MPRAGE map registered to MNI 1mm space.")
+    if not os.path.exists(mprage_to_mni_nonlin):
+        print("running fnirt MPRAGE to MNI now")
+        subprocess.run([
+            f"{FSLDIR}/bin/fnirt",
+            f"--in={mprage_file}",
+            f"--ref={MNI_TEMPLATE}",
+            f"--aff={affine_mprage_to_mni}",
+            f"--config={MY_CONFIG_DIR}/config/bb_fnirt.cnf",
+            f"--cout={fnirt_coeff}",
+            f"--iout={mprage_to_mni_nonlin}",
+            f"--refmask={FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz",
+            "--interp=spline"
+        ], check=True)
+        print(f"✅ {subject} FNIRT: MPRAGE map registered to MNI 1mm space.")
 
+    # Linear registration: apply MPRAGE→MNI affine directly to masked T1
+    t1_to_mni_linear = os.path.join(sub_dir, f"{subject}_T1_to_MNI_linear_1mm.nii.gz")
+
+    print("applying MPRAGE→MNI affine directly to masked T1 (already in MPRAGE space)…")
+    subprocess.run([
+        f"{FSLDIR}/bin/flirt",
+        "-in", t1_to_mprage_brain_masked,
+        "-ref", MNI_TEMPLATE,
+        "-applyxfm",
+        "-init", affine_mprage_to_mni,
+        "-out", t1_to_mni_linear,
+        "-interp", "spline"
+    ], check=True)
+
+    print(f"✅ {subject} FLIRT: Masked T1 map linearly registered to MNI 1mm space.")
+
+    # Nonlinear registration: apply FNIRT warp to masked T1
+    t1_to_mni_nonlin = os.path.join(sub_dir, f"{subject}_T1_to_MNI_nonlinear_1mm.nii.gz")
+
+    print("applying FNIRT (nonlinear) warp to masked T1 (already in MPRAGE space)…")
+    subprocess.run([
+        f"{FSLDIR}/bin/applywarp",
+        f"--in={t1_to_mprage_brain_masked}",
+        f"--ref={MNI_TEMPLATE}",
+        f"--warp={fnirt_coeff}",
+        f"--out={t1_to_mni_nonlin}",
+        "--interp=spline"
+    ], check=True)
+
+    print(f"✅ {subject} FNIRT: Masked T1 map nonlinearly registered to MNI 1mm space.")
+
+
+
+    # if not os.path.exists(t1_mni_output):
     #     # **Apply the same transformation to the T1 map**
     #     subprocess.run([
     #         f"{FSLDIR}/bin/applywarp",
-    #         f"--in={t1_brain}",
+    #         f"--in={t1_to_mprage_brain_masked}", # t1_brain
     #         f"--ref={MNI_TEMPLATE}",
     #         f"--warp={fnirt_coeff}",
     #         f"--premat={affine_t1_to_mprage}",
@@ -157,35 +208,35 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
     #     print(f"✅ {subject} T1 map successfully registered to MNI 1mm space.")
 
 
-    # paths for your linear-T1→MNI outputs
-    combined_affine = os.path.join(sub_dir, f"{subject}_T1_to_MNI_linear.mat")
-    t1_to_mni_linear = os.path.join(sub_dir, f"{subject}_T1_to_MNI_linear_1mm.nii.gz")
+    # # paths for your linear-T1→MNI outputs
+    # combined_affine = os.path.join(sub_dir, f"{subject}_T1_to_MNI_linear.mat")
+    # t1_to_mni_linear = os.path.join(sub_dir, f"{subject}_T1_to_MNI_linear_1mm.nii.gz")
 
-    ## Careful, this bit is applying both transforms to the raw T1 which is technically fine
-    ## but if we already have the t1 in mprage space, then dont need to use it right?
-    #if not os.path.exists(t1_to_mni_linear):
-    print("combining T1→MPRAGE and MPRAGE→MNI affines…")
-    # 1) build the single combined affine
-    subprocess.run([
-        f"{FSLDIR}/bin/convert_xfm",
-        "-omat", combined_affine,
-        "-concat", affine_mprage_to_mni,  # second
-                    affine_t1_to_mprage  # first
-    ], check=True)
+    # ## Careful, this bit is applying both transforms to the raw T1 which is technically fine
+    # ## but if we already have the t1 in mprage space, then dont need to use it right?
+    # #if not os.path.exists(t1_to_mni_linear):
+    # print("combining T1→MPRAGE and MPRAGE→MNI affines…")
+    # # 1) build the single combined affine
+    # subprocess.run([
+    #     f"{FSLDIR}/bin/convert_xfm",
+    #     "-omat", combined_affine,
+    #     "-concat", affine_mprage_to_mni,  # second
+    #                 affine_t1_to_mprage  # first
+    # ], check=True)
 
-    print("applying combined affine to T1…")
-    # 2) apply it to your brain-extracted T1
-    subprocess.run([
-        f"{FSLDIR}/bin/flirt",
-        "-in", t1_brain,
-        "-ref", MNI_TEMPLATE,
-        "-applyxfm",
-        "-init", combined_affine,
-        "-out", t1_to_mni_linear,
-        "-interp", "spline"
-    ], check=True)
+    # print("applying combined affine to T1…")
+    # # 2) apply it to your brain-extracted T1
+    # subprocess.run([
+    #     f"{FSLDIR}/bin/flirt",
+    #     "-in", t1_to_mprage_brain_masked, # t1_brain
+    #     "-ref", MNI_TEMPLATE,
+    #     "-applyxfm",
+    #     "-init", combined_affine,
+    #     "-out", t1_to_mni_linear,
+    #     "-interp", "spline"
+    # ], check=True)
 
-    print(f"✅ {subject} FLIRT: T1 map linearly registered to MNI 1mm space.")
+    # print(f"✅ {subject} FLIRT: T1 map linearly registered to MNI 1mm space.")
 
 
     # if not os.path.exists(t1_to_mni_linear):
