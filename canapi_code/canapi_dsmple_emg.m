@@ -649,29 +649,43 @@ print(h, '-dpdf', thisFilename, '-r300');  % -r300 sets the resolution to 300 DP
 
 %% can we use RMS to compare ch1 to ch2 
 
+% okay careful here, because i think for sub01, sub03, the channels are flipped
+sub01rms = rms_matrix(1,:);
+sub01rms_corr = [sub01rms(2) sub01rms(1) sub01rms(4) sub01rms(3) sub01rms(6) sub01rms(5) sub01rms(8) sub01rms(7)];
+sub03rms = rms_matrix(3,:);
+sub03rms_corr = [sub03rms(2) sub03rms(1) sub03rms(4) sub03rms(3) sub03rms(6) sub03rms(5) sub03rms(8) sub03rms(7)];
+
+rms_matrix_corrected = rms_matrix;
+rms_matrix_corrected(1,:) = sub01rms_corr;
+rms_matrix_corrected(3,:) = sub03rms_corr;
+
 nSubjects = size(rms_matrix, 1);
 nRuns = 4;
 
-ch1_vs_ch2 = zeros(nRuns, nSubjects); % channel 1 relative to channel 2
+ch1_vs_ch2 = zeros(nRuns, nSubjects); % channel dominance ratio
 
 for run = 1:nRuns
-    col_ch1 = (run-1)*2 + 1; % column index for EMG1
-    col_ch2 = col_ch1 + 1;   % column index for EMG2
+    col_ch1 = (run-1)*2 + 1; % EMG1 column
+    col_ch2 = col_ch1 + 1;   % EMG2 column
 
-    disp(col_ch1) % sanity check
-    disp(col_ch2)
+    ch1_rms = rms_matrix_corrected(:, col_ch1);
+    ch2_rms = rms_matrix_corrected(:, col_ch2);
     
-    ch1_rms = rms_matrix(:, col_ch1); % 10×1 vector
-    ch2_rms = rms_matrix(:, col_ch2); % 10×1 vector
-    
-    ch1_vs_ch2(run,:) = (ch1_rms ./ ch2_rms) * 100; % element-wise ratio
+    if run <= 2
+        % Runs 1-2 = right leg tasks → want ch1/ch2
+        ch1_vs_ch2(run,:) = (ch1_rms ./ ch2_rms) * 100;
+    else
+        % Runs 3-4 = left leg tasks → want ch2/ch1
+        ch1_vs_ch2(run,:) = (ch2_rms ./ ch1_rms) * 100;
+    end
 end
 
-disp('Channel 1 vs Channel 2 (%):')
+disp('Leg-dominance ratio (%):')
 disp(ch1_vs_ch2)
+save('canapi_rms_emg','ch1_vs_ch2')
 
 
-keyboard
+
 
 
 %% correlation vs RMS of ch1 and ch2

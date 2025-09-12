@@ -61,7 +61,7 @@ filestack = repmat(myfiles(:),length(dataset),1);
 
 cmap = {'#e31a1c','#fd8d3c','#0570b0','#74a9cf'};
 cmapped = validatecolor(cmap,'multiple');
-
+%%
 close all
 clear g
 figure('Position',[100 100 1200 600])
@@ -134,9 +134,24 @@ disp(fmri_ratio_1barL)
 fprintf('Correlation 1barR: r=%.3f, p=%.3f\n', r_R, p_R);
 fprintf('Correlation 1barL: r=%.3f, p=%.3f\n', r_L, p_L);
 %% plotting
-colors = cbrewer('qual', 'Set1', nSubjects);
-
 nSubjects = 10;
+
+%colors = cbrewer('qual', 'Set3', nSubjects);
+
+% Define your custom colors as an n×3 RGB matrix (scaled 0–1)
+colors = [
+    166 206 227
+     31 120 180
+    178 223 138
+     51 160  44
+    251 154 153
+    227  26  28
+    253 191 111
+    255 127   0
+    202 178 214
+    106  61 154
+] ./ 255;  % convert from 0–255 to 0–1
+
 subject_labels = compose('sub%02d', 1:nSubjects);
 close all
 clear g
@@ -163,6 +178,15 @@ g.axe_property('XGrid',1,'YGrid',1,'YLim',[80 200],'XLim',[0 800])
 g.set_names('x','EMG Ch1/Ch2 (%)','y','fMRI Contra/Ipsi (%)','color','Participant');
 
 g.draw()
+
+
+ax = gcf;             % current figure
+allAxes = findall(ax, 'type', 'axes');
+
+for i = 1:numel(allAxes)
+    axes(allAxes(i));  % make this subplot active
+    xline(100, '--k', 'LineWidth', 1.2);  % example at x=100
+end
 
 filename = ('rms_vs_tstat');
 g.export('file_name',filename, ...
