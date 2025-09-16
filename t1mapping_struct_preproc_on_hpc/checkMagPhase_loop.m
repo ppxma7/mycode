@@ -13,6 +13,12 @@ disp(dirInfo)
 folderNames = {dirInfo([dirInfo.isdir]).name};
 folderNames = folderNames(~ismember(folderNames, {'.', '..'}));
 
+
+
+% thisGuy = contains(folderNames,'17311-002b');
+% thisGuydata = folderNames(thisGuy);
+% folderNames = thisGuydata; % temp overwrite for this subject
+
 for ii = 1:length(folderNames)
     folderPath = fullfile(parentDir, folderNames{ii},'T1mapping'); % Full path to the folder
     %disp(folderPath)

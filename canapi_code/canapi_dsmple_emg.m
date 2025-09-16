@@ -418,7 +418,7 @@ for iSub = 1:length(dataset)
 end
 toc
 disp('...done!')
-
+keyboard
 
 %% run correlations
 
@@ -557,7 +557,8 @@ for subj = 1:nSubjects
         ch1vch2_corrs(run, subj_idx) = corr(trace1(:), trace2(:));
     end
 end
-run_labels = {'1barR', 'lowR', '1barL', 'lowL'};
+%run_labels = {'1barR', 'lowR', '1barL', 'lowL'};
+run_labels = {'1barR', '15%R', '1barL', '15%L'};
 %subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 2:10, 'UniformOutput', false);
 subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 1:10, 'UniformOutput', false);
 
@@ -587,7 +588,7 @@ isequal(manual_flat, ch1vch2_corrs(:))
 
 clear g
 close all
-figure('Position',[100 100 1200 800])
+figure('Position',[100 100 1000 600])
 
 g = gramm('x', run_vec, 'y', corr_vec);
 g.stat_summary('geom', {'bar', 'black_errorbar'}, 'type', 'sem');
@@ -596,10 +597,11 @@ g.set_title('Correlation between EMG ch1 and ch2 across runs');
 g.axe_property('YLim', [-0.2 1.2]);
 g.set_text_options('Font','Helvetica', 'base_size', 16)
 g.set_point_options('base_size',12)
+g.set_order_options('x',0,'color',0)
 g.draw();
 g.update('y',corr_vec,'color', subj_vec)
 g.geom_jitter2('dodge', 0.6);  % Optional: show individual subjects
-g.set_order_options('color',0)
+g.set_order_options('x',0,'color',0)
 g.draw();
 
 filename = ('corr_vec_channel_1_2_noconv');
@@ -822,7 +824,7 @@ channel_colors = {'#1f78b4', '#d95f02'};  % ch1 = blue, ch2 = orange
 
 for iRun = 1:4
     % Prepare figure
-    figure('Position', [100 100 1600 600]);
+    figure('Position', [100 100 1400 600]);
     tiledlayout(2,5);  % 2 rows × 5 columns
 
     for subj = 1:10  % subjects 2 to 10 (i.e., 9 subjects)
@@ -837,27 +839,32 @@ for iRun = 1:4
 
         plot(ch1, 'Color', channel_colors{1}, 'LineWidth', 1.2); hold on;
         plot(ch2, 'Color', channel_colors{2}, 'LineWidth', 1.2);
-
-        title(sprintf('Subject %d', subj));
+        
+        if subj~=10
+            title(sprintf('s0%d', subj));
+        else
+            title(sprintf('s%d', subj));
+        end
         %ylim([-0.1 1]);  % Adjust based on range of EMG
         xlim([1 length(ch1)]);
-        if subj == 2
+        if subj == 1
             ylabel('Amplitude');
         end
-        if subj >= 8
+        if subj == 1
             xlabel('Timepoints');
         end
     end
 
-    legend({'EMG ch1','EMG ch2'}, 'Position',[0.85 0.5 0.1 0.1]);  % optional
-    sgtitle(sprintf('Raw EMG traces (Run: %s)', run_label{iRun}));
+    %legend({'EMG ch1','EMG ch2'}, 'Position',[0.15 0.82 0.1 0.1]);  % optional
+    legend({'EMG ch1','EMG ch2'},'Location','bestoutside');  % optional
+    sgtitle(sprintf('EMG traces (Run: %s)', run_label{iRun}));
 
-    thisFilename = [savedir 'renormemg_traces_per_subj_' run_label{iRun}];
+    thisFilename = [savedir 'renormemg_traces_per_subj_legend' run_label{iRun}];
     h = gcf;
     set(h, 'PaperOrientation', 'landscape');
     set(h, 'PaperUnits', 'inches');
-    set(h, 'PaperSize', [20 12]);  % Increase the paper size to 20x12 inches
-    set(h, 'PaperPosition', [0 0 20 12]);  % Adjust paper position to fill the paper size
+    set(h, 'PaperSize', [15 9]);  % Increase the paper size to 20x12 inches
+    set(h, 'PaperPosition', [0 0 15 9]);  % Adjust paper position to fill the paper size
     print(h, '-dpdf', thisFilename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
 
 

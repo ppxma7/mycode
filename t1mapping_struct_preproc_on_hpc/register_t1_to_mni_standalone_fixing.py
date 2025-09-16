@@ -2,6 +2,8 @@ import os
 import subprocess
 import glob
 import argparse
+import sys
+import shutil
 
 # FSL and MNI paths
 #FSLDIR = "/usr/local/fsl/"  # Update if needed
@@ -53,9 +55,28 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
     print(f"✅ Found MPRAGE file for {subject}: {mprage_file}")
 
     mprage_brain = os.path.join(mprage_dir, f"{subject}_MPRAGE_brain.nii.gz")
-    if not os.path.exists(mprage_brain):
-        bet_cmd = ["bet", mprage_file, mprage_brain, "-R", "-F", "-f", "0.1"]
-        subprocess.run(bet_cmd, check=True)
+
+    mprage_optibrain = os.path.join(mprage_dir, f"{subject}_MPRAGE_optibrain.nii.gz")
+    mprage_optibrain_mask = os.path.join(mprage_dir, f"{subject}_MPRAGE_optibrain_mask.nii.gz")
+
+    if not os.path.exists(mprage_optibrain):
+        optibet_path = '/Users/ppzma/Documents/MATLAB/optibet.sh'
+        optibet_cmd = ["sh", optibet_path, "-i", mprage_file]
+        #bet_cmd = ["bet", mprage_file, mprage_brain, "-R", "-F", "-f", "0.1"]
+        subprocess.run(optibet_cmd, check=True)
+
+        # optiBET will have created these:
+        base = os.path.splitext(mprage_file)[0]  # remove .nii or .nii.gz
+        optibet_brain = f"{base}_optiBET_brain.nii.gz"
+        optibet_mask = f"{base}_optiBET_brain_mask.nii.gz"
+
+        # Rename/move to desired output names
+        shutil.move(optibet_brain, mprage_optibrain)
+        shutil.move(optibet_mask, mprage_optibrain_mask)
+
+
+
+    #sys.exit(0)
 
 
     # Locate the T1 map
@@ -80,7 +101,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
 
     t1_mni_output = os.path.join(sub_dir,f"{subject}_T1_to_MNI_nonlinear_1mm.nii.gz")
 
-    t1_to_mprage_brain_masked = os.path.join(sub_dir,f"{subject}_T1_to_MPRAGE_masked.nii.gz")
+    #t1_to_mprage_brain_masked = os.path.join(sub_dir,f"{subject}_T1_to_MPRAGE_masked.nii.gz")
 
 
     print("mprage_brain =", mprage_brain)
@@ -90,14 +111,64 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
     #print("affine_mprage_to_mni =", affine_mprage_to_mni)
 
 
+    mprage_mask = os.path.join(mprage_dir, f"{subject}_MPRAGE_brain_mask.nii.gz")
+    mprage_to_t1 = os.path.join(sub_dir, f"{subject}_MPRAGE_to_T1.nii.gz")
+    mprage_mask_to_t1 = os.path.join(sub_dir, f"{subject}_MPRAGEmask_to_T1.nii.gz")
+    affine_mprage_to_t1 = os.path.join(sub_dir,f"{subject}_MPRAGE_to_T1.mat")
+    t1_masked = os.path.join(sub_dir, f"{subject}_T1_brain_flipx_masked.nii.gz")
+
+    # STEP 1: Register MPRAGE brain to T1 space
+    if not os.path.exists(mprage_to_t1):
+        print("🔄 Registering MPRAGE brain to T1 space...")
+        subprocess.run([
+            f"{FSLDIR}/bin/flirt",
+            "-in", mprage_optibrain,    # MPRAGE input
+            "-ref", t1_brain,       # T1 is reference
+            "-omat", affine_mprage_to_t1,
+            "-out", mprage_to_t1,
+            "-cost", "normmi",
+            "-dof", "12",
+            "-searchrx", "0", "0",
+            "-searchry", "0", "0",
+            "-searchrz", "0", "0",
+            "-usesqform"
+        ], check=True)
+        print(f"✅ {subject}: MPRAGE registered to T1 space.")
+
+    # STEP 2: Apply same transform to MPRAGE mask
+    if not os.path.exists(mprage_mask_to_t1):
+        print("🔄 Applying transform to MPRAGE mask...")
+        subprocess.run([
+            f"{FSLDIR}/bin/flirt",
+            "-in", mprage_optibrain_mask,
+            "-ref", t1_brain,
+            "-out", mprage_mask_to_t1,
+            "-applyxfm",
+            "-init", affine_mprage_to_t1,
+            "-interp", "nearestneighbour"  # Important: keep it binary!
+        ], check=True)
+        print(f"✅ {subject}: MPRAGE mask moved to T1 space.")
+
+    # STEP 3: Mask the T1 map
+    if not os.path.exists(t1_masked):
+        print("🔄 Masking T1 map with MPRAGE mask (in T1 space)...")
+        subprocess.run([
+            f"{FSLDIR}/bin/fslmaths",
+            t1_brain,
+            "-mas", mprage_mask_to_t1,
+            t1_masked
+        ], check=True)
+        print(f"✅ {subject}: T1 map masked.")
+
+    #sys.exit(0)
 
     if not os.path.exists(t1_to_mprage):
         # Step 1: Register T1 to MPRAGE (native space)
         print("running T1 to native MPRAGE now")
         subprocess.run([
             f"{FSLDIR}/bin/flirt",
-            "-in", t1_brain,
-            "-ref", mprage_brain,
+            "-in", t1_masked,
+            "-ref", mprage_optibrain,
             "-omat", affine_t1_to_mprage,
             "-out", t1_to_mprage,
             "-cost", "normmi",  # Use MI instead of default corratio mutualinfo
@@ -110,19 +181,19 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
         print(f"✅ {subject} FLIRT: T1 map registered to MPRAGE.")
 
 
-    if not os.path.exists(t1_to_mprage_brain_masked):
-        mprage_brain_mask = os.path.join(mprage_dir, f"{subject}_MPRAGE_brain_mask.nii.gz")
-        print("Masking T1 by MPRAGE mask")
+    # if not os.path.exists(t1_to_mprage_brain_masked):
+    #     mprage_brain_mask = os.path.join(mprage_dir, f"{subject}_MPRAGE_brain_mask.nii.gz")
+    #     print("Masking T1 by MPRAGE mask")
 
-        maths_cmd = [
-            "fslmaths",  # assuming you mean fslmaths
-            t1_to_mprage,
-            "-mul", mprage_brain_mask,
-            t1_to_mprage_brain_masked
-        ]
+    #     maths_cmd = [
+    #         "fslmaths",  # assuming you mean fslmaths
+    #         t1_to_mprage,
+    #         "-mul", mprage_brain_mask,
+    #         t1_to_mprage_brain_masked
+    #     ]
 
-        subprocess.run(maths_cmd, check=True)
-        print(f"✅ {subject} T1 to MPRAGE image masked by MPRAGE brain mask")
+    #     subprocess.run(maths_cmd, check=True)
+    #     print(f"✅ {subject} T1 to MPRAGE image masked by MPRAGE brain mask")
 
 
     # **Move MPRAGE to MNI 1mm space (linear)**
@@ -130,7 +201,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
         print("running MPRAGE to MNI now")
         subprocess.run([
             f"{FSLDIR}/bin/flirt",
-            "-in", mprage_brain,
+            "-in", mprage_file,
             "-ref", MNI_TEMPLATE,
             "-omat", affine_mprage_to_mni,
             "-out", mprage_to_mni,
@@ -167,7 +238,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
     print("applying MPRAGE→MNI affine directly to masked T1 (already in MPRAGE space)…")
     subprocess.run([
         f"{FSLDIR}/bin/flirt",
-        "-in", t1_to_mprage_brain_masked,
+        "-in", t1_to_mprage,
         "-ref", MNI_TEMPLATE,
         "-applyxfm",
         "-init", affine_mprage_to_mni,
@@ -183,7 +254,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
     print("applying FNIRT (nonlinear) warp to masked T1 (already in MPRAGE space)…")
     subprocess.run([
         f"{FSLDIR}/bin/applywarp",
-        f"--in={t1_to_mprage_brain_masked}",
+        f"--in={t1_to_mprage}",
         f"--ref={MNI_TEMPLATE}",
         f"--warp={fnirt_coeff}",
         f"--out={t1_to_mni_nonlin}",
