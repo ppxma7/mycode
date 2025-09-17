@@ -11,9 +11,12 @@ import shutil
 # MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_1mm.nii.gz"  # 1mm version
 # MY_CONFIG_DIR = "/Users/spmic/data/"  # Update if needed
 
-FSLDIR = "/usr/local/fsl/"
+#FSLDIR = "/usr/local/fsl/"
+FSLDIR = "/Users/spmic/fsl/"
 MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_1mm.nii.gz"  # 1mm version
-MY_CONFIG_DIR = "/Users/ppzma/data/"  # Update if needed
+MY_CONFIG_DIR = "/Users/spmic/data/"  # Update if needed
+#optibet_path = '/Users/ppzma/Documents/MATLAB/optibet.sh'
+optibet_path = '/Users/spmic/Documents/MATLAB/nottingham/fMRI_preproc/optibet.sh'
 
 # Define paths
 #FSLDIR = "/software/imaging/fsl/6.0.6.3"
@@ -60,7 +63,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
     mprage_optibrain_mask = os.path.join(mprage_dir, f"{subject}_MPRAGE_optibrain_mask.nii.gz")
 
     if not os.path.exists(mprage_optibrain):
-        optibet_path = '/Users/ppzma/Documents/MATLAB/optibet.sh'
+        
         optibet_cmd = ["sh", optibet_path, "-i", mprage_file]
         #bet_cmd = ["bet", mprage_file, mprage_brain, "-R", "-F", "-f", "0.1"]
         subprocess.run(optibet_cmd, check=True)

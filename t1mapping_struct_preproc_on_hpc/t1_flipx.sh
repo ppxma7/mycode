@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #basedir="/Volumes/DRS-GBPerm/other/t1mapping_out/"
-basedir="/Volumes/nemosine/SAN/AFIRM/t1mapping_out/"
-
+#basedir="/Volumes/nemosine/SAN/AFIRM/t1mapping_out/"
+basedir="/Volumes/DRS-Touchmap/ma_ares_backup/SAN/AFIRM/t1mapping_out/"
 # Option 1: If subject list is stored in a file
 # while read -r subj; do
 
@@ -29,13 +29,13 @@ basedir="/Volumes/nemosine/SAN/AFIRM/t1mapping_out/"
 # 18031_002 18038_002 18076_002 18094_002
 # )
 
-subjects=("1688-002C" "15234-003B" "16469-002A" "16498-002A" \
-"16500-002B" "16501-002b" "16521-001b" "16523_002b" \
-"16602-002B" "16707-002A" "16708-03A" "16797-002C" \
-"16798-002A" "16821-002A" "16835-002A" "16885-002A" \
-"16994-002A" "16999-002B" "17057-002C" "17058-002A" "17059-002a")
+# subjects=("1688-002C" "15234-003B" "16469-002A" "16498-002A" \
+# "16500-002B" "16501-002b" "16521-001b" "16523_002b" \
+# "16602-002B" "16707-002A" "16708-03A" "16797-002C" \
+# "16798-002A" "16821-002A" "16835-002A" "16885-002A" \
+# "16994-002A" "16999-002B" "17057-002C" "17058-002A" "17059-002a")
 
-
+subjects=("17311-002b")
 
 for subj in "${subjects[@]}"; do
     input="${basedir}/${subj}/${subj}_T1_brain.nii.gz"
