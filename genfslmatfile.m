@@ -1,5 +1,5 @@
 % Group sizes
-groupSizes = [46, 45, 45, 44];
+groupSizes = [46, 45, 45, 44, 22];
 nGroups = length(groupSizes);
 totalSubs = sum(groupSizes);
 
@@ -25,12 +25,12 @@ fprintf(fid, '\n');
 fprintf(fid, '/Matrix\n');
 
 for i = 1:totalSubs
-    fprintf(fid, '%d %d %d %d\n', designMat(i,1), designMat(i,2), designMat(i,3), designMat(i,4));
+    fprintf(fid, '%d %d %d %d %d\n', designMat(i,1), designMat(i,2), designMat(i,3), designMat(i,4), designMat(i,5));
 end
 fclose(fid);
 
 %%
-groupSizes = [46, 45, 45, 44];
+groupSizes = [46, 45, 45, 44, 22];
 grp = [];
 
 for g = 1:length(groupSizes)
