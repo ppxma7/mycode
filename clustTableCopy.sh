@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # Set base directory containing the glmdir folders
-base_dir="/Volumes/r15/DRS-GBPerm/other/outputs/etiv_doss_wcov/"  # Change this to the actual path
+base_dir="/Volumes/DRS-GBPerm/other/outputs/etiv_doss_wage_onlyg234_audcovs/"  # Change this to the actual path
 
 # Set export directory
-export_dir="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_screenshots/eTIV_groups_doss_wcov"
+export_dir="/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/etiv_doss_wage_onlyg234_audcovs"
 
 # List of GLM folders
 glmdir_list=(
-  "lh.thickness.NexpoStudy_eTIV_wcov.10.glmdir"
-  "lh.volume.NexpoStudy_eTIV_wcov.10.glmdir"
-  "rh.thickness.NexpoStudy_eTIV_wcov.10.glmdir"
-  "rh.volume.NexpoStudy_eTIV_wcov.10.glmdir"
+  "lh.thickness.NexpoStudy_eTIV_wcov_wage_g234.10.glmdir"
+  "lh.volume.NexpoStudy_eTIV_wcov_wage_g234.10.glmdir"
+  "rh.thickness.NexpoStudy_eTIV_wcov_wage_g234.10.glmdir"
+  "rh.volume.NexpoStudy_eTIV_wcov_wage_g234.10.glmdir"
 )
 
 # Loop through each GLM dir
@@ -31,15 +31,30 @@ for glmdir in "${glmdir_list[@]}"; do
     src="${contrast_dir}/cacheth30possigcluster.csv"
     dest="${export_dir}/${contrast_name}/cacheth30possigcluster__${suffix}.csv"
 
+    src2="${contrast_dir}/cacheth30negsigcluster.csv"
+    dest2="${export_dir}/${contrast_name}/cacheth30negsigcluster__${suffix}.csv"
+
     # Make sure destination folder exists
     mkdir -p "${export_dir}/${contrast_name}"
 
     # Copy with renamed filename
-    if [ -f "$src" ]; then
+    if [ -f "$src" ] && [ "$(wc -l < "$src")" -gt 1 ]; then
       cp "$src" "$dest"
       echo "Copied: $src → $dest"
     else
-      echo "Missing: $src"
+      echo "Skipped empty or missing: $src"
+    fi
+
+    if [ -f "$src2" ] && [ "$(wc -l < "$src2")" -gt 1 ]; then
+      cp "$src2" "$dest2"
+      echo "Copied: $src2 → $dest2"
+    else
+      echo "Skipped empty or missing: $src2"
     fi
   done
 done
+
+
+
+
+
