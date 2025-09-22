@@ -24,21 +24,31 @@ end
 fprintf(fid, '\n');
 fprintf(fid, '/Matrix\n');
 
+% for i = 1:totalSubs
+%     fprintf(fid, '%d %d %d %d %d\n', designMat(i,1), designMat(i,2), designMat(i,3), designMat(i,4), designMat(i,5));
+% end
+
 for i = 1:totalSubs
-    fprintf(fid, '%d %d %d %d %d\n', designMat(i,1), designMat(i,2), designMat(i,3), designMat(i,4), designMat(i,5));
+    fprintf(fid, [repmat('%d ', 1, nGroups) '\n'], designMat(i,:));
 end
+
+
 fclose(fid);
+
+imagesc(designMat)
+xlabel('Groups'); ylabel('Subjects')
+title('Design Matrix')
 
 %%
-groupSizes = [46, 45, 45, 44, 22];
-grp = [];
-
-for g = 1:length(groupSizes)
-    grp = [grp; repmat(g, groupSizes(g), 1)];
-end
-
-% Save to design.grp file
-fid = fopen('design.grp', 'w');
-fprintf(fid, '%d\n', grp);
-fclose(fid);
-
+% groupSizes = [46, 45, 45, 44, 22];
+% grp = [];
+% 
+% for g = 1:length(groupSizes)
+%     grp = [grp; repmat(g, groupSizes(g), 1)];
+% end
+% 
+% % Save to design.grp file
+% fid = fopen('design.grp', 'w');
+% fprintf(fid, '%d\n', grp);
+% fclose(fid);
+% 
