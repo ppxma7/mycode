@@ -11,12 +11,12 @@ import shutil
 # MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_1mm.nii.gz"  # 1mm version
 # MY_CONFIG_DIR = "/Users/spmic/data/"  # Update if needed
 
-#FSLDIR = "/usr/local/fsl/"
-FSLDIR = "/Users/spmic/fsl/"
+FSLDIR = "/usr/local/fsl/"
+#FSLDIR = "/Users/spmic/fsl/"
 MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_1mm.nii.gz"  # 1mm version
-MY_CONFIG_DIR = "/Users/spmic/data/"  # Update if needed
-#optibet_path = '/Users/ppzma/Documents/MATLAB/optibet.sh'
-optibet_path = '/Users/spmic/Documents/MATLAB/nottingham/fMRI_preproc/optibet.sh'
+MY_CONFIG_DIR = "/Users/ppzma/data/"  # Update if needed
+optibet_path = '/Users/ppzma/Documents/MATLAB/optibet.sh'
+#optibet_path = '/Users/spmic/Documents/MATLAB/nottingham/fMRI_preproc/optibet.sh'
 
 # Define paths
 #FSLDIR = "/software/imaging/fsl/6.0.6.3"
@@ -30,8 +30,8 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
 
     # Step 0: Perform Brain Extraction (BET)
     t1_raw = os.path.join(sub_dir, f"{subject}_T1.nii.gz")
-    #t1_brain = os.path.join(sub_dir, f"{subject}_T1_brain.nii.gz")
-    t1_brain = os.path.join(sub_dir, f"{subject}_T1_brain_flipx.nii.gz")
+    t1_brain = os.path.join(sub_dir, f"{subject}_T1_brain.nii.gz")
+    #t1_brain = os.path.join(sub_dir, f"{subject}_T1_brain_flipx.nii.gz")
 
     print(f"{t1_raw}")
     
@@ -118,7 +118,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
     mprage_to_t1 = os.path.join(sub_dir, f"{subject}_MPRAGE_to_T1.nii.gz")
     mprage_mask_to_t1 = os.path.join(sub_dir, f"{subject}_MPRAGEmask_to_T1.nii.gz")
     affine_mprage_to_t1 = os.path.join(sub_dir,f"{subject}_MPRAGE_to_T1.mat")
-    t1_masked = os.path.join(sub_dir, f"{subject}_T1_brain_flipx_masked.nii.gz")
+    t1_masked = os.path.join(sub_dir, f"{subject}_T1_brain_masked.nii.gz")
 
     # STEP 1: Register MPRAGE brain to T1 space
     if not os.path.exists(mprage_to_t1):

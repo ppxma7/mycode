@@ -6,11 +6,11 @@
 #OUTPUT_DIR="/Users/spmic/data/NEXPO/t1mapping_out/"
 #OUTPUT_DIR="/Volumes/DRS-GBPerm/other/t1mapping_out/"
 
-# DATA_DIR="/Volumes/nemosine/SAN/AFIRM/afirm_new_ins/"
-# OUTPUT_DIR="/Volumes/nemosine/SAN/AFIRM/t1mapping_out/"
+DATA_DIR="/Volumes/nemosine/SAN/SASHB/inputs/"
+OUTPUT_DIR="/Volumes/nemosine/SAN/SASHB/t1mapping_out/"
 
-DATA_DIR="/Volumes/DRS-Touchmap/ma_ares_backup/SAN/AFIRM/afirm_new_ins/"
-OUTPUT_DIR="/Volumes/DRS-Touchmap/ma_ares_backup/SAN/AFIRM/t1mapping_out/"
+#DATA_DIR="/Volumes/DRS-Touchmap/ma_ares_backup/SAN/AFIRM/afirm_new_ins/"
+#OUTPUT_DIR="/Volumes/DRS-Touchmap/ma_ares_backup/SAN/AFIRM/t1mapping_out/"
 
 # List of subjects (update as necessary)
 # SUBJECT=("16469-002A" "16500-002B" "16501-002b" \
@@ -87,19 +87,20 @@ OUTPUT_DIR="/Volumes/DRS-Touchmap/ma_ares_backup/SAN/AFIRM/t1mapping_out/"
 # "16798-002A" "16821-002A" "16835-002A" "16885-002A" \
 # "16994-002A" "16999-002B" "17057-002C" "17058-002A" "17059-002a")
 
-SUBJECT=("1688-002C" "15234-003B" "16469-002A" "16498-002A" \
-"16500-002B" "16501-002b" "16521-001b" "16523_002b" \
-"16602-002B" "16707-002A" "16708-03A" "16797-002C" \
-"16798-002A" "16821-002A" "16835-002A" "16885-002A" \
-"16994-002A" "16999-002B" "17057-002C" "17058-002A" "17059-002a")
+# SUBJECT=("1688-002C" "15234-003B" "16469-002A" "16498-002A" \
+# "16500-002B" "16501-002b" "16521-001b" "16523_002b" \
+# "16602-002B" "16707-002A" "16708-03A" "16797-002C" \
+# "16798-002A" "16821-002A" "16835-002A" "16885-002A" \
+# "16994-002A" "16999-002B" "17057-002C" "17058-002A" "17059-002a")
 
-SUBJECT=("17311-002b")
+# SUBJECT=("17311-002b")
+SUBJECT=("17880002" "16905_004" "16905_005" "17880001")
 
 # Loop through each subject
 for subject in "${SUBJECT[@]}"; do
     #python3 /gpfs01/home/ppzma/code/register_t1_to_mni_standalone.py -d "$DATA_DIR" -o "$OUTPUT_DIR" -s "$subject"
     #python3 /Users/spmic/Documents/MATLAB/mycode/t1mapping_struct_preproc_on_hpc/register_t1_to_mni_standalone_fixing.py -d "$DATA_DIR" -o "$OUTPUT_DIR" -s "$subject"
-    python3 /Users/spmic/Documents/MATLAB/mycode/t1mapping_struct_preproc_on_hpc/register_t1_to_mni_standalone_fixing.py -d "$DATA_DIR" -o "$OUTPUT_DIR" -s "$subject"
+    python3 /Users/ppzma/Documents/MATLAB/mycode/t1mapping_struct_preproc_on_hpc/register_t1_to_mni_standalone_fixing.py -d "$DATA_DIR" -o "$OUTPUT_DIR" -s "$subject"
     #python3 /Users/spmic/Documents/MATLAB/mycode/apply_extract_atlas_t1.py -o "$OUTPUT_DIR" -s "$subject"
 
 done

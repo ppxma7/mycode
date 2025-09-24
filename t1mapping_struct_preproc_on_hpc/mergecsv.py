@@ -5,7 +5,7 @@ import pandas as pd
 root_dir = "/Volumes/nemosine/SAN/"
 out_dir = root_dir
 
-hemisphere = "l"
+hemisphere = "r"
 sashb_file = os.path.join(root_dir, "SASHB", f"freesurfer_stats_{hemisphere}_SASHB.csv")
 afirm_file = os.path.join(root_dir, "AFIRM", f"freesurfer_stats_{hemisphere}_AFIRM.csv")
 nexpo_file = os.path.join(root_dir, "NEXPO", f"freesurfer_stats_{hemisphere}_NEXPO.csv")

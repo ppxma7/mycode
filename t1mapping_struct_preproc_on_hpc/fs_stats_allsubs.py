@@ -12,7 +12,7 @@ import sys
 
 root_dir = "/Volumes/nemosine/SAN/"
 
-hemisphere = "l"
+hemisphere = "r"
 
 fs_filename = os.path.join(root_dir, f"freesurfer_stats_{hemisphere}_combined.csv")
 #fs_filename = os.path.join(root_dir, f"freesurfer_stats_{hemisphere}_{group_name}.csv")
@@ -39,7 +39,14 @@ df_thickness = df.groupby(["StructName", "Group"]).agg(
 # Get unique regions and groups
 regions = df["StructName"].unique()
 groups = df["Group"].unique()
-group_colors = {"AFIRM": "#e41a1c", "SASHB": "#377eb8", "NEXPO": "#4daf4a"}  # Customize colors per group
+group_colors = {
+    "AFIRM": "#e41a1c",   # red
+    "SASHB": "#377eb8",   # blue
+    "NEXPO1": "#4daf4a",  # green
+    "NEXPO2": "#984ea3",  # purple
+    "NEXPO3": "#ff7f00",  # orange
+    "NEXPO4": "#a65628"   # brown
+}
 
 print("Grouped GMV Data:\n", df_gmv[df_gmv["StructName"] == "G frontal superior"])
 print("Individual Data:\n", df[df["StructName"] == "G frontal superior"])
@@ -50,38 +57,42 @@ df_gmv = df_gmv.set_index("StructName").loc[regions].reset_index()
 
 # Define function to plot
 def plot_grouped_bars(df_grouped, y_label, title, filename, ymin, ymax):
-    plt.figure(figsize=(10, len(regions) * 0.3))
+    plt.figure(figsize=(10, len(regions) * 0.3))  # scales figure height by #regions
 
-    # Bar width and positioning
-    bar_width = 0.25
-    x = np.arange(len(regions))  # X positions for each region
+    # Manually tuned bar width & spacing for fixed number of regions/groups
+    bar_width = 0.1       # thinner bars so they don’t overlap
+    group_spacing = 0.05  # extra gap between groups
 
-    # Loop through groups to plot bars
+    x = np.arange(len(regions))  # base positions
+
+    # Plot bars with spacing
     for i, group in enumerate(groups):
         subset = df_grouped[df_grouped["Group"] == group]
-        plt.barh(x + i * bar_width, subset["Mean"], xerr=subset["Std_dev"], 
-                 color=group_colors[group], alpha=0.6, label=f"{group} Mean ± Std Dev",
-                 height=bar_width)
+        y_positions = x + i * (bar_width + group_spacing)
+        plt.barh(
+            y_positions, subset["Mean"],
+            xerr=subset["Std_dev"],
+            color=group_colors[group],
+            alpha=0.6,
+            label=f"{group} Mean ± Std Dev",
+            height=bar_width
+        )
 
-    # Overlay individual subject points
-    # comment this out if you don't want individual points
-    # for _, row in df.iterrows():
-    #     region_index = np.where(regions == row["StructName"])[0][0]  # Get x position
-    #     group_offset = list(groups).index(row["Group"]) * bar_width  # Offset for groups
-    #     plt.scatter(row[y_label], region_index + group_offset, 
-    #                 color=group_colors[row["Group"]], alpha=0.6, edgecolors="black")
-
-    # Set consistent y-axis limits
-    #ymin_gmv, ymax_gmv = 0, 15000  # Example values for GMV
-    #ymin_thick, ymax_thick = 0.0, 5.0  # Example values for Thickness
+    # Adjust yticks so labels are centered on the group stack
+    total_group_height = len(groups) * bar_width + (len(groups) - 1) * group_spacing
+    plt.yticks(x + total_group_height / 2 - (bar_width / 2), regions)
 
     # Formatting
-    plt.yticks(x + bar_width / 2, regions)  # Set region names as y-axis labels
     plt.xlabel(y_label)
     plt.ylabel("Brain Region")
     plt.title(title)
     plt.legend()
+
+    # Apply x limits and add left padding
     plt.xlim(ymin, ymax)
+    xmin, xmax = plt.xlim()
+    plt.xlim(xmin - (xmax - xmin) * 0.05, xmax)
+
     plt.grid(True, linestyle="--", alpha=0.5)
 
     # Save the plot
@@ -90,6 +101,8 @@ def plot_grouped_bars(df_grouped, y_label, title, filename, ymin, ymax):
     plt.savefig(plot_path, dpi=300)
     plt.close()
     print(f"Plot saved: {plot_path}")
+
+
 
 
 ymin_gmv, ymax_gmv = 0, 25000  # GMV limits
