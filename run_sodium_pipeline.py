@@ -8,7 +8,7 @@ import glob
 
 # ---------- USER CONFIG ----------
 FSLDIR = "/usr/local/fsl"
-MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_1mm.nii.gz"
+MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_1mm_brain.nii.gz"
 MNI_BRAIN_MASK = f"{FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz"
 MY_CONFIG_DIR = "/Users/ppzma/data"  # contains bb_fnirt.cnf
 OPTIBET_PATH = "/Users/ppzma/Documents/MATLAB/optibet.sh"
@@ -61,19 +61,35 @@ print(mprage_file)
 print(sodium_mprage_file)
 print(sodium_file)
 
-#sys.exit(0)
-
-
 
 # Outputs
+# First lets skull strip the main MPRAGE
 mprage_optibrain = os.path.join(ARG1, f"{subject}_MPRAGE_optibrain.nii.gz")
 mprage_optibrain_mask = os.path.join(ARG1, f"{subject}_MPRAGE_optibrain_mask.nii.gz")
 
+# Now lets skull strip the MPRAGE in SODIUM space
+sodium_mprage_file_optibrain = os.path.join(ARG2, f"{subject}_SODIUMMPRAGE_optibrain.nii.gz")
+sodium_mprage_file_optibrain_mask = os.path.join(ARG2, f"{subject}_SODIUMMPRAGE_optibrain_mask.nii.gz")
 
-affine_mprage_to_mni = os.path.join(ARG1, "mprage2mni.mat")
-mprage_to_mni = os.path.join(ARG1, "mprage2mni_linear.nii.gz")
-mprage_to_mni_nonlin = os.path.join(ARG1, "mprage2mni_nonlin.nii.gz")
-fnirt_coeff = os.path.join(ARG1, "mprage2mni_warpcoef.nii.gz")
+# Now lets move the SODIUM MPRAGE to the main MPRAGE
+sodium_mprage_file2mprage = os.path.join(ARG2, f"{subject}_SODIUMMPRAGE_2MPRAGE.nii.gz")
+sodium_mprage_file2mprage_mat = os.path.join(ARG2, f"{subject}_SODIUMMPRAGE_2MPRAGE.mat")
+
+# We need to move the sodium file to the sodium MPRAGE just to fix all the matrices
+sodium_2_sodiumMPRAGE = os.path.join(ARG3, f"{subject}_sodium_in_sodium_mprage_space.nii.gz")
+sodium_2_sodiumMPRAGE_mat = os.path.join(ARG3, f"{subject}_sodium_in_sodium_mprage_space.mat")
+
+# Now lets move the sodium to the main MPRAGE, using the transform from the SODIUM MPRAGE
+sodium_in_mprage_space = os.path.join(ARG3, f"{subject}_sodium_in_mprage_space.nii.gz")
+
+# Okay, now we can start to move to MNI space 
+sodium_mprage_file_mni = os.path.join(ARG2, f"{subject}_SODIUMMPRAGE_MNI.nii.gz")
+affine_mprage_to_mni = os.path.join(ARG1, f"{subject}_mprage2mni.mat")
+mprage_to_mni = os.path.join(ARG1, f"{subject}_mprage2mni_linear.nii.gz")
+mprage_to_mni_nonlin = os.path.join(ARG1, f"{subject}_mprage2mni_nonlin.nii.gz")
+fnirt_coeff = os.path.join(ARG1, f"{subject}_mprage2mni_warpcoef.nii.gz")
+
+sodium_file_mni = os.path.join(ARG3, f"{subject}_sodium_MNI.nii.gz")
 
 def run(cmd, check=True):
     print("🔧 Running:", " ".join(cmd))
@@ -97,39 +113,73 @@ def runOptibet():
         print("⏭️ optiBET brain already exists, skipping.")
 
 
+def runOptibetOnSodiumMPRAGE():
+    if not os.path.exists(sodium_mprage_file_optibrain):
+
+        run(["sh", OPTIBET_PATH, "-i", sodium_mprage_file])
+
+        base = os.path.splitext(sodium_mprage_file)[0]  # remove .nii or .nii.gz
+        optibet_brain = f"{base}_optiBET_brain.nii.gz"
+        optibet_mask = f"{base}_optiBET_brain_mask.nii.gz"
+
+        # Rename/move to desired output names
+        shutil.move(optibet_brain, sodium_mprage_file_optibrain)
+        shutil.move(optibet_mask, sodium_mprage_file_optibrain_mask)
+        print(f"✅ optiBET brain created: {sodium_mprage_file_optibrain}")
+
+    else:
+        print("⏭️ optiBET brain already exists, skipping.")
 
 
 def runMPRAGE2MPRAGE():
-    out_file = sodium_mprage_file.replace(".nii", "_to_mainmprage.nii.gz")
-    if not os.path.exists(out_file):
+    if not os.path.exists(sodium_mprage_file2mprage):
         run([
             f"{FSLDIR}/bin/flirt",
-            "-in", sodium_mprage_file,
+            "-in", sodium_mprage_file_optibrain,
             "-ref", mprage_optibrain,
-            "-omat", os.path.join(ARG1, "sodiummprage2mprage.mat"),
-            "-out", out_file,
+            "-omat", sodium_mprage_file2mprage_mat,
+            "-out", sodium_mprage_file2mprage,
             "-dof", "6"
         ])
-        print(f"✅ Registered sodium MPRAGE to main MPRAGE: {out_file}")
+        print(f"✅ Registered sodium MPRAGE to main MPRAGE: {sodium_mprage_file2mprage}")
     else:
         print("⏭️ Sodium MPRAGE already registered, skipping.")
-    return out_file
 
-def runSodium2Mprage():
-    out_file = os.path.join(ARG3, "sodium_in_mprage_space.nii.gz")
-    if not os.path.exists(out_file):
+def runSodium2SodiumMPRAGE():
+    if not os.path.exists(sodium_2_sodiumMPRAGE):
         run([
             f"{FSLDIR}/bin/flirt",
             "-in", sodium_file,
+            "-ref", sodium_mprage_file_optibrain,
+            "-omat", sodium_2_sodiumMPRAGE_mat,
+            "-out", sodium_2_sodiumMPRAGE,
+            "-bins","256",
+            "-dof", "6",
+            "-schedule","/usr/local/fsl/etc/flirtsch/sch3Dtrans_3dof",
+            "-cost", "normmi",
+            "-searchrx", "0", "0",
+            "-searchry", "0", "0",
+            "-searchrz", "0", "0",
+            "-interp", "trilinear"
+        ])
+        print(f"✅ Sodium registered to sodium-MPRAGE: {sodium_2_sodiumMPRAGE}")
+    else:
+        print("⏭️ Sodium already registered to sodium-MPRAGE.")
+
+
+def runSodium2Mprage():
+    if not os.path.exists(sodium_in_mprage_space):
+        run([
+            f"{FSLDIR}/bin/flirt",
+            "-in", sodium_2_sodiumMPRAGE,
             "-ref", mprage_optibrain,
             "-applyxfm",
-            "-init", os.path.join(ARG1, "sodiummprage2mprage.mat"),
-            "-out", out_file
+            "-init", sodium_mprage_file2mprage_mat,
+            "-out", sodium_in_mprage_space
         ])
-        print(f"✅ Sodium image transformed into MPRAGE space: {out_file}")
+        print(f"✅ Sodium image transformed into MPRAGE space: {sodium_in_mprage_space}")
     else:
         print("⏭️ Sodium image already transformed, skipping.")
-    return out_file
 
 def runMPRAGE2MNI():
     if not os.path.exists(mprage_to_mni):
@@ -143,6 +193,9 @@ def runMPRAGE2MNI():
             "-bins", "256",
             "-dof", "12",
             "-cost", "corratio",
+            "-searchrx", "-90", "90",
+            "-searchry", "-90", "90",
+            "-searchrz", "-90", "90",
             "-interp", "trilinear"
         ])
     else:
@@ -152,7 +205,7 @@ def runMPRAGE2MNI():
         print("Running FNIRT MPRAGE → MNI")
         run([
             f"{FSLDIR}/bin/fnirt",
-            f"--in={mprage_file}",
+            f"--in={mprage_optibrain}",
             f"--ref={MNI_TEMPLATE}",
             f"--aff={affine_mprage_to_mni}",
             f"--config={MY_CONFIG_DIR}/config/bb_fnirt.cnf",
@@ -164,47 +217,268 @@ def runMPRAGE2MNI():
     else:
         print("⏭️ FNIRT warp exists, skipping.")
 
+
+# Just ignore this bit for now, because of FNIRT
 def runSodiumMPRAGEtoMNI():
     out_file = sodium_mprage_file.replace(".nii", "_in_mni.nii.gz")
     if not os.path.exists(out_file):
         run([
             f"{FSLDIR}/bin/applywarp",
             "--ref="+MNI_TEMPLATE,
-            "--in="+sodium_mprage_file,
+            "--in="+sodium_mprage_file2mprage,
             "--warp="+fnirt_coeff,
             "--out="+out_file
         ])
         print(f"✅ Sodium MPRAGE moved to MNI space: {out_file}")
     else:
         print("⏭️ Sodium MPRAGE already in MNI space.")
+
+def runSodiumMPRAGEtoMNI_linear():
+    if not os.path.exists(sodium_mprage_file_mni):
+        run([
+            f"{FSLDIR}/bin/flirt",
+            "-in", sodium_mprage_file2mprage,
+            "-ref", MNI_TEMPLATE,
+            "-applyxfm",
+            "-init", affine_mprage_to_mni,
+            "-out", sodium_mprage_file_mni
+        ])
+        print(f"✅ Sodium MPRAGE moved to MNI space (linear only): {sodium_mprage_file_mni}")
+    else:
+        print("⏭️ Sodium MPRAGE already in MNI space.")
+
+# use the linear transformation for now
+def runSodiumtoMNI():
+    if not os.path.exists(sodium_file_mni):
+        run([
+            f"{FSLDIR}/bin/flirt",
+            "-in", sodium_in_mprage_space,
+            "-ref", MNI_TEMPLATE,
+            "-applyxfm",
+            "-init", affine_mprage_to_mni,
+            "-out", sodium_file_mni
+        ])
+        print(f"✅ Sodium moved to MNI space (linear only): {sodium_file_mni}")
+    else:
+        print("⏭️ Sodium already in MNI space.")
+
+
+def runSodiumtoMNI_FNIRT():
+    out_file = sodium_file_mni.replace(".nii.gz", "_FNIRT.nii.gz")
+    if not os.path.exists(out_file):
+        run([
+            f"{FSLDIR}/bin/applywarp",
+            "--ref=" + MNI_TEMPLATE,
+            "--in=" + sodium_in_mprage_space,
+            "--warp=" + fnirt_coeff,
+            "--out=" + out_file,
+            "--interp=spline"
+        ])
+        print(f"✅ Sodium moved to MNI space (FNIRT): {out_file}")
+    else:
+        print("⏭️ Sodium already in MNI (FNIRT) space.")
     return out_file
 
+
+
+
+#####################################################################################################################
+#####################################################################################################################
+
 def moveAtlasToSodium():
-    atlas = f"{FSLDIR}/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr50-1mm.nii.gz"
-    out_file = os.path.join(ARG3, "HOatlas_in_sodium_space.nii.gz")
-    if not os.path.exists(out_file):
+    atlas = f"{FSLDIR}/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr0-1mm.nii.gz"
+    atlas_in_sodium = os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium.nii.gz")
+
+    # Step 1: Invert MPRAGE→MNI (get MNI→MPRAGE)
+    mni2mprage_mat = os.path.join(ARG1, f"{subject}_mni2mprage.mat")
+    if not os.path.exists(mni2mprage_mat):
+        run([
+            f"{FSLDIR}/bin/convert_xfm",
+            "-omat", mni2mprage_mat,
+            "-inverse", affine_mprage_to_mni
+        ])
+        print(f"✅ Created MNI→MPRAGE matrix: {mni2mprage_mat}")
+    else:
+        print("⏭️ MNI→MPRAGE matrix already exists.")
+
+    # Step 2: Invert SODIUMMPRAGE→MPRAGE (get MPRAGE→SODIUMMPRAGE)
+    mprage2sodiummprage_mat = os.path.join(ARG2, f"{subject}_MPRAGE_2_SODIUMMPRAGE.mat")
+    if not os.path.exists(mprage2sodiummprage_mat):
+        run([
+            f"{FSLDIR}/bin/convert_xfm",
+            "-omat", mprage2sodiummprage_mat,
+            "-inverse", sodium_mprage_file2mprage_mat
+        ])
+        print(f"✅ Created MPRAGE→SODIUMMPRAGE matrix: {mprage2sodiummprage_mat}")
+    else:
+        print("⏭️ MPRAGE→SODIUMMPRAGE matrix already exists.")
+
+    # Step 3: Invert SODIUM→SODIUMMPRAGE (get SODIUMMPRAGE→SODIUM)
+    sodiummprage2sodium_mat = os.path.join(ARG3, f"{subject}_sodiummprage2sodium.mat")
+    if not os.path.exists(sodiummprage2sodium_mat):
+        run([
+            f"{FSLDIR}/bin/convert_xfm",
+            "-omat", sodiummprage2sodium_mat,
+            "-inverse", sodium_2_sodiumMPRAGE_mat
+        ])
+        print(f"✅ Created SODIUMMPRAGE→SODIUM matrix: {sodiummprage2sodium_mat}")
+    else:
+        print("⏭️ SODIUMMPRAGE→SODIUM matrix already exists.")
+
+    # Step 4: Concatenate MNI→MPRAGE + MPRAGE→SODIUMMPRAGE
+    mni2sodiummprage_mat = os.path.join(ARG3, f"{subject}_mni2sodiummprage.mat")
+    if not os.path.exists(mni2sodiummprage_mat):
+        run([
+            f"{FSLDIR}/bin/convert_xfm",
+            "-omat", mni2sodiummprage_mat,
+            "-concat", mprage2sodiummprage_mat,
+            mni2mprage_mat
+        ])
+        print(f"✅ Created MNI→SODIUMMPRAGE matrix: {mni2sodiummprage_mat}")
+
+    # Step 5: Concatenate with SODIUMMPRAGE→SODIUM to get final MNI→SODIUM
+    mni2sodium_mat = os.path.join(ARG3, f"{subject}_mni2sodium.mat")
+    if not os.path.exists(mni2sodium_mat):
+        run([
+            f"{FSLDIR}/bin/convert_xfm",
+            "-omat", mni2sodium_mat,
+            "-concat", sodiummprage2sodium_mat,
+            mni2sodiummprage_mat
+        ])
+        print(f"✅ Created MNI→SODIUM matrix: {mni2sodium_mat}")
+
+    # Step 6: Apply transform to atlas (nearest neighbour for labels)
+    if not os.path.exists(atlas_in_sodium):
+        run([
+            f"{FSLDIR}/bin/flirt",
+            "-in", atlas,
+            "-ref", sodium_file,
+            "-applyxfm",
+            "-init", mni2sodium_mat,
+            "-interp", "nearestneighbour",
+            "-out", atlas_in_sodium
+        ])
+        print(f"✅ Atlas moved to sodium space: {atlas_in_sodium}")
+    else:
+        print("⏭️ Atlas already exists in sodium space.")
+
+    return atlas_in_sodium
+
+
+
+def moveAtlasToSodium_FNIRT():
+    # Step 1: Invert MPRAGE→MNI warp to get MNI→MPRAGE
+    mni2mprage_warp = os.path.join(ARG1, f"{subject}_mni2mprage_warp.nii.gz")
+    if not os.path.exists(mni2mprage_warp):
         run([
             f"{FSLDIR}/bin/invwarp",
             "-w", fnirt_coeff,
-            "-o", os.path.join(ARG1, "mni2mprage_warp"),
+            "-o", mni2mprage_warp,
             "-r", mprage_optibrain
         ])
+        print(f"✅ Created MNI→MPRAGE warp: {mni2mprage_warp}")
+
+    # Step 2: Invert SODIUMMPRAGE→MPRAGE (get MPRAGE→SODIUMMPRAGE)
+    mprage2sodiummprage_mat = os.path.join(ARG2, f"{subject}_MPRAGE_2_SODIUMMPRAGE.mat")
+    if not os.path.exists(mprage2sodiummprage_mat):
+        run([
+            f"{FSLDIR}/bin/convert_xfm",
+            "-omat", mprage2sodiummprage_mat,
+            "-inverse", sodium_mprage_file2mprage_mat
+        ])
+        print(f"✅ Created MPRAGE→SODIUMMPRAGE matrix: {mprage2sodiummprage_mat}")
+    else:
+        print("⏭️ MPRAGE→SODIUMMPRAGE matrix already exists.")
+
+    # Step 3: Invert SODIUM→SODIUMMPRAGE (get SODIUMMPRAGE→SODIUM)
+    sodiummprage2sodium_mat = os.path.join(ARG3, f"{subject}_sodiummprage2sodium.mat")
+    if not os.path.exists(sodiummprage2sodium_mat):
+        run([
+            f"{FSLDIR}/bin/convert_xfm",
+            "-omat", sodiummprage2sodium_mat,
+            "-inverse", sodium_2_sodiumMPRAGE_mat
+        ])
+        print(f"✅ Created SODIUMMPRAGE→SODIUM matrix: {sodiummprage2sodium_mat}")
+    else:
+        print("⏭️ SODIUMMPRAGE→SODIUM matrix already exists.")
+
+    # Step 4: Concatenate MNI→MPRAGE + MPRAGE→SODIUMMPRAGE
+    mni2sodiummprage_mat = os.path.join(ARG3, f"{subject}_mni2sodiummprage.mat")
+    if not os.path.exists(mni2sodiummprage_mat):
+        run([
+            f"{FSLDIR}/bin/convert_xfm",
+            "-omat", mni2sodiummprage_mat,
+            "-concat", mprage2sodiummprage_mat,
+            mni2mprage_mat
+        ])
+        print(f"✅ Created MNI→SODIUMMPRAGE matrix: {mni2sodiummprage_mat}")
+
+    # Step 5: Concatenate with SODIUMMPRAGE→SODIUM to get final MNI→SODIUM
+    mni2sodium_mat = os.path.join(ARG3, f"{subject}_mni2sodium.mat")
+    if not os.path.exists(mni2sodium_mat):
+        run([
+            f"{FSLDIR}/bin/convert_xfm",
+            "-omat", mni2sodium_mat,
+            "-concat", sodiummprage2sodium_mat,
+            mni2sodiummprage_mat
+        ])
+        print(f"✅ Created MNI→SODIUM matrix: {mni2sodium_mat}")
+
+    # Step 6: Apply warp + matrices to atlas
+    if not os.path.exists(atlas_in_sodium):
+        # First warp atlas into MPRAGE space (nonlinear)
+        atlas_in_mprage = os.path.join(ARG1, f"{subject}_atlas_in_mprage.nii.gz")
         run([
             f"{FSLDIR}/bin/applywarp",
-            "--ref="+sodium_file,
-            "--in="+atlas,
-            "--warp="+os.path.join(ARG1, "mni2mprage_warp"),
-            "--out="+out_file
+            "--ref=" + mprage_optibrain,
+            "--in=" + atlas,
+            "--warp=" + mni2mprage_warp,
+            "--out=" + atlas_in_mprage,
+            "--interp=nn"
         ])
-        print(f"✅ Harvard-Oxford atlas moved to sodium space: {out_file}")
-    else:
-        print("⏭️ Atlas already in sodium space.")
-    return out_file
+
+        # Then use convert_xfm to concatenate mprage2sodiummprage.mat and sodiummprage2sodium.mat
+        mni2sodium_mat = os.path.join(ARG3, f"{subject}_mni2sodium.mat")
+        run([
+            f"{FSLDIR}/bin/convert_xfm",
+            "-omat", mni2sodium_mat,
+            "-concat", sodiummprage2sodium_mat,
+            mprage2sodiummprage_mat
+        ])
+
+        # Finally apply the affine transform to go from MPRAGE space → sodium
+        run([
+            f"{FSLDIR}/bin/flirt",
+            "-in", atlas_in_mprage,
+            "-ref", sodium_file,
+            "-applyxfm",
+            "-init", mni2sodium_mat,
+            "-interp", "nearestneighbour",
+            "-out", atlas_in_sodium
+        ])
+
+
+
+
+
+
+
+#####################################################################################################################
+#####################################################################################################################
+
 
 if __name__ == "__main__":
     runOptibet()
+    runOptibetOnSodiumMPRAGE()
     runMPRAGE2MPRAGE()
+    runSodium2SodiumMPRAGE()
     runSodium2Mprage()
+
     runMPRAGE2MNI()
     runSodiumMPRAGEtoMNI()
-    moveAtlasToSodium()
+    #runSodiumMPRAGEtoMNI_linear()
+    #runSodiumtoMNI()
+    runSodiumtoMNI_FNIRT()
+
+    #moveAtlasToSodium()
+    moveAtlasToSodium_FNIRT()
