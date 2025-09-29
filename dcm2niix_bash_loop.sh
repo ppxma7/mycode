@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Root folder containing subject directories
-rootfolder="/Volumes/kratos/NEXPODTIS/ppzma-20250923_145236"
+rootfolder="/Volumes/kratos/NEXPOt2s/ppzma-20250929_115920"
 
 # Loop through all subject directories
 for subjdir in "$rootfolder"/*/; do
