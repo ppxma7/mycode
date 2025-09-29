@@ -84,12 +84,14 @@ sodium_in_mprage_space = os.path.join(ARG3, f"{subject}_sodium_in_mprage_space.n
 
 # Okay, now we can start to move to MNI space 
 sodium_mprage_file_mni = os.path.join(ARG2, f"{subject}_SODIUMMPRAGE_MNI.nii.gz")
+sodium_mprage_file_mni_fnirt = os.path.join(ARG2, f"{subject}_SODIUMMPRAGE_MNI_FNIRT.nii.gz")
 affine_mprage_to_mni = os.path.join(ARG1, f"{subject}_mprage2mni.mat")
 mprage_to_mni = os.path.join(ARG1, f"{subject}_mprage2mni_linear.nii.gz")
 mprage_to_mni_nonlin = os.path.join(ARG1, f"{subject}_mprage2mni_nonlin.nii.gz")
 fnirt_coeff = os.path.join(ARG1, f"{subject}_mprage2mni_warpcoef.nii.gz")
 
 sodium_file_mni = os.path.join(ARG3, f"{subject}_sodium_MNI.nii.gz")
+sodium_file_mni_FNIRT = os.path.join(ARG3, f"{subject}_sodium_MNI_FNIRT.nii.gz")
 
 def run(cmd, check=True):
     print("🔧 Running:", " ".join(cmd))
@@ -220,16 +222,16 @@ def runMPRAGE2MNI():
 
 # Just ignore this bit for now, because of FNIRT
 def runSodiumMPRAGEtoMNI():
-    out_file = sodium_mprage_file.replace(".nii", "_in_mni.nii.gz")
-    if not os.path.exists(out_file):
+    #out_file = sodium_mprage_file.replace(".nii", "_in_mni.nii.gz")
+    if not os.path.exists(sodium_mprage_file_mni_fnirt):
         run([
             f"{FSLDIR}/bin/applywarp",
             "--ref="+MNI_TEMPLATE,
             "--in="+sodium_mprage_file2mprage,
             "--warp="+fnirt_coeff,
-            "--out="+out_file
+            "--out="+sodium_mprage_file_mni_fnirt
         ])
-        print(f"✅ Sodium MPRAGE moved to MNI space: {out_file}")
+        print(f"✅ Sodium MPRAGE moved to MNI space: {sodium_mprage_file_mni_fnirt}")
     else:
         print("⏭️ Sodium MPRAGE already in MNI space.")
 
@@ -264,20 +266,20 @@ def runSodiumtoMNI():
 
 
 def runSodiumtoMNI_FNIRT():
-    out_file = sodium_file_mni.replace(".nii.gz", "_FNIRT.nii.gz")
-    if not os.path.exists(out_file):
+    #out_file = sodium_file_mni.replace(".nii.gz", "_FNIRT.nii.gz")
+    if not os.path.exists(sodium_file_mni_FNIRT):
         run([
             f"{FSLDIR}/bin/applywarp",
             "--ref=" + MNI_TEMPLATE,
             "--in=" + sodium_in_mprage_space,
             "--warp=" + fnirt_coeff,
-            "--out=" + out_file,
+            "--out=" + sodium_file_mni_FNIRT,
             "--interp=spline"
         ])
-        print(f"✅ Sodium moved to MNI space (FNIRT): {out_file}")
+        print(f"✅ Sodium moved to MNI space (FNIRT): {sodium_file_mni_FNIRT}")
     else:
         print("⏭️ Sodium already in MNI (FNIRT) space.")
-    return out_file
+    #return sodium_file_mni_FNIRT
 
 
 
@@ -367,6 +369,10 @@ def moveAtlasToSodium():
 
 
 def moveAtlasToSodium_FNIRT():
+
+    atlas = f"{FSLDIR}/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr0-1mm.nii.gz"
+    atlas_in_sodium = os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium_FNIRT.nii.gz")
+
     # Step 1: Invert MPRAGE→MNI warp to get MNI→MPRAGE
     mni2mprage_warp = os.path.join(ARG1, f"{subject}_mni2mprage_warp.nii.gz")
     if not os.path.exists(mni2mprage_warp):
@@ -458,6 +464,29 @@ def moveAtlasToSodium_FNIRT():
         ])
 
 
+def moveOutputs():
+    # Use ARG1's parent folder as subject root
+    subject_root = os.path.dirname(ARG1)  # gives .../<subject>
+    output_dir = os.path.join(subject_root, "outputs")
+    os.makedirs(output_dir, exist_ok=True)
+    print(f"📦 Collecting outputs in: {output_dir}")
+
+    files_to_copy = [
+        os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium.nii.gz"),
+        os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium_FNIRT.nii.gz"),
+        sodium_file_mni,
+        sodium_file_mni_FNIRT,
+    ]
+
+    for f in files_to_copy:
+        if os.path.exists(f):
+            dest = os.path.join(output_dir, os.path.basename(f))
+            shutil.copy(f, dest)
+            print(f"✅ Copied {os.path.basename(f)} to outputs/")
+        else:
+            print(f"⚠️ Missing file, skipping: {f}")
+
+
 
 
 
@@ -473,12 +502,15 @@ if __name__ == "__main__":
     runMPRAGE2MPRAGE()
     runSodium2SodiumMPRAGE()
     runSodium2Mprage()
-
     runMPRAGE2MNI()
+
+    runSodiumMPRAGEtoMNI_linear()
     runSodiumMPRAGEtoMNI()
-    #runSodiumMPRAGEtoMNI_linear()
-    #runSodiumtoMNI()
+
+    runSodiumtoMNI()
     runSodiumtoMNI_FNIRT()
 
-    #moveAtlasToSodium()
+    moveAtlasToSodium()
     moveAtlasToSodium_FNIRT()
+
+    moveOutputs()
