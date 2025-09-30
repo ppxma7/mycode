@@ -2,23 +2,19 @@
 
 # === CONFIGURATION ===
 SUBJECTS_DIR=/Volumes/DRS-GBPerm/other/outputs
-ROOT_DIR=/Volumes/DRS-GBPerm/other/outputs/etiv_doss_wage_wafirm_wsashb
-OUTPUT_ROOT="/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/etiv_doss_wage_wafirm_wsashb"
+ROOT_DIR=/Volumes/DRS-GBPerm/other/outputs/etiv_doss_wage_wafirm_wsashb_g2only
+OUTPUT_ROOT="/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/etiv_doss_wage_wafirm_wsashb_g2only"
 
 hemi_list=("lh" "rh")
 measure_list=("thickness" "volume")
 contrast_dirs=(
-  Age_overall g1_vs_g2 g1_vs_g3 g1_vs_g4 g1_vs_g5 g1_vs_g6
-  g2_vs_g3 g2_vs_g4 g2_vs_g5 g2_vs_g6
-  g3_vs_g4 g3_vs_g5 g3_vs_g6
-  g4_vs_g5 g4_vs_g6
-  g5_vs_g6 HL_overall Noise_overall
+  Age_overall g2_vs_g5 g2_vs_g6 g5_vs_g6
 )
 
 # === MAIN LOOP ===
 for hemi in "${hemi_list[@]}"; do
   for meas in "${measure_list[@]}"; do
-    glm_dir="${ROOT_DIR}/${hemi}.${meas}.NexpoStudy_eTIV_wafirm_wsashb.10.glmdir"
+    glm_dir="${ROOT_DIR}/${hemi}.${meas}.NexpoStudy_eTIV_wafirm_wsashb_g2only.10.glmdir"
     surf_file="${SUBJECTS_DIR}/fsaverage/surf/${hemi}.inflated"
 
     for contrast in "${contrast_dirs[@]}"; do
@@ -45,7 +41,7 @@ for hemi in "${hemi_list[@]}"; do
         if [[ -f "$overlay_file" ]]; then
 
        		# Build output directory to mirror input structure
-          outdir="${OUTPUT_ROOT}/${hemi}.${meas}.NexpoStudy_eTIV_wafirm_wsashb.10.glmdir/${contrast}"
+          outdir="${OUTPUT_ROOT}/${hemi}.${meas}.NexpoStudy_eTIV_wafirm_wsashb_g2only.10.glmdir/${contrast}"
           mkdir -p "$outdir"
 
           for view in lateral medial; do
