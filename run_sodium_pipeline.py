@@ -93,6 +93,12 @@ fnirt_coeff = os.path.join(ARG1, f"{subject}_mprage2mni_warpcoef.nii.gz")
 sodium_file_mni = os.path.join(ARG3, f"{subject}_sodium_MNI.nii.gz")
 sodium_file_mni_FNIRT = os.path.join(ARG3, f"{subject}_sodium_MNI_FNIRT.nii.gz")
 
+atlas_in_sodium = os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium.nii.gz")
+#subcortatlas_in_sodium = os.path.join(ARG3, f"{subject}_HarvardOxfordsubcort_in_sodium.nii.gz")
+atlas_in_sodium_FNIRT = os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium_FNIRT.nii.gz")
+#subcortatlas_in_sodium_FNIRT = os.path.join(ARG3, f"{subject}_HarvardOxfordsubcort_in_sodium_FNIRT.nii.gz")
+
+
 def run(cmd, check=True):
     print("🔧 Running:", " ".join(cmd))
     subprocess.run(cmd, check=check)
@@ -289,7 +295,9 @@ def runSodiumtoMNI_FNIRT():
 
 def moveAtlasToSodium():
     atlas = f"{FSLDIR}/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr0-1mm.nii.gz"
-    atlas_in_sodium = os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium.nii.gz")
+    #subcortatlas = f"{FSLDIR}/data/atlases/HarvardOxford/HarvardOxford-sub-maxprob-thr0-1mm.nii.gz"
+
+    
 
     # Step 1: Invert MPRAGE→MNI (get MNI→MPRAGE)
     mni2mprage_mat = os.path.join(ARG1, f"{subject}_mni2mprage.mat")
@@ -364,14 +372,14 @@ def moveAtlasToSodium():
     else:
         print("⏭️ Atlas already exists in sodium space.")
 
-    return atlas_in_sodium
+
 
 
 
 def moveAtlasToSodium_FNIRT():
 
     atlas = f"{FSLDIR}/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr0-1mm.nii.gz"
-    atlas_in_sodium = os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium_FNIRT.nii.gz")
+    #subcortatlas = f"{FSLDIR}/data/atlases/HarvardOxford/HarvardOxford-sub-maxprob-thr0-1mm.nii.gz"
 
     # Step 1: Invert MPRAGE→MNI warp to get MNI→MPRAGE
     mni2mprage_warp = os.path.join(ARG1, f"{subject}_mni2mprage_warp.nii.gz")
@@ -431,7 +439,7 @@ def moveAtlasToSodium_FNIRT():
         print(f"✅ Created MNI→SODIUM matrix: {mni2sodium_mat}")
 
     # Step 6: Apply warp + matrices to atlas
-    if not os.path.exists(atlas_in_sodium):
+    if not os.path.exists(atlas_in_sodium_FNIRT):
         # First warp atlas into MPRAGE space (nonlinear)
         atlas_in_mprage = os.path.join(ARG1, f"{subject}_atlas_in_mprage.nii.gz")
         run([
@@ -460,8 +468,10 @@ def moveAtlasToSodium_FNIRT():
             "-applyxfm",
             "-init", mni2sodium_mat,
             "-interp", "nearestneighbour",
-            "-out", atlas_in_sodium
+            "-out", atlas_in_sodium_FNIRT
         ])
+
+
 
 
 def moveOutputs():
@@ -471,12 +481,19 @@ def moveOutputs():
     os.makedirs(output_dir, exist_ok=True)
     print(f"📦 Collecting outputs in: {output_dir}")
 
+    # files_to_copy = [
+    #     os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium.nii.gz"),
+    #     os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium_FNIRT.nii.gz"),
+    #     sodium_file_mni,
+    #     sodium_file_mni_FNIRT,
+    # ]
     files_to_copy = [
-        os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium.nii.gz"),
-        os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium_FNIRT.nii.gz"),
+        atlas_in_sodium,
+        atlas_in_sodium_FNIRT,
         sodium_file_mni,
         sodium_file_mni_FNIRT,
     ]
+
 
     for f in files_to_copy:
         if os.path.exists(f):
