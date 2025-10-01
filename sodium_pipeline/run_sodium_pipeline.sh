@@ -27,4 +27,4 @@ for d in "$ARG1" "$ARG2" "$ARG3"; do
 done
 
 echo "Running sodium pipeline for $SUBJECT"
-python3 /Users/ppzma/Documents/MATLAB/mycode/run_sodium_pipeline.py "$ARG1" "$ARG2" "$ARG3"
+python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline.py "$ARG1" "$ARG2" "$ARG3"

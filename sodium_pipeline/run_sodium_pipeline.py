@@ -4,6 +4,10 @@ import argparse
 import sys
 import shutil
 import glob
+import nibabel as nib
+import numpy as np
+import pandas as pd
+import xml.etree.ElementTree as ET
 
 
 # ---------- USER CONFIG ----------
@@ -98,6 +102,8 @@ atlas_in_sodium = os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium.nii.gz"
 atlas_in_sodium_FNIRT = os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium_FNIRT.nii.gz")
 #subcortatlas_in_sodium_FNIRT = os.path.join(ARG3, f"{subject}_HarvardOxfordsubcort_in_sodium_FNIRT.nii.gz")
 
+
+out_csv = os.path.join(ARG3, f"{subject}_ROIstats.csv")
 
 def run(cmd, check=True):
     print("🔧 Running:", " ".join(cmd))
@@ -472,6 +478,60 @@ def moveAtlasToSodium_FNIRT():
         ])
 
 
+def load_atlas_labels(xml_file):
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+    labels = {}
+    for label in root.findall(".//label"):
+        idx = int(label.get("index"))
+        name = label.text
+        labels[idx] = name
+    return labels
+
+
+def roiTable():
+    # Load sodium image and atlas
+    sodium_img = nib.load(sodium_file)
+    atlas_img = nib.load(atlas_in_sodium)  
+    sodium_data = sodium_img.get_fdata()
+    atlas_data = atlas_img.get_fdata().astype(int)
+
+    # Get unique ROI labels (exclude 0 = background)
+    roi_labels = np.unique(atlas_data)
+    roi_labels = roi_labels[(roi_labels >= 0) & (roi_labels <= 47)]
+    #print(roi_labels)
+    #roi_labels = roi_labels[roi_labels > 0]
+
+    xml_file = f"{FSLDIR}/data/atlases/HarvardOxford-Cortical.xml"
+    label_dict = load_atlas_labels(xml_file)
+    #print(label_dict)
+
+    results = []
+    for roi in roi_labels:
+        mask = atlas_data == roi
+        values = sodium_data[mask]
+
+        if values.size > 0:
+            mean_val = np.mean(values)
+            std_val = np.std(values)
+            median_val = np.median(values)
+
+            roi_name = label_dict.get(roi, f"ROI_{roi}") # grab names from XML
+            results.append([roi, roi_name, mean_val, std_val, median_val])
+
+    # Put into a DataFrame
+    df = pd.DataFrame(results, columns=["ROI", "Name", "Mean", "StdDev", "Median"])
+
+    # Save CSV 
+    #output_dir = os.path.join(os.path.dirname(ARG3), "outputs")
+    #output_dir = ARG3
+    #os.makedirs(output_dir, exist_ok=True)
+    #out_csv = os.path.join(output_dir, f"{subject}_ROIstats.csv")
+    df.to_csv(out_csv, index=False)
+
+    print(f"✅ ROI stats saved to {out_csv}")
+
+
 
 
 def moveOutputs():
@@ -492,6 +552,7 @@ def moveOutputs():
         atlas_in_sodium_FNIRT,
         sodium_file_mni,
         sodium_file_mni_FNIRT,
+        out_csv
     ]
 
 
@@ -529,5 +590,7 @@ if __name__ == "__main__":
 
     moveAtlasToSodium()
     moveAtlasToSodium_FNIRT()
+
+    roiTable()
 
     moveOutputs()
