@@ -12,7 +12,7 @@ SUBJECT=$1
 REF_BASENAME=$2
 
 # Root directory where subject folders live
-ROOTDIR="/Volumes/nemosine/SAN/SASHB/inputs/NASCAR/"
+ROOTDIR="/Volumes/nemosine/SAN/NASCAR/"
 
 # Build paths
 ARG1="${ROOTDIR}/${SUBJECT}/site2/pipeline/proton"
