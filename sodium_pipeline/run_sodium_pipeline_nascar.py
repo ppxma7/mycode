@@ -33,7 +33,8 @@ ARG3 = args.ARG3
 ARG4 = args.ARG4
 
 
-subject = os.path.basename(os.path.dirname(ARG1))
+subject = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(ARG1))))
+print(subject)
 
 # --- Auto-detect input files ---
 # 1. Main MPRAGE (should start with WIP_MPRAGE_ or similar)
@@ -92,13 +93,13 @@ for oth in others:
         matches = []
 
     if len(matches) == 0:
-        print(f"⚠️ Could not find expected sodium file for {oth} in {ARG3}")
+        print(f"Could not find expected sodium file for {oth} in {ARG3}")
         other_sodium_files[oth] = None
         continue
 
    
     if len(matches) > 1:
-        print(f"⚠️ Multiple matches for {oth}, using first: {matches[0]}")
+        print(f"Multiple matches for {oth}, using first: {matches[0]}")
 
     src = matches[0]
 
@@ -106,7 +107,7 @@ for oth in others:
     if oth in ["seiffert", "radial", "floret"]:
         dst = os.path.join(ARG3, f"{oth}.nii")
         if os.path.exists(dst):
-            print(f"ℹ️ Skipping copy for {oth}, {dst} already exists")
+            print(f"⏭️ Skipping copy for {oth}, {dst} already exists")
         else:
             shutil.copy(src, dst)
             print(f"✅ Copied {oth}: {src} → {dst}")
@@ -141,10 +142,10 @@ for name, f in valid_other_sodiums.items():
     tsc_matches = glob.glob(f"{base}_TSC.nii*")
 
     if len(tsc_matches) == 0:
-        print(f"⚠️ No TSC file found for {name} ({f}), continuing without TSC")
+        print(f"No TSC file found for {name} ({f}), continuing without TSC")
         other_tsc_files[name] = None
     elif len(tsc_matches) > 1:
-        print(f"⚠️ Multiple TSC files for {name}, using first: {tsc_matches[0]}")
+        print(f"Multiple TSC files for {name}, using first: {tsc_matches[0]}")
         other_tsc_files[name] = tsc_matches[0]
     else:
         other_tsc_files[name] = tsc_matches[0]
@@ -178,7 +179,7 @@ def strip_ext(fname):
 #     resampled_seiffert = f"{os.path.splitext(seiffert_file)[0]}_2375.nii.gz"
 #     print(resampled_seiffert)    
 #     if os.path.exists(resampled_seiffert):
-#         print(f"⏭️ Skipping Seiffert resample, already exists: {resampled_seiffert}")
+#         print(f" Skipping Seiffert resample, already exists: {resampled_seiffert}")
 #     else:
 #         run(["flirt", "-in", seiffert_file, "-ref", seiffert_file,
 #              "-out", resampled_seiffert, "-applyisoxfm", "2.375"])
@@ -188,12 +189,12 @@ def strip_ext(fname):
 #         resampled_seiffert_tsc = f"{os.path.splitext(seiffert_tsc)[0]}_2375.nii.gz"
 
 #         if os.path.exists(resampled_seiffert_tsc):
-#             print(f"⏭️ Skipping Seiffert TSC resample, already exists: {resampled_seiffert_tsc}")
+#             print(f" Skipping Seiffert TSC resample, already exists: {resampled_seiffert_tsc}")
 #         else:
 #             run(["flirt", "-in", seiffert_tsc, "-ref", seiffert_tsc,
 #                  "-out", resampled_seiffert_tsc, "-applyisoxfm", "2.375"])
 # else:
-#     print("ℹ️ No Seiffert sodium file found, skipping resampling.")
+#     print(" No Seiffert sodium file found, skipping resampling.")
 
 
 # Step 1) Resample Seiffert if present (reference or other)
@@ -241,7 +242,7 @@ elif other_sodium_files.get("seiffert"):
                  "-out", resampled_seiffert_tsc, "-applyisoxfm", "2.375"])
 
 else:
-    print("ℹ️ No Seiffert sodium file found (neither reference nor other), skipping resampling.")
+    print("⏭️ No Seiffert sodium file found (neither reference nor other), skipping resampling.")
 
 
 # Do a check here to grab the relevant files
@@ -463,7 +464,7 @@ if not os.path.exists(mprage_optibrain):
     print(f"✅ optiBET brain created: {mprage_optibrain}")
 
 else:
-    print("⏭️ optiBET brain already exists, skipping.")
+    print(f"⏭️ optiBET brain {mprage_optibrain} already exists, skipping.")
 
 
 if not os.path.exists(mprage_optibrain_fast):
@@ -471,30 +472,39 @@ if not os.path.exists(mprage_optibrain_fast):
 else:
     print(f"✅ Already run FSL FAST on optibrain: {mprage_optibrain_fast}")
 
-sys.exit(0)
 
-def moveOutputs():
-    subject_root = os.path.dirname(os.path.dirname(ARG3))  # go up from .../pipeline/other_sodium → .../site2
-    output_dir = os.path.join(subject_root, "outputs")
-    os.makedirs(output_dir, exist_ok=True)
-    print(f"📦 Collecting outputs in: {output_dir}")
+########### Need to move data now
+#####
 
-    # Gather files if variable exists and is not None
-    candidates = [
-        "radial_align", "floret_align", "seiffert_align",
-        "radial_align_nobet", "floret_align_nobet", "seiffert_align_nobet",
-        "radial_tsc_align", "floret_tsc_align", "seiffert_tsc_align",
-        "radial_tsc_bet_align", "floret_tsc_bet_align", "seiffert_tsc_bet_align",
-        # MPRAGE outputs
-        "mprage_optibrain", "mprage_optibrain_mask", "mprage_optibrain_fast"
-    ]
+subject_root = os.path.dirname(os.path.dirname(ARG3))  # go up from .../pipeline/other_sodium → .../site2
+output_dir = os.path.join(subject_root, "outputs")
+os.makedirs(output_dir, exist_ok=True)
+print(f"📦 Collecting outputs in: {output_dir}")
 
-    for var in candidates:
-        f = locals().get(var)  # check if variable is defined
-        if f and os.path.exists(f):
-            dest = os.path.join(output_dir, os.path.basename(f))
-            shutil.copy(f, dest)
-            print(f"✅ Copied {os.path.basename(f)} → outputs/")
+# print(sodium_ref_file)
+# print(sodium_ref_tsc_file)
+
+# Gather files if variable exists and is not None
+candidates = ["sodium_ref_file", "sodium_ref_tsc_file",
+    "radial_file", "radial_tsc_file",
+    "resampled_seiffert", "resampled_seiffert_tsc",
+    "radial_align", "floret_align", "seiffert_align",
+    "radial_align_nobet", "floret_align_nobet", "seiffert_align_nobet",
+    "radial_tsc_align", "floret_tsc_align", "seiffert_tsc_align",
+    "radial_tsc_bet_align", "floret_tsc_bet_align", "seiffert_tsc_bet_align",
+    # MPRAGE outputs
+    "mprage_optibrain", "mprage_optibrain_mask"
+]
+
+for var in candidates:
+    f = locals().get(var)  # check if variable is defined
+    if f and os.path.exists(f):
+        dest = os.path.join(output_dir, os.path.basename(f))
+        if os.path.exists(dest):
+            print('skipping')
         else:
-            print(f"⚠️ Missing or undefined: {var}")
+            shutil.copy(f, dest)
+        print(f"✅ Copied {os.path.basename(f)} → outputs/")
+    else:
+        print(f"⚠️ Missing or undefined: {var}")
 
