@@ -1,11 +1,25 @@
 import os
 import glob
+import argparse
+import subprocess
 import nibabel as nib
 import numpy as np
 import pandas as pd
 import xml.etree.ElementTree as ET
 
 FSLDIR = "/usr/local/fsl"
+
+# ---------- ARGPARSE ----------
+parser = argparse.ArgumentParser(description="Run sodium MRI atlas")
+parser.add_argument("ARG1", help="Basename of reference sodium (e.g. floret, radial, seiffert)")
+parser.add_argument("ARG2", help="Site (1 or 2)")
+parser.add_argument("ARG3", help="Subject")
+
+args = parser.parse_args()
+ARG1 = args.ARG1
+ARG2 = args.ARG2
+ARG3 = args.ARG3
+
 
 def load_atlas_labels(xml_file):
     tree = ET.parse(xml_file)
@@ -56,12 +70,72 @@ def roi_table(sodium_file, atlas_file, out_csv, max_roi=47):
     df.to_csv(out_csv, index=False)
     print(f"✅ ROI stats saved to {out_csv}")
 
+def roi_table_catchexceptions(sodium_file, atlas_file, out_csv, max_roi=47):
+    try:
+        sodium_img = nib.load(sodium_file)
+        atlas_img = nib.load(atlas_file)
+
+        sodium_data = sodium_img.get_fdata()
+        atlas_data = atlas_img.get_fdata().astype(int)
+
+        # --- Handle shape mismatch automatically ---
+        if sodium_data.shape != atlas_data.shape:
+            print(f"⚠️ Shape mismatch: {os.path.basename(sodium_file)} "
+                  f"{sodium_data.shape} vs atlas {atlas_data.shape} — resampling sodium to atlas space...")
+
+            resampled_sodium = f"{strip_ext(sodium_file)}_resampled_to_atlas.nii.gz"
+            subprocess.run([
+                f"{FSLDIR}/bin/flirt",
+                "-in", sodium_file,
+                "-ref", atlas_file,
+                "-out", resampled_sodium,
+                "-applyxfm",
+                "-usesqform"
+            ], check=True)
+
+            sodium_file = resampled_sodium
+            sodium_img = nib.load(sodium_file)
+            sodium_data = sodium_img.get_fdata()
+            print(f"✅ Resampled sodium saved as {os.path.basename(resampled_sodium)}")
+
+        # --- ROI extraction as before ---
+        roi_labels = np.unique(atlas_data)
+        roi_labels = roi_labels[(roi_labels >= 0) & (roi_labels <= max_roi)]
+
+        xml_file = os.path.join(FSLDIR, "data/atlases/HarvardOxford-Cortical.xml")
+        label_dict = load_atlas_labels(xml_file)
+
+        results = []
+        for roi in roi_labels:
+            mask = atlas_data == roi
+            values = sodium_data[mask]
+            if values.size > 0:
+                mean_val = np.mean(values)
+                std_val = np.std(values)
+                median_val = np.median(values)
+                roi_name = label_dict.get(roi, f"ROI_{roi}")
+                results.append([roi, roi_name, mean_val, std_val, median_val])
+
+        if not results:
+            print(f"⚠️ No valid ROI data found for {os.path.basename(sodium_file)} — skipping.")
+            return
+
+        df = pd.DataFrame(results, columns=["ROI", "Name", "Mean", "StdDev", "Median"])
+        df.to_csv(out_csv, index=False)
+        print(f"✅ ROI stats saved to {out_csv}")
+
+    except Exception as e:
+        print(f"❌ Error processing {os.path.basename(sodium_file)}: {e}")
+        return
+
+
+
 
 # --- Paths ---
-subject = "Subject1"   # <-- replace or parse dynamically
-base_dir = "/Volumes/nemosine/SAN/SASHB/inputs/NASCAR"
-outputs_mni = os.path.join(base_dir, subject, "site2", "outputs_mni")
-outputs_native = os.path.join(base_dir, subject, "site2", "outputs")
+subject = ARG3   # <-- replace or parse dynamically
+base_dir = "/Volumes/nemosine/SAN/NASCAR/"
+outputs_mni = os.path.join(base_dir, subject, ARG2, "outputs_mni")
+outputs_native = os.path.join(base_dir, subject, ARG2, "outputs")
 
 atlas_mni = os.path.join(FSLDIR, "data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr0-1mm.nii.gz")
 atlas_native = os.path.join(outputs_native, f"{subject}_atlas_in_sodium.nii.gz")
@@ -75,15 +149,60 @@ for f in mni_sodiums:
     else:
         roi_table(f, atlas_mni, out_csv)
 
-# --- Process native sodiums ---
-native_sodiums = [
-    os.path.join(outputs_native, "seiffert_TSC_2375.nii.gz"),
-    os.path.join(outputs_native, "seiffert_2375.nii.gz"),
-    os.path.join(outputs_native, "radial_TSC.nii"),
-    os.path.join(outputs_native, "radial.nii"),
-    os.path.join(outputs_native, "floret_TSC.nii"),
-    os.path.join(outputs_native, "floret.nii")
-]
+####################################################################################
+
+
+
+#--- Process native-space sodiums ---
+# Determine reference sodium (passed from command line)
+reference = ARG1.lower()
+
+# Define all possible sodium types
+all_sodiums = ["floret", "radial", "seiffert"]
+
+# The non-reference ones
+others = [s for s in all_sodiums if s != reference]
+
+# Start list
+native_sodiums = []
+
+# --- 1. Add reference sodium files (no align12dof) ---
+for suffix in ["", "_TSC", "_2375", "_TSC_2375"]:
+    matches = glob.glob(os.path.join(outputs_native, f"{reference}{suffix}.nii*"))
+    if matches:
+        native_sodiums.extend(matches)
+    else:
+        print(f"⚠️ Missing reference sodium file: {reference}{suffix}.nii*")
+
+# --- 2. Add non-reference sodiums (with align12dof) ---
+for name in others:
+    for suffix in ["", "_TSC", "_2375", "_TSC_2375"]:
+        matches = glob.glob(os.path.join(outputs_native, f"{name}{suffix}_align12dof.nii*"))
+        if matches:
+            native_sodiums.extend(matches)
+        else:
+            print(f"⚠️ Missing aligned sodium file: {name}{suffix}_align12dof.nii*")
+
+print("🧾 Files to process:")
+for f in native_sodiums:
+    print(f"  - {os.path.basename(f)}")
+
+
+# native_sodiums = []
+# for name in ["seiffert_TSC_2375", "seiffert_2375",
+#               "radial_TSC", "radial",
+#               "floret_TSC", "floret",
+#               "seiffert_2375_align12dof", "seiffert_TSC_2375_align12dof",
+#               "floret_align12dof", "floret_TSC_align12dof",
+#               "radial_align12dof", "radial_TSC_align12dof",]:
+#     matches = glob.glob(os.path.join(outputs_native, f"{name}.nii*"))
+#     if matches:
+#         native_sodiums.extend(matches)
+#     else:
+#         print(f"⚠️ Missing sodium file: {name}.nii*")
+
+
+#print(native_sodiums)
 
 for f in native_sodiums:
     if os.path.exists(f):
@@ -91,6 +210,6 @@ for f in native_sodiums:
         if os.path.exists(out_csv):
             print("skipping")
         else:
-            roi_table(f, atlas_native, out_csv)
+            roi_table_catchexceptions(f, atlas_native, out_csv)
     else:
         print(f"⚠️ Missing sodium file: {f}")

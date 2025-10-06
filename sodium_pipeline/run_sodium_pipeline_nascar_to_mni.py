@@ -66,20 +66,59 @@ def run(cmd, check=True):
 
 # Pick the first sodium file as the "moving" image
 #ref_sodium = sodium_files[0]
-matches = glob.glob(os.path.join(ARG1, f"{ARG2}.nii*"))
-if not matches:
-    raise FileNotFoundError(f"Reference sodium {ARG2}.nii not found in {ARG1}")
-ref_sodium = matches[0]
+#matches = glob.glob(os.path.join(ARG1, f"{ARG2}.nii*"))
+matches = []
+for pattern in [f"{ARG2}.nii*", f"{ARG2}_2375.nii*"]:
+    found = glob.glob(os.path.join(ARG1, pattern))
+    matches.extend(found)
 
-# Look for reference sodium TSC
+if not matches:
+    raise FileNotFoundError(f"Reference sodium {ARG2}.nii* or {ARG2}_2375.nii* not found in {ARG1}")
+
+# Prefer resampled if both exist
+if any("_2375" in m for m in matches):
+    ref_sodium = [m for m in matches if "_2375" in m][0]
+else:
+    ref_sodium = matches[0]
+
+print(f"✅ Using reference sodium file: {ref_sodium}")
+
+#ref_sodium = matches[0]
+
+
+# --- Find matching TSC file ---
 ref_base = strip_ext(ref_sodium)
-tsc_matches = glob.glob(f"{ref_base}_TSC.nii*")
+# Handle both “base_TSC” and “base_2375_TSC” forms
+tsc_patterns = [
+    f"{ref_base}_TSC.nii*",
+    f"{ref_base.replace('_2375', '')}_TSC_2375.nii*"
+]
+tsc_matches = []
+for pat in tsc_patterns:
+    tsc_matches.extend(glob.glob(pat))
+
 if not tsc_matches:
     print(f"ℹ️ No TSC file found for {ref_sodium}, continuing without TSC")
     ref_sodium_tsc = None
 else:
-    ref_sodium_tsc = tsc_matches[0]
+    # Prefer a matching _2375 version if it exists
+    if any("_2375" in t for t in tsc_matches):
+        ref_sodium_tsc = [t for t in tsc_matches if "_2375" in t][0]
+    else:
+        ref_sodium_tsc = tsc_matches[0]
     print(f"✅ Found reference TSC file: {ref_sodium_tsc}")
+
+    
+
+# Look for reference sodium TSC
+# ref_base = strip_ext(ref_sodium)
+# tsc_matches = glob.glob(f"{ref_base}_TSC.nii*")
+# if not tsc_matches:
+#     print(f"ℹ️ No TSC file found for {ref_sodium}, continuing without TSC")
+#     ref_sodium_tsc = None
+# else:
+#     ref_sodium_tsc = tsc_matches[0]
+#     print(f"✅ Found reference TSC file: {ref_sodium_tsc}")
 
 
 

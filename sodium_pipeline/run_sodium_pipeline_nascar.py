@@ -34,7 +34,7 @@ ARG4 = args.ARG4
 
 
 subject = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(ARG1))))
-print(subject)
+print(f"Running: {subject}")
 
 # --- Auto-detect input files ---
 # 1. Main MPRAGE (should start with WIP_MPRAGE_ or similar)
@@ -45,7 +45,7 @@ elif len(mprage_matches) > 1:
     print(f"Multiple MPRAGE files found, using first: {mprage_matches[0]}")
 mprage_file = mprage_matches[0]
 
-print(mprage_file)
+print(f"This is the T1w: {mprage_file}")
 
 # 2. Reference sodium
 sodium_ref_matches = glob.glob(os.path.join(ARG2, f"{ARG4}.nii*"))
@@ -69,8 +69,10 @@ else:
     sodium_ref_tsc_file = sodium_ref_tsc_matches[0]
 
 
-print(sodium_ref_file)
-print(sodium_ref_tsc_file)
+#print(sodium_ref_file)
+print(f"This is the sodium reference: {sodium_ref_file}")
+
+#print(sodium_ref_tsc_file)
 
 # 4. Grab the other sodium files
 sodium_types = ["floret", "radial", "seiffert"]
@@ -85,7 +87,10 @@ for oth in others:
         matches = glob.glob(os.path.join(ARG3, "*23NaSeiffert*.nii*"))
     elif oth == "radial":
         # Radial 
-        matches = glob.glob(os.path.join(ARG3, "radialfiltstrong.nii*"))
+        #matches = glob.glob(os.path.join(ARG3, "radialfiltstrong.nii*"))
+        matches = []
+        for pattern in ["radialfiltstrong.nii*", "radialdefault.nii*"]:
+            matches.extend(glob.glob(os.path.join(ARG3, pattern)))
     elif oth == "floret":
         # Floret 
         matches = glob.glob(os.path.join(ARG3, "floret.nii*"))
@@ -152,6 +157,7 @@ for name, f in valid_other_sodiums.items():
 
 #print(other_tsc_files)
 
+#sys.exit(0)
 
 ######################
 # Okay here we have all our files. the sodium images (file1 and file2)
@@ -203,6 +209,7 @@ resampled_seiffert_tsc = None
 
 # Case 1: Seiffert is the reference sodium
 if ARG4.lower() == "seiffert":
+    print("Seiffert is the ref")
     seiffert_file = sodium_ref_file
     resampled_seiffert = f"{strip_ext(seiffert_file)}_2375.nii.gz"
 
@@ -220,6 +227,8 @@ if ARG4.lower() == "seiffert":
         else:
             run(["flirt", "-in", seiffert_tsc, "-ref", seiffert_tsc,
                  "-out", resampled_seiffert_tsc, "-applyisoxfm", "2.375"])
+    # now we need to repoint our ref to the seiffert resampled
+    sodium_ref_file = resampled_seiffert
 
 # Case 2: Seiffert is one of the "other sodiums"
 elif other_sodium_files.get("seiffert"):
@@ -249,6 +258,10 @@ else:
 # Problem here though is what if seiffert is reference
 radial_file = other_sodium_files.get("radial")
 floret_file = other_sodium_files.get("floret")
+seiffert_other = other_sodium_files.get("seiffert")
+#print(seiffert_other)
+
+#sys.exit(0)
 
 # if radial_file:
 #     print(f"Radial file: {radial_file}")
@@ -259,10 +272,13 @@ floret_file = other_sodium_files.get("floret")
 #     print(f"Floret file: {floret_file}")
 # else:
 #     print("ℹNo floret file (probably reference or missing)")
-
+print(f"Reminder, this is the sodium ref: {sodium_ref_file}")
+#sys.exit(0)
 
 radial_tsc_file = other_tsc_files.get("radial")
 floret_tsc_file = other_tsc_files.get("floret")
+seiffert_other_tsc = other_tsc_files.get("seiffert")
+
 # resampled_seiffert_tsc
 
 #2) BET sodium datasets which not reference
@@ -280,7 +296,7 @@ if floret_file:
     else:
         run(["bet", floret_file, floret_bet, "-f", "0.7"])
 
-if resampled_seiffert:
+if seiffert_other:
     seiffert_bet = f"{strip_ext(resampled_seiffert)}_bet.nii.gz"
     if os.path.exists(seiffert_bet):
         print(f"⏭️ Skipping seiffert_bet, already exists: {seiffert_bet}")
@@ -302,7 +318,7 @@ if floret_tsc_file:
     else:
         run(["bet", floret_tsc_file, floret_tsc_bet, "-f", "0.7"])
 
-if resampled_seiffert_tsc:
+if seiffert_other_tsc:
     seiffert_tsc_bet = f"{strip_ext(resampled_seiffert_tsc)}_bet.nii.gz"
     if os.path.exists(seiffert_tsc_bet):
         print(f"⏭️ Skipping seiffert_tsc_bet, already exists: {seiffert_tsc_bet}")
@@ -332,7 +348,7 @@ if floret_file:
             "flirt", "-in", floret_bet, "-ref", sodium_ref_file,
             "-out", floret_align, "-omat", floret_mat
         ])
-if resampled_seiffert:
+if seiffert_other:
     seiffert_align = f"{strip_ext(seiffert_bet)}_align12dof.nii.gz"
     seiffert_mat   = "seiffert_to_ref.mat"
     if os.path.exists(seiffert_align):
@@ -363,7 +379,7 @@ if floret_file:
             "flirt", "-in", floret_file, "-ref", sodium_ref_file,
             "-out", floret_align_nobet, "-init", floret_mat, "-applyxfm"
         ])
-if resampled_seiffert:
+if seiffert_other:
     seiffert_align_nobet = f"{strip_ext(resampled_seiffert)}_align12dof.nii.gz"
     if os.path.exists(seiffert_align_nobet):
         print(f"⏭️ Skipping seiffert_align_nobet, already exists: {seiffert_align_nobet}")
@@ -403,7 +419,7 @@ if floret_tsc_file:
             "flirt", "-in", floret_tsc_file, "-ref", sodium_ref_file,
             "-out", floret_tsc_align, "-init", floret_mat, "-applyxfm"
         ])
-if resampled_seiffert_tsc:
+if seiffert_other_tsc:
     seiffert_tsc_align = f"{strip_ext(resampled_seiffert_tsc)}_align12dof.nii.gz"
     if os.path.exists(seiffert_tsc_align):
         print(f"⏭️ Skipping seiffert_tsc_align, already exists: {seiffert_tsc_align}")
@@ -433,7 +449,7 @@ if floret_tsc_file:
             "flirt", "-in", floret_tsc_bet, "-ref", sodium_ref_file,
             "-out", floret_tsc_bet_align, "-init", floret_mat, "-applyxfm"
         ])
-if resampled_seiffert_tsc:
+if seiffert_other_tsc:
     seiffert_tsc_bet_align = f"{strip_ext(seiffert_tsc_bet)}_align12dof.nii.gz"
     if os.path.exists(seiffert_tsc_bet_align):
         print(f"⏭️ Skipping seiffert_tsc_bet_align, already exists: {seiffert_tsc_bet_align}")
@@ -454,7 +470,11 @@ if not os.path.exists(mprage_optibrain):
 
     run(["sh", OPTIBET_PATH, "-i", mprage_file])
 
-    base = os.path.splitext(mprage_file)[0]  # remove .nii or .nii.gz
+    #base = os.path.splitext(mprage_file)[0]  # remove .nii or .nii.gz
+    base = strip_ext(mprage_file) # remove .nii or .nii.gz
+    #print(base)
+
+    #sys.exit(0)
     optibet_brain = f"{base}_optiBET_brain.nii.gz"
     optibet_mask = f"{base}_optiBET_brain_mask.nii.gz"
 
@@ -487,6 +507,7 @@ print(f"📦 Collecting outputs in: {output_dir}")
 # Gather files if variable exists and is not None
 candidates = ["sodium_ref_file", "sodium_ref_tsc_file",
     "radial_file", "radial_tsc_file",
+    "floret_file", "floret_tsc_file",
     "resampled_seiffert", "resampled_seiffert_tsc",
     "radial_align", "floret_align", "seiffert_align",
     "radial_align_nobet", "floret_align_nobet", "seiffert_align_nobet",

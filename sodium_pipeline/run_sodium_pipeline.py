@@ -30,6 +30,9 @@ ARG3 = args.ARG3
 
 subject = os.path.basename(os.path.dirname(ARG1))
 
+#print(output_dir)
+#sys.exit(0)
+
 # --- Auto-detect input files ---
 # 1. Main MPRAGE (should start with WIP_MPRAGE_ or similar)
 mprage_matches = glob.glob(os.path.join(ARG1, "*MPRAGE_CS3p5*.nii*"))
@@ -215,21 +218,21 @@ def runMPRAGE2MNI():
     else:
         print("⏭️ FLIRT MPRAGE→MNI exists, skipping.")
 
-    if not os.path.exists(mprage_to_mni_nonlin):
-        print("Running FNIRT MPRAGE → MNI")
-        run([
-            f"{FSLDIR}/bin/fnirt",
-            f"--in={mprage_optibrain}",
-            f"--ref={MNI_TEMPLATE}",
-            f"--aff={affine_mprage_to_mni}",
-            f"--config={MY_CONFIG_DIR}/config/bb_fnirt.cnf",
-            f"--cout={fnirt_coeff}",
-            f"--iout={mprage_to_mni_nonlin}",
-            f"--refmask={MNI_BRAIN_MASK}",
-            "--interp=spline"
-        ])
-    else:
-        print("⏭️ FNIRT warp exists, skipping.")
+    # if not os.path.exists(mprage_to_mni_nonlin):
+    #     print("Running FNIRT MPRAGE → MNI")
+    #     run([
+    #         f"{FSLDIR}/bin/fnirt",
+    #         f"--in={mprage_optibrain}",
+    #         f"--ref={MNI_TEMPLATE}",
+    #         f"--aff={affine_mprage_to_mni}",
+    #         f"--config={MY_CONFIG_DIR}/config/bb_fnirt.cnf",
+    #         f"--cout={fnirt_coeff}",
+    #         f"--iout={mprage_to_mni_nonlin}",
+    #         f"--refmask={MNI_BRAIN_MASK}",
+    #         "--interp=spline"
+    #     ])
+    # else:
+    #     print("⏭️ FNIRT warp exists, skipping.")
 
 
 # Just ignore this bit for now, because of FNIRT
@@ -531,6 +534,65 @@ def roiTable():
 
     print(f"✅ ROI stats saved to {out_csv}")
 
+def roi_tableMNI(sodium_file, atlas_file, out_csv, max_roi=47):
+    # Load sodium image and atlas
+    sodium_img = nib.load(sodium_file)
+    atlas_img = nib.load(atlas_file)
+
+    sodium_data = sodium_img.get_fdata()
+    atlas_data = atlas_img.get_fdata().astype(int)
+
+    # Get unique ROI labels (limit to Harvard-Oxford range)
+    roi_labels = np.unique(atlas_data)
+    roi_labels = roi_labels[(roi_labels >= 0) & (roi_labels <= max_roi)]
+
+    # Load ROI names
+    xml_file = os.path.join(FSLDIR, "data/atlases/HarvardOxford-Cortical.xml")
+    label_dict = load_atlas_labels(xml_file)
+
+    results = []
+    for roi in roi_labels:
+        mask = atlas_data == roi
+        values = sodium_data[mask]
+
+        if values.size > 0:
+            mean_val = np.mean(values)
+            std_val = np.std(values)
+            median_val = np.median(values)
+            roi_name = label_dict.get(roi, f"ROI_{roi}")
+            results.append([roi, roi_name, mean_val, std_val, median_val])
+
+    df = pd.DataFrame(results, columns=["ROI", "Name", "Mean", "StdDev", "Median"])
+    df.to_csv(out_csv, index=False)
+    print(f"✅ ROI stats saved to {out_csv}")
+
+
+def strip_ext(fname):
+    if fname.endswith(".nii.gz"):
+        return fname[:-7]  # strip ".nii.gz"
+    else:
+        return os.path.splitext(fname)[0]
+        
+def atlasMNI():
+    subject_root = os.path.dirname(ARG1)
+    outputs_mni = os.path.join(subject_root, "outputs")
+    print(f"🔍 Looking for MNI files in {outputs_mni}")
+
+    atlas_mni = os.path.join(FSLDIR, "data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr0-1mm.nii.gz")
+    mni_sodiums = glob.glob(os.path.join(outputs_mni, "*MNI*.nii.gz"))
+
+    if not mni_sodiums:
+        print("⚠️ No MNI-space sodium files found.")
+        return
+
+    for f in mni_sodiums:
+        out_csv = f"{strip_ext(f)}_ROIstatsMNI.csv"
+        if os.path.exists(out_csv):
+            print(f"⏭️ Skipping existing: {out_csv}")
+        else:
+            print(f"Processing: {f}")
+            roi_tableMNI(f, atlas_mni, out_csv)
+
 
 
 
@@ -547,11 +609,16 @@ def moveOutputs():
     #     sodium_file_mni,
     #     sodium_file_mni_FNIRT,
     # ]
+    # files_to_copy = [
+    #     atlas_in_sodium,
+    #     atlas_in_sodium_FNIRT,
+    #     sodium_file_mni,
+    #     sodium_file_mni_FNIRT,
+    #     out_csv
+    # ]
     files_to_copy = [
         atlas_in_sodium,
-        atlas_in_sodium_FNIRT,
         sodium_file_mni,
-        sodium_file_mni_FNIRT,
         out_csv
     ]
 
@@ -583,14 +650,22 @@ if __name__ == "__main__":
     runMPRAGE2MNI()
 
     runSodiumMPRAGEtoMNI_linear()
-    runSodiumMPRAGEtoMNI()
+    #runSodiumMPRAGEtoMNI()
 
     runSodiumtoMNI()
-    runSodiumtoMNI_FNIRT()
+    #runSodiumtoMNI_FNIRT()
 
     moveAtlasToSodium()
-    moveAtlasToSodium_FNIRT()
+    #moveAtlasToSodium_FNIRT()
 
     roiTable()
 
+  
+
     moveOutputs()
+
+    atlasMNI()
+
+
+
+
