@@ -92,8 +92,14 @@ g.export('file_name',filename, ...
 emgrmspath = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/miscdata/'];
 
 % Load EMG RMS data and correlate with T-statistics
-emgDataStruct = load(fullfile(emgrmspath, 'canapi_rms_emg.mat'));
-emgData = emgDataStruct.ch1_vs_ch2;
+%emgDataStruct = load(fullfile(emgrmspath, 'canapi_rms_emg.mat'));
+emgDataStruct = load(fullfile(emgrmspath, 'canapi_xcorr_emg.mat')); % cheeky try looking at amplitude xcorr not RMS
+
+%emgData = emgDataStruct.ch1_vs_ch2;
+emgData = emgDataStruct.ch1vch2_xcorr_peakXC;
+
+
+
 % correlationResults = corr(weightedTs(:), emgData.RMS);
 % disp(['Correlation between T-statistics and EMG RMS: ', num2str(correlationResults)]);
 
@@ -174,7 +180,7 @@ g.set_text_options('Font','Helvetica', 'base_size', 16)
 g.set_point_options('base_size',12)
 g.set_color_options("map",colors)
 g.set_order_options("color",0)
-g.axe_property('XGrid',1,'YGrid',1,'YLim',[80 200],'XLim',[0 800])
+%g.axe_property('XGrid',1,'YGrid',1,'YLim',[80 200],'XLim',[0 800])
 g.set_names('x','EMG Ch1/Ch2 (%)','y','fMRI Contra/Ipsi (%)','color','Participant');
 
 g.draw()
@@ -188,11 +194,11 @@ for i = 1:numel(allAxes)
     xline(100, '--k', 'LineWidth', 1.2);  % example at x=100
 end
 
-filename = ('rms_vs_tstat');
-g.export('file_name',filename, ...
-    'export_path',...
-    savedir,...
-    'file_type','pdf')
+% filename = ('rms_vs_tstat');
+% g.export('file_name',filename, ...
+%     'export_path',...
+%     savedir,...
+%     'file_type','pdf')
 
 
 
