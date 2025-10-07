@@ -887,8 +887,13 @@ for iRun = 1:4
     for subj = 1:10  % subjects 2 to 10 (i.e., 9 subjects)
         nexttile
         % Get EMG traces
-        ch1 = opMatsubs_noconv{iRun, 1, subj};
-        ch2 = opMatsubs_noconv{iRun, 2, subj};
+        if subj==1
+            ch1 = opMatsubs_noconv{iRun, 2, subj};
+            ch2 = opMatsubs_noconv{iRun, 1, subj};
+        else
+            ch1 = opMatsubs_noconv{iRun, 1, subj};
+            ch2 = opMatsubs_noconv{iRun, 2, subj};
+        end
 
         % rather than raw, can we do % of instructed leg
 %         ch1_pct = 100 * ch1 / max(ch1);   

@@ -62,10 +62,20 @@ filestack = repmat(myfiles(:),length(dataset),1);
 cmap = {'#e31a1c','#fd8d3c','#0570b0','#74a9cf'};
 cmapped = validatecolor(cmap,'multiple');
 %%
+
+legendLabels = filestack; % start with same names
+
+legendLabels(strcmpi(filestack, '1barR_Lmask.csv')) = {'1barR_contralateral'};
+legendLabels(strcmpi(filestack, '1barR_Rmask.csv')) = {'1barR_ipsilateral'};
+legendLabels(strcmpi(filestack, '1barL_Rmask.csv')) = {'1barL_contralateral'};
+legendLabels(strcmpi(filestack, '1barL_Lmask.csv')) = {'1barL_ipsilateral'};
+
+
+
 close all
 clear g
 figure('Position',[100 100 1200 600])
-g = gramm('x', subs, 'y', y, 'color', filestack);
+g = gramm('x', subs, 'y', y, 'color', legendLabels);
 %g.geom_jitter2('dodge', 0);  % adds subject dots
 %g.geom_point()
 g.stat_summary('geom', {'bar'}, 'dodge', 0.6);  % mean over subjects
@@ -85,6 +95,78 @@ g.export('file_name',filename, ...
     'export_path',...
     savedir,...
     'file_type','pdf')
+
+
+%% also plot separately
+weightedTs_R = weightedTs(1:2,:);
+weightedTs_L = weightedTs(3:4,:);
+yR = weightedTs_R(:);
+yL = weightedTs_L(:);
+subs = repmat({'sub01','sub02','sub03','sub04','sub05','sub06','sub07','sub08','sub09','sub10'},2,1);
+subs = subs(:);
+filestackR = repmat(myfiles(1:2),length(dataset),1);
+filestackL = repmat(myfiles(3:4),length(dataset),1);
+filestackR = filestackR';
+filestackL = filestackL';
+filestackR = filestackR(:);
+filestackL = filestackL(:);
+
+legendLabelsR = filestackR; % start with same names
+legendLabelsR(strcmpi(filestackR, '1barR_Lmask.csv')) = {'1barR_contralateral'};
+legendLabelsR(strcmpi(filestackR, '1barR_Rmask.csv')) = {'1barR_ipsilateral'};
+legendLabelsL = filestackL; % start with same names
+legendLabelsL(strcmpi(filestackL, '1barL_Lmask.csv')) = {'1barL_ipsilateral'};
+legendLabelsL(strcmpi(filestackL, '1barL_Rmask.csv')) = {'1barL_contralateral'};
+
+
+close all
+clear g
+figure('Position',[100 100 1200 600])
+g = gramm('x', subs, 'y', yR, 'color', legendLabelsR);
+%g.geom_jitter2('dodge', 0);  % adds subject dots
+%g.geom_point()
+g.stat_summary('geom', {'bar'}, 'dodge', 0.6);  % mean over subjects
+g.set_names('x','Participant','y','T Stat','color','Task');
+%g.set_title('Max T stat per task');
+g.set_title('Cluster-size weighted average T-score per task');
+
+g.set_text_options('Font','Helvetica', 'base_size', 16)
+g.set_point_options('base_size',12)
+g.set_color_options("map",cmapped)
+g.set_order_options("color",0)
+
+g.axe_property('YLim', [0 30]);
+g.draw();
+filename = ('tstat_unilateral_weighted_R');
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
+
+close all
+clear g
+figure('Position',[100 100 1200 600])
+g = gramm('x', subs, 'y', yL, 'color', legendLabelsL);
+%g.geom_jitter2('dodge', 0);  % adds subject dots
+%g.geom_point()
+g.stat_summary('geom', {'bar'}, 'dodge', 0.6);  % mean over subjects
+g.set_names('x','Participant','y','T Stat','color','Task');
+%g.set_title('Max T stat per task');
+g.set_title('Cluster-size weighted average T-score per task');
+
+g.set_text_options('Font','Helvetica', 'base_size', 16)
+g.set_point_options('base_size',12)
+g.set_color_options("map",cmapped(3:4,:))
+g.set_order_options("color",0)
+
+g.axe_property('YLim', [0 30]);
+g.draw();
+filename = ('tstat_unilateral_weighted_L');
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
+
 
 
 %% can we load in the EMG RMS and correlate here??
@@ -180,8 +262,8 @@ g.set_text_options('Font','Helvetica', 'base_size', 16)
 g.set_point_options('base_size',12)
 g.set_color_options("map",colors)
 g.set_order_options("color",0)
-%g.axe_property('XGrid',1,'YGrid',1,'YLim',[80 200],'XLim',[0 800])
-g.set_names('x','EMG Ch1/Ch2 (%)','y','fMRI Contra/Ipsi (%)','color','Participant');
+g.axe_property('XGrid',1,'YGrid',1) %,'YLim',[80 200],'XLim',[0 800])
+g.set_names('x','Amp XCorr EMG','y','fMRI Contra/Ipsi (%)','color','Participant');
 
 g.draw()
 
@@ -194,11 +276,11 @@ for i = 1:numel(allAxes)
     xline(100, '--k', 'LineWidth', 1.2);  % example at x=100
 end
 
-% filename = ('rms_vs_tstat');
-% g.export('file_name',filename, ...
-%     'export_path',...
-%     savedir,...
-%     'file_type','pdf')
+filename = ('xcorr_vs_tstat');
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
 
 
 
