@@ -15,8 +15,8 @@ surf_lh = os.path.join(fsaverage_dir, "surf", "lh.pial")
 surf_rh = os.path.join(fsaverage_dir, "surf", "rh.pial")
 
 # --- Load .mgh thickness data using nibabel ---
-lh_data = nib.load(os.path.join(outdir, "lh.thickness.mean.mgh")).get_fdata().squeeze()
-rh_data = nib.load(os.path.join(outdir, "rh.thickness.mean.mgh")).get_fdata().squeeze()
+lh_data = nib.load(os.path.join(outdir, "lh.thickness.mean_subset.mgh")).get_fdata().squeeze()
+rh_data = nib.load(os.path.join(outdir, "rh.thickness.mean_subset.mgh")).get_fdata().squeeze()
 
 # --- Optional background (sulcal depth) ---
 bg_lh = os.path.join(fsaverage_dir, "surf", "lh.sulc")
