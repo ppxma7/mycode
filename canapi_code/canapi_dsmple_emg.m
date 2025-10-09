@@ -152,8 +152,15 @@ for iSub = 1:length(dataset)
         %endMark = thisMarker.Position(lastMarker)+(thisMarker.Position(lastMarker-1)-thisMarker.Position(twoBefore));
 
         % cut it to when the trials start, to when it ends
-        ch1_clv = thisFile(1,startMark:endMark);
-        ch2_clv = thisFile(2,startMark:endMark);
+        % fix this for subject 1 where electrodes were swapped. this has
+        % consequence for normalization later
+        if iSub==1
+            ch1_clv = thisFile(2,startMark:endMark);
+            ch2_clv = thisFile(1,startMark:endMark);
+        else
+            ch1_clv = thisFile(1,startMark:endMark);
+            ch2_clv = thisFile(2,startMark:endMark);
+        end
         thisLen = length(ch1_clv);
         thisLen_ch2 = length(ch2_clv);
 
@@ -652,14 +659,14 @@ print(h, '-dpdf', thisFilename, '-r300');  % -r300 sets the resolution to 300 DP
 %% can we use RMS to compare ch1 to ch2 
 
 % okay careful here, because i think for sub01, sub03, the channels are flipped
-sub01rms = rms_matrix(1,:);
-sub01rms_corr = [sub01rms(2) sub01rms(1) sub01rms(4) sub01rms(3) sub01rms(6) sub01rms(5) sub01rms(8) sub01rms(7)];
-sub03rms = rms_matrix(3,:);
-sub03rms_corr = [sub03rms(2) sub03rms(1) sub03rms(4) sub03rms(3) sub03rms(6) sub03rms(5) sub03rms(8) sub03rms(7)];
+%sub01rms = rms_matrix(1,:);
+%sub01rms_corr = [sub01rms(2) sub01rms(1) sub01rms(4) sub01rms(3) sub01rms(6) sub01rms(5) sub01rms(8) sub01rms(7)];
+%sub03rms = rms_matrix(3,:);
+%sub03rms_corr = [sub03rms(2) sub03rms(1) sub03rms(4) sub03rms(3) sub03rms(6) sub03rms(5) sub03rms(8) sub03rms(7)];
 
 rms_matrix_corrected = rms_matrix;
-rms_matrix_corrected(1,:) = sub01rms_corr;
-rms_matrix_corrected(3,:) = sub03rms_corr;
+%rms_matrix_corrected(1,:) = sub01rms_corr;
+%rms_matrix_corrected(3,:) = sub03rms_corr;
 
 nSubjects = size(rms_matrix, 1);
 nRuns = 4;
@@ -762,9 +769,9 @@ g.export('file_name',filename, ...
 %% do cross correlation amplitude
 
 % swap sub01 channels as they were flipped in scanner
-opMatsubs_noconv_sub01fix = opMatsubs_noconv;
-opMatsubs_noconv_sub01fix(:,1,1) = opMatsubs_noconv(:,2,1);
-opMatsubs_noconv_sub01fix(:,2,1) = opMatsubs_noconv(:,1,1);
+%opMatsubs_noconv_sub01fix = opMatsubs_noconv;
+%opMatsubs_noconv_sub01fix(:,1,1) = opMatsubs_noconv(:,2,1);
+%opMatsubs_noconv_sub01fix(:,2,1) = opMatsubs_noconv(:,1,1);
 
 channel_labels = {'EMG ch1', 'EMG ch2'};
 nRuns = 4;
@@ -777,8 +784,8 @@ for subj = 1:nSubjects
     for run = 1:nRuns
 
         % --- Get EMG traces (already filtered, rectified, envelope, etc.) ---
-        trace1 = opMatsubs_noconv_sub01fix{run, 1, subj};  % channel 1
-        trace2 = opMatsubs_noconv_sub01fix{run, 2, subj};  % channel 2
+        trace1 = opMatsubs_noconv{run, 1, subj};  % channel 1
+        trace2 = opMatsubs_noconv{run, 2, subj};  % channel 2
 
         % --- Optional: make same length (safety) ---
         N = min(length(trace1), length(trace2));

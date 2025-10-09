@@ -5,8 +5,8 @@ echo "Hey, you. You're finally awake..."
 SECONDS=0  # Start timing
 
 
-mypath="/Volumes/nemosine/"
-mysub="fMRI_somato_pilot3/"
+mypath="/Volumes/kratos/SOFYA/"
+mysub="12185_004/"
 mydata="topup/"
 # myscans="parrec_FAST_rsfMRI_20221117112738_6_nordic.nii
 #     parrec_FAST_rsfMRI_20221117112738_7_nordic.nii
@@ -27,38 +27,20 @@ mydata="topup/"
 # myscans=("digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_11_nordic_clv" \
 # 	"digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_12_nordic_clv")
 
-myscans=("fMRI_somato_pilot3_WIPMB0_S3_1p5_FWD_20250529142302_5_nordic_clv" \
-	"fMRI_somato_pilot3_WIPMB0_S3_1p5_REV_20250529142302_6_nordic_clv" \
-	"fMRI_somato_pilot3_WIPMB0_S3_1p5_ONOFF_20250529142302_7_nordic_clv" \
-	"fMRI_somato_pilot3_WIPMB0_S3_1p5_ONOFF_PWM_20250529142302_8_nordic_clv" \
-	"fMRI_somato_pilot3_WIPMB0_S3_1p5_ONOFF_20250529142302_9_nordic_clv" \
-	"fMRI_somato_pilot3_WIPMB0_S3_1p5_ONOFF_PWM_20250529142302_10_nordic_clv")
+# myscans=("fMRI_somato_pilot3_WIPMB0_S3_1p5_FWD_20250529142302_5_nordic_clv" \
+# 	"fMRI_somato_pilot3_WIPMB0_S3_1p5_REV_20250529142302_6_nordic_clv" \
+# 	"fMRI_somato_pilot3_WIPMB0_S3_1p5_ONOFF_20250529142302_7_nordic_clv" \
+# 	"fMRI_somato_pilot3_WIPMB0_S3_1p5_ONOFF_PWM_20250529142302_8_nordic_clv" \
+# 	"fMRI_somato_pilot3_WIPMB0_S3_1p5_ONOFF_20250529142302_9_nordic_clv" \
+# 	"fMRI_somato_pilot3_WIPMB0_S3_1p5_ONOFF_PWM_20250529142302_10_nordic_clv")
 
+myscans=("12185_004_WIP_fMRI_RS_20220804125939_1001")
 
+mergescan="12185_004_WIP_fMRI_RS_FOR_20220804125939_1101"
 
-# myscans="parrec_thermode_block1_20221117112738_9_nordic_clv
-# 	parrec_thermode_block2_20221117112738_10_nordic_clv
-# 	parrec_PTSarm_20221117112738_13_nordic_clv
-# 	parrec_thermode_armblock1_20221117112738_15_nordic_clv
-# 	parrec_thermode_armblock2_20221117112738_16_nordic_clv
-# 	parrec_PTShand_20221117112738_17_nordic_clv"
+topupscan="12185_004_WIP_fMRI_RS_REV_20220804125939_1201"
 
-#myscans="parrec_thermode_armblock1_20221129122548_8_nordic_clv
-#parrec_thermode_armblock2_20221129122548_9_nordic_clv
-#parrec_PTSarm_20221129122548_11_nordic_clv"
-
-# myscans="tgi_sub_04_12778_221124_WIPThermode-fMRI1_20221124145248_8_nordic_clv
-# tgi_sub_04_12778_221124_WIPThermode-fMRI1_20221124145248_11_nordic_clv
-# tgi_sub_04_12778_221124_WIPThermode-fMRI1_20221124145248_9_nordic_clv
-# tgi_sub_04_12778_221124_WIPThermode-fMRI1_20221124145248_10_nordic_clv
-# tgi_sub_04_12778_221124_WIPTGI1_20221124145248_4_nordic_clv
-# tgi_sub_04_12778_221124_WIPTGI2_20221124145248_5_nordic_clv"
-
-mergescan="fMRI_somato_pilot3_WIPMB0_S3_1p5_FWD_20250529142302_5_nordic_clv"
-
-topupscan="fMRI_somato_pilot3_WIPMB0_S3_1p5_topup_A_20250529142302_11_clv"
-
-numDyn=5
+numDyn=2
 
 for sub in $mysub
 do
