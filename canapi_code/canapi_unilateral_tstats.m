@@ -70,12 +70,30 @@ legendLabels(strcmpi(filestack, '1barR_Rmask.csv')) = {'1barR_ipsilateral'};
 legendLabels(strcmpi(filestack, '1barL_Rmask.csv')) = {'1barL_contralateral'};
 legendLabels(strcmpi(filestack, '1barL_Lmask.csv')) = {'1barL_ipsilateral'};
 
+% CAREFUL SWAP THIS FOR PLOTTING
 
+% Example: y = 40x1 double, labels = 40x1 cell array
+n = numel(y);
+
+% preallocate
+y_swapped = y;
+labels_swapped = legendLabels(:);
+
+% loop through pairs (every 4 if pattern repeats in 4s)
+for i = 1:4:n
+    % pattern is [R_contra, R_ipsi, L_contra, L_ipsi]
+    idx = i:(i+3);
+    % new order: [L_contra, L_ipsi, R_contra, R_ipsi]
+    new_order = [i+2, i+3, i, i+1];
+
+    y_swapped(idx) = y(new_order);
+    labels_swapped(idx) = legendLabels(new_order);
+end
 
 close all
 clear g
 figure('Position',[100 100 1200 600])
-g = gramm('x', subs, 'y', y, 'color', legendLabels);
+g = gramm('x', subs, 'y', y_swapped, 'color', labels_swapped);
 %g.geom_jitter2('dodge', 0);  % adds subject dots
 %g.geom_point()
 g.stat_summary('geom', {'bar'}, 'dodge', 0.6);  % mean over subjects

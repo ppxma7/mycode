@@ -772,10 +772,18 @@ g.export('file_name',filename, ...
 %opMatsubs_noconv_sub01fix = opMatsubs_noconv;
 %opMatsubs_noconv_sub01fix(:,1,1) = opMatsubs_noconv(:,2,1);
 %opMatsubs_noconv_sub01fix(:,2,1) = opMatsubs_noconv(:,1,1);
+run_labels = {'1barL', '1barR'};
+run_labels_stack = repmat(run_labels,1,length(dataset))';
+subs = repmat({'sub01','sub02','sub03','sub04','sub05','sub06','sub07','sub08','sub09','sub10'},length(run_labels),1);
+subs = subs(:);
+
+cmap = {'#238b45','#66c2a4','#b2e2e2','#edf8fb'};
+cmapped = validatecolor(cmap,'multiple');
 
 channel_labels = {'EMG ch1', 'EMG ch2'};
 nRuns = 4;
 nSubjects = 10;
+%useRuns = [1 3];  % only these runs
 
 ch1vch2_xcorr_normXC = zeros(nRuns, nSubjects);  % run × subject
 ch1vch2_xcorr_peakXC = zeros(nRuns, nSubjects);  % run × subject
@@ -807,21 +815,51 @@ for subj = 1:nSubjects
 end
 
 
-figure('Position',[100 100 1200 800]);
-bar(ch1vch2_xcorr_peakXC', 'grouped');
-xlabel('Subject');
-ylabel('Amplitude cross-correlation index');
-title('Per-run amplitude cross-correlation between EMG1 & EMG2');
-legend(compose('Run %d', 1:nRuns), 'Location', 'bestoutside');
-grid on;
-
-
+% figure('Position',[100 100 1200 800]);
+% bar(ch1vch2_xcorr_peakXC', 'grouped');
+% xlabel('Participant');
+% ylabel('Amplitude cross-correlation index');
+% title('Per-run amplitude cross-correlation between EMG1 & EMG2');
+% %legend(compose('Run %d', 1:nRuns), 'Location', 'bestoutside');
+% legend(run_labels, 'Location', 'bestoutside');
+% grid on;
 save('canapi_xcorr_emg','ch1vch2_xcorr_peakXC')
-h = gcf;
-thisFilename = [savedir 'xcorr_matrix_emg'];
-orient(h,'Landscape')
-print(h, '-dpdf', thisFilename, '-r300');  % -r300 sets the resolution to 300 DPI
+% h = gcf;
+% thisFilename = [savedir 'xcorr_emg'];
+% orient(h,'Landscape')
+% print(h, '-dpdf', thisFilename, '-r300');  % -r300 sets the resolution to 300 DPI
 
+% CAREFUL HERE< JUST FOR PLOTTING FLIP SO LEFT IS ON LEFT OF BAR
+ch1vch2_xcorr_peakXC_subset = ch1vch2_xcorr_peakXC;
+peakxcsubset_flippedLR = [ch1vch2_xcorr_peakXC_subset(3,:); ch1vch2_xcorr_peakXC_subset(1,:)];
+peakxcsubset_flippedLR = peakxcsubset_flippedLR(:);
+
+% ch1vch2_xcorr_peakXC_subset(2,:) = NaN;
+% ch1vch2_xcorr_peakXC_subset(4,:) = NaN;
+% ch1vch2_xcorr_peakXC_subset = ch1vch2_xcorr_peakXC_subset(~isnan(ch1vch2_xcorr_peakXC_subset));
+
+clear g
+figure('Position',[100 100 1200 600])
+g = gramm('x', subs, 'y', peakxcsubset_flippedLR, 'color', run_labels_stack);
+%g.geom_jitter2('dodge', 0);  % adds subject dots
+%g.geom_point()
+g.stat_summary('geom', {'bar'}, 'dodge', 0.6);  % mean over subjects
+g.set_names('x','Participant','y','Amplitude cross-correlation index','color','Task');
+%g.set_title('Max T stat per task');
+g.set_title('Per-run amplitude cross-correlation between EMG1 & EMG2');
+
+g.set_text_options('Font','Helvetica', 'base_size', 16)
+g.set_point_options('base_size',12)
+g.set_color_options("map",cmapped)
+g.set_order_options("color",0)
+
+%g.axe_property('YLim', [0 30]);
+g.draw();
+filename = ('xcorr_emg');
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
 
 
 %% Plot
