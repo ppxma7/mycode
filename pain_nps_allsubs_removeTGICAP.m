@@ -4,8 +4,8 @@ close all
 clc
 
 % Locate data
-mypath = '/Volumes/arianthe/PAIN/';
-%mypath = '/Volumes/r15/DRS-TOUCHMAP/ma_ares_backup/PAIN/';
+%mypath = '/Volumes/arianthe/PAIN/';
+mypath = '/Volumes/r15/DRS-TOUCHMAP/ma_ares_backup/PAIN/';
 cd(mypath)
 
 userName = char(java.lang.System.getProperty('user.name'));
@@ -191,10 +191,11 @@ g.set_color_options('map',mycmap)
 g.set_title('7T NPS Scalar values')
 g.draw()
 g.update('color',details_stack)
-g.geom_jitter
+g.geom_jitter2
 g.set_point_options('base_size',10)
 g.set_order_options('x',0,'color',0)
 g.set_color_options('map','lch')
+g.no_legend
 g.draw()
 
 % add this fudgey bit to include values from Jo PFP
@@ -424,10 +425,11 @@ g.set_color_options('map',mycmap)
 g.set_title('3T NPS Scalar values')
 g.draw()
 g.update('color',details_stack)
-g.geom_jitter
+g.geom_jitter2
 g.set_point_options('base_size',10)
 g.set_order_options('x',0,'color',0)
 g.set_color_options('map','lch')
+g.no_legend
 g.draw()
 
 
