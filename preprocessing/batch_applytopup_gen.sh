@@ -1,7 +1,5 @@
 #! /bin/bash
 
-echo "Hey, you. You're finally awake..."
-
 SECONDS=0  # Start timing
 
 

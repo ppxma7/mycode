@@ -7,8 +7,8 @@ import sys
 
 # ---------- USER CONFIG ----------
 FSLDIR = "/usr/local/fsl"
-MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_1mm_brain.nii.gz"
-MNI_BRAIN_MASK = f"{FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz"
+MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_2mm_brain.nii.gz"
+MNI_BRAIN_MASK = f"{FSLDIR}/data/standard/MNI152_T1_2mm_brain_mask.nii.gz"
 MY_CONFIG_DIR = "/Users/ppzma/data"  # contains bb_fnirt.cnf
 #OPTIBET_PATH = "/Users/ppzma/Documents/MATLAB/optibet.sh"
 FASTPATH = f"{FSLDIR}/share/fsl/bin/fast"
@@ -175,6 +175,19 @@ for file in fMRI_files:
     else:
         print("Skipping fMRI to MPRAGE flirt")
 
+    # # step 3a - sanity check
+    # fMRI_in_mprage = os.path.join(fmri_outdir, base_name + "_mc_inMPRAGE")
+
+    # run([
+    #     f"{FSLDIR}/bin/flirt",
+    #     "-in", mcflirt_out + ".nii.gz",
+    #     "-ref", mprage_file,
+    #     "-applyxfm",
+    #     "-init", fMRI_mat,
+    #     "-out", fMRI_in_mprage + ".nii.gz",
+    #     "-interp", "trilinear"
+    # ])
+
     #sys.exit(0)
 
     affine_mprage_to_mni = os.path.join(struc_path, f"{thisSubject}_mprage2mni.mat")
@@ -201,6 +214,20 @@ for file in fMRI_files:
         print("Skipping MPRAGE to MNI")
 
 
+    # sanity check
+    # fMRI_in_MNI = os.path.join(fmri_outdir, base_name + "_mc_inMNI")
+
+    # run([
+    #     f"{FSLDIR}/bin/flirt",
+    #     "-in", fMRI_in_mprage + ".nii.gz",
+    #     "-ref", MNI_TEMPLATE,
+    #     "-applyxfm",
+    #     "-init", affine_mprage_to_mni,
+    #     "-out", fMRI_in_MNI + ".nii.gz",
+    #     "-interp", "trilinear"
+    # ])
+    # sys.exit(0)
+
     # Step 5: Concatenate transforms so we can apply once
     fMRI_to_MNI_mat = os.path.join(fmri_outdir, f"{thisSubject}_fMRI2MNI.mat")
     if not os.path.exists(fMRI_to_MNI_mat):
@@ -214,9 +241,8 @@ for file in fMRI_files:
         print("Skipping transform concat")
 
 
-    #Step 6 fMRI to MNI
-
-    # Step 6: Apply composite transform once
+    # Step 6 fMRI to MNI
+    # Apply composite transform once
     fMRI_MNI = os.path.join(fmri_outdir, f"{strip_ext(mcflirt_out)}_MNI.nii.gz")
     if not os.path.exists(fMRI_MNI):
         run([
@@ -226,21 +252,11 @@ for file in fMRI_files:
             "-applyxfm",
             "-init", fMRI_to_MNI_mat,
             "-out", fMRI_MNI,
-            "-interp", "trilinear"
+            "-interp", "trilinear",
+            "-verbose", "1"
         ])
     else:
         print("Skipping apply MNI transform to fMRI")
-
-
-    # fMRI_align_MNI = f"{strip_ext(fMRI_align)}_MNI.nii.gz"
-    # run([
-    #     f"{FSLDIR}/bin/flirt",
-    #     "-in", fMRI_align,
-    #     "-ref", MNI_TEMPLATE,
-    #     "-applyxfm",
-    #     "-init", affine_mprage_to_mni,
-    #     "-out", fMRI_align_MNI
-    # ])
 
 
 
