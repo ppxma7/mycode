@@ -20,10 +20,13 @@ parser = argparse.ArgumentParser(description="Run sodium MRI pipeline")
 
 parser.add_argument("ARG1", help="Path to outputs")
 parser.add_argument("ARG2", help="Path to reference sodium")
+parser.add_argument("ARG3", help="Path to proton images")
+
 
 args = parser.parse_args()
 ARG1 = args.ARG1
 ARG2 = args.ARG2
+ARG3 = args.ARG3
 
 subject = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(ARG1))))
 print(subject)
@@ -323,3 +326,38 @@ if not os.path.exists(atlas_in_sodium):
         "-out", atlas_in_sodium
     ])
     print(f"✅ Atlas moved to sodium space: {atlas_in_sodium}")
+
+# Also want to move the FAST outputs to sodium space, so that's just applying 
+# the MPRAGE->Sodium matrix to the FAST outputs
+# Proton images are in ARG3
+
+# Collect all FAST outputs
+fast_matches = []
+fast_matches += glob.glob(os.path.join(ARG3, "*MPRAGE_optibrain_pve*.nii*"))
+fast_matches += glob.glob(os.path.join(ARG3, "*MPRAGE_optibrain_seg.nii*"))
+fast_matches += glob.glob(os.path.join(ARG3, "*MPRAGE_optibrain_mixeltype.nii*"))
+
+# Loop over each file and apply the transform
+for fast_file in fast_matches:
+    base = os.path.basename(fast_file)
+    out_file = os.path.join(ARG3, base.replace("MPRAGE_optibrain", "fast_in_sodium"))
+
+    if not os.path.exists(out_file):
+        run([
+            f"{FSLDIR}/bin/flirt",
+            "-in", fast_file,
+            "-ref", ref_sodium,
+            "-applyxfm",
+            "-init", mprage2sodium_mat,
+            "-interp", "nearestneighbour",
+            "-out", out_file
+        ])
+        print(f"✅ Transformed {base} → {out_file}")
+    else:
+        print(f"Skipping {out_file} (already exists)")
+
+
+
+
+
+

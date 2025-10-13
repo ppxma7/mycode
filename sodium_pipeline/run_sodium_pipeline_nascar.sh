@@ -24,15 +24,15 @@ ARG3="${ROOTDIR}/${SUBJECT}/${SITE}/pipeline/other_sodium"
 ARG4="${ROOTDIR}/${SUBJECT}/${SITE}/outputs/"
 
 ## Check that all three paths exist
-for d in "$ARG1" "$ARG2" "$ARG3"; do
-    if [ ! -d "$d" ]; then
-        echo "Error: directory $d does not exist."
-        exit 1
-    fi
-done
+# for d in "$ARG1" "$ARG2" "$ARG3"; do
+#     if [ ! -d "$d" ]; then
+#         echo "Error: directory $d does not exist."
+#         exit 1
+#     fi
+# done
 
-echo "Running sodium NASCAR pipeline for $SUBJECT (reference=${REF_BASENAME}.nii)"
-python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_nascar.py "$ARG1" "$ARG2" "$ARG3" "$REF_BASENAME"
+# echo "Running sodium NASCAR pipeline for $SUBJECT (reference=${REF_BASENAME}.nii)"
+# python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_nascar.py "$ARG1" "$ARG2" "$ARG3" "$REF_BASENAME"
 
 #Check that all three paths exist
 for d in "$ARG4"; do
@@ -43,10 +43,10 @@ for d in "$ARG4"; do
 done
 
 echo "Running sodium NASCAR MNI pipeline for $SUBJECT"
-python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_nascar_to_mni.py "$ARG4" "$REF_BASENAME"
+python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_nascar_to_mni.py "$ARG4" "$REF_BASENAME" "$ARG1"
 
-echo "atlas rois"
-python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_atlasread.py "$REF_BASENAME" "$SITE" "$SUBJECT"
+# echo "atlas rois"
+# python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_atlasread.py "$REF_BASENAME" "$SITE" "$SUBJECT"
 
 
 
