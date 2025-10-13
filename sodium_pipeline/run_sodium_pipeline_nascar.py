@@ -32,6 +32,11 @@ ARG2 = args.ARG2
 ARG3 = args.ARG3
 ARG4 = args.ARG4
 
+def get_extension(fname):
+    if fname.endswith(".nii.gz"):
+        return ".nii.gz"
+    return os.path.splitext(fname)[1]
+
 
 subject = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(ARG1))))
 print(f"Running: {subject}")
@@ -110,7 +115,9 @@ for oth in others:
 
     # Copy radial and seiffert to standardized names
     if oth in ["seiffert", "radial", "floret"]:
-        dst = os.path.join(ARG3, f"{oth}.nii")
+        ext = get_extension(src)  # e.g. ".nii.gz"
+        dst = os.path.join(ARG3, f"{oth}{ext}")  # keep proper extension
+        #dst = os.path.join(ARG3, f"{oth}.nii*")
         if os.path.exists(dst):
             print(f"⏭️ Skipping copy for {oth}, {dst} already exists")
         else:

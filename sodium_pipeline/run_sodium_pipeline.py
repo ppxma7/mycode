@@ -16,6 +16,7 @@ MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_1mm_brain.nii.gz"
 MNI_BRAIN_MASK = f"{FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz"
 MY_CONFIG_DIR = "/Users/ppzma/data"  # contains bb_fnirt.cnf
 OPTIBET_PATH = "/Users/ppzma/Documents/MATLAB/optibet.sh"
+FASTPATH = f"{FSLDIR}/share/fsl/bin/fast"
 
 # ---------- ARGPARSE ----------
 parser = argparse.ArgumentParser(description="Run sodium MRI pipeline")
@@ -105,6 +106,8 @@ atlas_in_sodium = os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium.nii.gz"
 atlas_in_sodium_FNIRT = os.path.join(ARG3, f"{subject}_HarvardOxford_in_sodium_FNIRT.nii.gz")
 #subcortatlas_in_sodium_FNIRT = os.path.join(ARG3, f"{subject}_HarvardOxfordsubcort_in_sodium_FNIRT.nii.gz")
 
+mprage_optibrain_fast = os.path.join(ARG1, f"{subject}_MPRAGE_optibrain_pve_0.nii.gz")
+
 
 out_csv = os.path.join(ARG3, f"{subject}_ROIstats.csv")
 
@@ -128,6 +131,12 @@ def runOptibet():
 
     else:
         print("⏭️ optiBET brain already exists, skipping.")
+
+def runFAST():
+    if not os.path.exists(mprage_optibrain_fast):
+        run([FASTPATH, mprage_optibrain])
+    else:
+        print(f"✅ Already run FSL FAST on optibrain: {mprage_optibrain_fast}")
 
 
 def runOptibetOnSodiumMPRAGE():
@@ -380,6 +389,38 @@ def moveAtlasToSodium():
         print(f"✅ Atlas moved to sodium space: {atlas_in_sodium}")
     else:
         print("⏭️ Atlas already exists in sodium space.")
+
+    ## Let's also just move the FAST outputs into sodium space
+    # Collect all FAST outputs
+    fast_matches = []
+    fast_matches += glob.glob(os.path.join(ARG1, "*MPRAGE_optibrain_pve*.nii*"))
+    fast_matches += glob.glob(os.path.join(ARG1, "*MPRAGE_optibrain_seg.nii*"))
+    fast_matches += glob.glob(os.path.join(ARG1, "*MPRAGE_optibrain_mixeltype.nii*"))
+
+    # Loop over each file and apply the transform
+    for fast_file in fast_matches:
+        base = os.path.basename(fast_file)
+        out_file = os.path.join(ARG1, base.replace("MPRAGE_optibrain", "fast_in_sodium"))
+        mainmprage2sodium = os.path.join(ARG1, f"{subject}_mainmprage2sodium.mat")
+        if not os.path.exists(out_file):
+            run([
+                f"{FSLDIR}/bin/convert_xfm",
+                "-omat", mainmprage2sodium,
+                "-concat", mprage2sodiummprage_mat,
+                sodiummprage2sodium_mat
+            ])
+            run([
+                f"{FSLDIR}/bin/flirt",
+                "-in", fast_file,
+                "-ref", sodium_file,
+                "-applyxfm",
+                "-init", mainmprage2sodium,
+                "-interp", "nearestneighbour",
+                "-out", out_file
+            ])
+            print(f"✅ Transformed {base} → {out_file}")
+        else:
+            print(f"Skipping {out_file} (already exists)")
 
 
 
@@ -643,6 +684,7 @@ def moveOutputs():
 
 if __name__ == "__main__":
     runOptibet()
+    runFAST()
     runOptibetOnSodiumMPRAGE()
     runMPRAGE2MPRAGE()
     runSodium2SodiumMPRAGE()
