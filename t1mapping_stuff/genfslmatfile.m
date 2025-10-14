@@ -1,7 +1,7 @@
 % Group sizes
 % groupSizes = [46, 45, 45, 44, 22];
 
-groupSizes = [45, 22, 4];
+groupSizes = [50, 22, 4];
 
 
 nGroups = length(groupSizes);
