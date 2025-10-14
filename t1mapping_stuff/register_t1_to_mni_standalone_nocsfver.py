@@ -25,7 +25,7 @@ SUBJECT = args.SUBJECT
 sub_mprage_dir = os.path.join(MPRAGE_DIR,SUBJECT)
 sub_t1_dir = os.path.join(T1_DIR,SUBJECT)
 
-mprage_brain = os.path.join(sub_mprage_dir, f"{SUBJECT}_MPRAGE_brain.nii.gz")
+mprage_brain = os.path.join(sub_mprage_dir, f"{SUBJECT}_MPRAGE_optibrain.nii.gz")
 mprage2mni = os.path.join(sub_t1_dir, f"{SUBJECT}_MPRAGE_to_MNI.mat")
 
 t1_nocsf = os.path.join(sub_t1_dir, f"{SUBJECT}_T1_to_MPRAGE_noCSF.nii.gz")

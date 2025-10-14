@@ -132,6 +132,8 @@ sodium_2_sodiumMPRAGE_mat = f"{base}_toMPRAGE.mat"
 #####
 # First lets move sodium files to MPRAGE
 
+
+
 if not os.path.exists(sodium_2_sodiumMPRAGE):
     run([
         f"{FSLDIR}/bin/flirt",
@@ -151,6 +153,29 @@ if not os.path.exists(sodium_2_sodiumMPRAGE):
     print(f"✅ Ran FLIRT for {ref_sodium} → {sodium_2_sodiumMPRAGE}")
 else:
     print("⏭️ Sodium→MPRAGE already exists, skipping FLIRT.")
+
+# FOR SITE 3, using 12DOF for some reason
+# if not os.path.exists(sodium_2_sodiumMPRAGE):
+#     run([
+#         f"{FSLDIR}/bin/flirt",
+#         "-in", ref_sodium,
+#         "-ref", mprage_file,
+#         "-omat", sodium_2_sodiumMPRAGE_mat,
+#         "-out", sodium_2_sodiumMPRAGE,
+#         "-bins", "256",
+#         "-dof", "12",
+#         "-cost", "normmi",
+#         "-searchrx", "0", "0",
+#         "-searchry", "0", "0",
+#         "-searchrz", "0", "0",
+#         "-interp", "trilinear"
+#     ])
+#     print(f"✅ Ran FLIRT for {ref_sodium} → {sodium_2_sodiumMPRAGE}")
+# else:
+#     print("⏭️ Sodium→MPRAGE already exists, skipping FLIRT.")
+
+
+#sys.exit(0)
 
 # Apply the same transform to all the *other* sodium files
 for s in sodium_files:
