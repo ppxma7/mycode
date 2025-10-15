@@ -43,10 +43,10 @@ for d in "$ARG4"; do
 done
 
 echo "Running sodium NASCAR MNI pipeline for $SUBJECT"
-#python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_nascar_to_mni.py "$ARG4" "$REF_BASENAME" "$ARG1"
+python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_nascar_to_mni.py "$ARG4" "$REF_BASENAME" "$ARG1"
 
 echo "atlas rois"
-#python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_atlasread.py "$REF_BASENAME" "$SITE" "$SUBJECT"
+python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_atlasread.py "$REF_BASENAME" "$SITE" "$SUBJECT"
 
 
 
