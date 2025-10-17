@@ -4,7 +4,7 @@ clc
 dirname = '/Volumes/kratos/SOFYA/12185_004/';
 
 files ={
-    '12185_004_WIP_fMRI_RS_20220804125939_1001_toppedup.nii',...
+    '12185_004_WIP_fMRI_RS_20220804125939_1001.nii',...
     };
 
 
