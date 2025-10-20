@@ -136,6 +136,8 @@ subject = ARG3   # <-- replace or parse dynamically
 base_dir = "/Volumes/nemosine/SAN/NASCAR/"
 outputs_mni = os.path.join(base_dir, subject, ARG2, "outputs_mni")
 outputs_native = os.path.join(base_dir, subject, ARG2, "outputs")
+outputs_pve_native = os.path.join(base_dir, subject, ARG2, "outputs_pve_native")
+
 
 atlas_mni = os.path.join(FSLDIR, "data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr0-1mm.nii.gz")
 atlas_native = os.path.join(outputs_native, f"{subject}_atlas_in_sodium.nii.gz")
@@ -213,3 +215,37 @@ for f in native_sodiums:
             roi_table_catchexceptions(f, atlas_native, out_csv)
     else:
         print(f"⚠️ Missing sodium file: {f}")
+
+
+# now apply atlas code to pve native space
+print("\n--- Processing PVE files with atlas ---")
+
+# 1. Collect all PVE files under outputs_pve_native for this subject/site
+pve_files = sorted(
+    glob.glob(os.path.join(outputs_pve_native, "*pve*.nii*"))
+)
+
+if not pve_files:
+    print(f"⚠️ No PVE files found in {outputs_pve_native}")
+else:
+    print(f"🧾 Found {len(pve_files)} PVE files:")
+    for f in pve_files:
+        print(f"  - {os.path.basename(f)}")
+
+# 2. Apply atlas ROI stats
+for f in pve_files:
+    out_csv = f"{strip_ext(f)}_ROIstats.csv"
+    if os.path.exists(out_csv):
+        print(f"⏭️ Skipping (already processed): {os.path.basename(out_csv)}")
+        continue
+
+    if not os.path.exists(f):
+        print(f"⚠️ Missing PVE file: {f}")
+        continue
+
+    try:
+        roi_table_catchexceptions(f, atlas_native, out_csv)
+        print(f"✅ Processed {os.path.basename(f)} → {os.path.basename(out_csv)}")
+    except Exception as e:
+        print(f"❌ Failed on {f}: {e}")
+

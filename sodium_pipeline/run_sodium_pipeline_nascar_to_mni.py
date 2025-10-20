@@ -382,7 +382,113 @@ for fast_file in fast_matches:
         print(f"Skipping {out_file} (already exists)")
 
 
+# --- Binarise the pve masks and apply them to TSC files ---
+print("\n--- Processing FAST masks and applying to TSC files ---")
+
+# 1. Get the PVE mask files we just generated in sodium space (but exclude _bin files)
+pve_masks = sorted(
+    f for f in glob.glob(os.path.join(ARG3, "*fast_in_sodium_pve_*.nii.gz"))
+    if "_bin" not in f
+)
+if not pve_masks:
+    raise FileNotFoundError(f"No PVE masks found in {ARG3}")
+
+
+# Optional: define a binarisation threshold (typical ~0.5)
+PVE_THRESHOLD = 0.5
+
+# 2. Binarise each PVE mask
+binarised_masks = []
+for pve_file in pve_masks:
+    bin_file = pve_file.replace(".nii.gz", "_bin.nii.gz")
+    if not os.path.exists(bin_file):
+        run([
+            f"{FSLDIR}/bin/fslmaths",
+            pve_file,
+            "-thr", str(PVE_THRESHOLD),
+            "-bin",
+            bin_file
+        ])
+        print(f"✅ Binarised {pve_file} → {bin_file}")
+    else:
+        print(f"Skipping {bin_file} (already exists)")
+    binarised_masks.append(bin_file)
+
+# 3. Find TSC files to apply masks to
+#all_tsc_files = glob.glob(os.path.join(ARG1, "*TSC*.nii.gz"))
+#tsc_files = [f for f in all_tsc_files if "MPRAGE" not in f and "MNI" not in f]
+all_tsc_files = [
+    f for f in glob.glob(os.path.join(ARG1, "*TSC*.nii*"))
+    if "_masked_" not in f   # ✅ don't mask masked files again
+]
+
+tsc_files = [
+    f for f in all_tsc_files
+    if "MPRAGE" not in f
+    and "MNI" not in f
+    and "bet" not in f
+    and (
+        ("align" in f or "resampled" in f)
+        or os.path.basename(f).endswith("_TSC.nii")
+        or os.path.basename(f).endswith("_TSC.nii.gz")
+    )
+]
+
+# tsc_files = [
+#     f for f in all_tsc_files
+#     if "MPRAGE" not in f
+#     and "MNI" not in f
+#     and "bet" not in f
+#     and ("align" in f or "resampled" in f)
+# ]
+
+if not tsc_files:
+    print("⚠️ No matching TSC files found.")
+else:
+    print(f"Found {len(tsc_files)} TSC files to mask.")
 
 
 
+# 4. Apply each binary mask to each TSC file
+for tsc_file in tsc_files:
+    tsc_base = strip_ext(os.path.basename(tsc_file))
+    for mask in binarised_masks:
+        mask_base = os.path.basename(mask).replace(".nii.gz", "")
+        # Strip any trailing _bin to avoid _bin_bin_bin outputs
+        if mask_base.endswith("_bin"):
+            mask_base = mask_base[:-4]
+
+        out_file = os.path.join(ARG1, f"{tsc_base}_masked_{mask_base}_bin.nii.gz")
+
+        if not os.path.exists(out_file):
+            run([
+                f"{FSLDIR}/bin/fslmaths",
+                tsc_file,
+                "-mas", mask,
+                out_file
+            ])
+            print(f"✅ Masked {tsc_file} with {mask_base} → {out_file}")
+        else:
+            print(f"Skipping {out_file} (already exists)")
+
+
+#### MOVING Place outputs_mni one level up from ARG1
+#parent_dir = os.path.dirname(os.path.dirname(ARG1))
+outputs_pve_native = os.path.join(parent_dir, "outputs_pve_native")
+os.makedirs(outputs_pve_native, exist_ok=True)
+
+pve_files = glob.glob(os.path.join(ARG1, "*_pve_*.nii*"))
+
+for f in pve_files:
+    if not os.path.exists(f):
+        print(f"⚠️ Missing source file: {f}")
+        continue
+
+    dest = os.path.join(outputs_pve_native, os.path.basename(f))
+    # if os.path.exists(dest):
+    #     print(f"⏭️ Already exists in outputs_pve_native: {dest}")
+    #     continue
+
+    shutil.move(f, dest)
+    print(f"📦 Moved {os.path.basename(f)} → {outputs_pve_native}/")
 
