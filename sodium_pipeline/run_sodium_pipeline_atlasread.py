@@ -6,6 +6,7 @@ import nibabel as nib
 import numpy as np
 import pandas as pd
 import xml.etree.ElementTree as ET
+import csv
 
 FSLDIR = "/usr/local/fsl"
 
@@ -232,11 +233,31 @@ else:
     for f in pve_files:
         print(f"  - {os.path.basename(f)}")
 
-# 2. Apply atlas ROI stats
+# # 2. Apply atlas ROI stats
+# for f in pve_files:
+#     out_csv = f"{strip_ext(f)}_ROIstats.csv"
+#     if os.path.exists(out_csv):
+#         print(f"⏭️ Skipping (already processed): {os.path.basename(out_csv)}")
+#         continue
+
+#     if not os.path.exists(f):
+#         print(f"⚠️ Missing PVE file: {f}")
+#         continue
+
+#     try:
+#         roi_table_catchexceptions(f, atlas_native, out_csv)
+#         print(f"✅ Processed {os.path.basename(f)} → {os.path.basename(out_csv)}")
+#     except Exception as e:
+#         print(f"❌ Failed on {f}: {e}")
+
+# 2. Compute global stats
+all_results = []
 for f in pve_files:
-    out_csv = f"{strip_ext(f)}_ROIstats.csv"
-    if os.path.exists(out_csv):
-        print(f"⏭️ Skipping (already processed): {os.path.basename(out_csv)}")
+    summary_csv = os.path.join(outputs_pve_native, "PVE_global_summary.csv")
+    #out_csv = f"{strip_ext(f)}_ROIstats.csv"  # keep your naming convention
+
+    if os.path.exists(summary_csv):
+        print(f"⏭️ Skipping (already processed): {os.path.basename(summary_csv)}")
         continue
 
     if not os.path.exists(f):
@@ -244,8 +265,35 @@ for f in pve_files:
         continue
 
     try:
-        roi_table_catchexceptions(f, atlas_native, out_csv)
-        print(f"✅ Processed {os.path.basename(f)} → {os.path.basename(out_csv)}")
+        img = nib.load(f)
+        data = img.get_fdata()
+
+        # Clean up: drop NaNs and zeros (optional)
+        data = data[np.isfinite(data)]
+        data = data[data > 0]
+
+        # Compute stats
+        mean_val = np.mean(data)
+        std_val = np.std(data)
+
+        # Create DataFrame (easy to append or merge later)
+        df = pd.DataFrame({
+            "Filename": [os.path.basename(f)],
+            "Mean": [mean_val],
+            "Std": [std_val]
+        })
+
+        # Save single CSV per file
+        all_results.append(df)
+        #df.to_csv(out_csv, index=False)
+        print(f"✅ Saved global stats → {os.path.basename(out_csv)}")
+
     except Exception as e:
         print(f"❌ Failed on {f}: {e}")
 
+# Save combined summary at the end
+if all_results:
+    pd.concat(all_results, ignore_index=True).to_csv(summary_csv, index=False)
+    print(f"📊 Saved combined summary → {summary_csv}")
+else:
+    print("⚠️ No results to save.")
