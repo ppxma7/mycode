@@ -38,6 +38,18 @@ for iSub = 1:length(dataset)
         KEvals = thisFile_contents.clust_ke;
         validIdx = ~isnan(Tvals) & ~isnan(KEvals);
         weightedTs(ii,iSub) = sum(Tvals(validIdx) .* KEvals(validIdx)) / sum(KEvals(validIdx));
+        
+        % Get the STDEV
+        w = KEvals(validIdx);
+        x = Tvals(validIdx);
+        % Weighted mean (already computed)
+        wmean = sum(w .* x) / sum(w);
+        % Weighted variance (unbiased form)
+        wvar = sum(w .* (x - wmean).^2) / sum(w);
+        % Weighted standard deviation
+        wstd = sqrt(wvar);
+        %weightedTs2(ii,iSub)  = wmean;
+        weightedStd(ii,iSub) = wstd;
 
 
 
@@ -47,11 +59,13 @@ toc
 % now plot?
 
 y = weightedTs(:);
+y_std = weightedStd(:);
 %y = tfiles;
 %yflip = [y(1:2,:); y(4,:); y(3,:)]; % bug, because L_L comes before 
 %yflip = yflip(:);
 
 %myfiles_flip = {'1barR_Lmask.csv','1barR_Rmask.csv','1barL_Rmask.csv','1barL_Lmask.csv'};
+
 
 
 subs = repmat({'sub01','sub02','sub03','sub04','sub05','sub06','sub07','sub08','sub09','sub10'},length(myfiles),1);
@@ -77,6 +91,7 @@ n = numel(y);
 
 % preallocate
 y_swapped = y;
+y_swapped_std = y_std;
 labels_swapped = legendLabels(:);
 
 % loop through pairs (every 4 if pattern repeats in 4s)
@@ -87,8 +102,18 @@ for i = 1:4:n
     new_order = [i+2, i+3, i, i+1];
 
     y_swapped(idx) = y(new_order);
+    y_swapped_std(idx) = y_std(new_order);
     labels_swapped(idx) = legendLabels(new_order);
 end
+
+
+
+
+
+T = table(subs, y_swapped, y_swapped_std, labels_swapped, ...
+          'VariableNames', {'Subject','Y','stdev','Label'});
+writetable(T, fullfile(savedir,'output.csv'));
+
 
 close all
 clear g
@@ -113,6 +138,55 @@ g.export('file_name',filename, ...
     'export_path',...
     savedir,...
     'file_type','pdf')
+
+%% manual plot - optional with error bars (stdev)
+close all
+clc
+
+uniqueSubs = unique(subs);
+uniqueTasks = unique(labels_swapped);
+
+nSub = numel(uniqueSubs);
+nTask = numel(uniqueTasks);
+
+
+% turn into 4 columns of 10
+Y = reshape(y_swapped,nTask,nSub)';
+Yerr = reshape(y_swapped_std,nTask,nSub)';
+
+bloop = figure('Position',[100 100 1200 600]);
+set(bloop, 'PaperOrientation', 'landscape');
+hb = bar(Y, 'grouped'); % each row = subject, each column = task
+hold on
+
+for i = 1:numel(hb)
+    hb(i).FaceColor = cmapped(i,:);  % RGB for task i
+end
+
+% Add error bars
+[ngroups, nbars] = size(Y);
+groupwidth = min(0.8, nbars/(nbars + 1.5));
+
+for ibar = 1:nbars
+    x = (1:ngroups) - groupwidth/2 + (2*ibar-1) * groupwidth / (2*nbars); % x positions for bars in group
+    errorbar(x, Y(:,ibar), Yerr(:,ibar), 'k', 'linestyle', 'none', 'LineWidth', 1.5);
+end
+
+% Labels
+set(gca,'XTick',1:nSub,'XTickLabel',uniqueSubs)
+ylabel('Cluster-size weighted T')
+ylim([0 35])
+legend(uniqueTasks,'Location','Best','Interpreter', 'none')
+title('Cluster-size weighted average T-score per task')
+grid on
+(cmapped)
+h = gcf;
+
+thisFilename = [savedir 'tstat_unilateral_weighted_wstdevbars'];
+print(h, '-dpdf', thisFilename, '-r300');  % -r300 sets the resolution to 300 DPI
+
+
+
 
 
 %% also plot separately
