@@ -256,9 +256,9 @@ for f in pve_files:
     summary_csv = os.path.join(outputs_pve_native, "PVE_global_summary.csv")
     #out_csv = f"{strip_ext(f)}_ROIstats.csv"  # keep your naming convention
 
-    if os.path.exists(summary_csv):
-        print(f"⏭️ Skipping (already processed): {os.path.basename(summary_csv)}")
-        continue
+    # if os.path.exists(summary_csv):
+    #     print(f"⏭️ Skipping (already processed): {os.path.basename(summary_csv)}")
+    #     continue
 
     if not os.path.exists(f):
         print(f"⚠️ Missing PVE file: {f}")
@@ -275,12 +275,17 @@ for f in pve_files:
         # Compute stats
         mean_val = np.mean(data)
         std_val = np.std(data)
+        median_val = np.median(data)
+        q75, q25 = np.percentile(data, [75, 25])
+        iqr_val = q75 - q25
 
         # Create DataFrame (easy to append or merge later)
         df = pd.DataFrame({
             "Filename": [os.path.basename(f)],
             "Mean": [mean_val],
-            "Std": [std_val]
+            "Std": [std_val],
+            "Median": [median_val],
+            "IQR": [iqr_val]
         })
 
         # Save single CSV per file
