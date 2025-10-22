@@ -144,7 +144,10 @@ atlas_mni = os.path.join(FSLDIR, "data/atlases/HarvardOxford/HarvardOxford-cort-
 atlas_native = os.path.join(outputs_native, f"{subject}_atlas_in_sodium.nii.gz")
 
 # --- Process MNI-space sodiums ---
-mni_sodiums = glob.glob(os.path.join(outputs_mni, "*MNI.nii.gz"))
+#mni_sodiums = glob.glob(os.path.join(outputs_mni, "*MNI.nii.gz"))
+# include new naming scheme (alignedtoRef_toMPRAGE_MNI)
+mni_sodiums = sorted(glob.glob(os.path.join(outputs_mni, "*_alignedtoRef_toMPRAGE_MNI.nii.gz")))
+
 for f in mni_sodiums:
     out_csv = f"{strip_ext(f)}_ROIstats.csv"
     if os.path.exists(out_csv):
@@ -177,35 +180,19 @@ for suffix in ["", "_TSC", "_2375", "_TSC_2375"]:
     else:
         print(f"⚠️ Missing reference sodium file: {reference}{suffix}.nii*")
 
-# --- 2. Add non-reference sodiums (with align12dof) ---
+# --- 2. Add non-reference sodiums (alignedtoRef convention) ---
 for name in others:
-    for suffix in ["", "_TSC", "_2375", "_TSC_2375"]:
-        matches = glob.glob(os.path.join(outputs_native, f"{name}{suffix}_align12dof.nii*"))
+    for suffix in ["", "_TSC", "_2375", "_TSC_2375", "_TSC_3_bottles", "_TSC_3_bottles_2375"]:
+        matches = glob.glob(os.path.join(outputs_native, f"{name}{suffix}_alignedtoRef.nii*"))
         if matches:
             native_sodiums.extend(matches)
         else:
-            print(f"⚠️ Missing aligned sodium file: {name}{suffix}_align12dof.nii*")
+            print(f"⚠️ Missing aligned sodium file: {name}{suffix}_alignedtoRef.nii*")
 
 print("🧾 Files to process:")
 for f in native_sodiums:
     print(f"  - {os.path.basename(f)}")
 
-
-# native_sodiums = []
-# for name in ["seiffert_TSC_2375", "seiffert_2375",
-#               "radial_TSC", "radial",
-#               "floret_TSC", "floret",
-#               "seiffert_2375_align12dof", "seiffert_TSC_2375_align12dof",
-#               "floret_align12dof", "floret_TSC_align12dof",
-#               "radial_align12dof", "radial_TSC_align12dof",]:
-#     matches = glob.glob(os.path.join(outputs_native, f"{name}.nii*"))
-#     if matches:
-#         native_sodiums.extend(matches)
-#     else:
-#         print(f"⚠️ Missing sodium file: {name}.nii*")
-
-
-#print(native_sodiums)
 
 for f in native_sodiums:
     if os.path.exists(f):
@@ -233,22 +220,6 @@ else:
     for f in pve_files:
         print(f"  - {os.path.basename(f)}")
 
-# # 2. Apply atlas ROI stats
-# for f in pve_files:
-#     out_csv = f"{strip_ext(f)}_ROIstats.csv"
-#     if os.path.exists(out_csv):
-#         print(f"⏭️ Skipping (already processed): {os.path.basename(out_csv)}")
-#         continue
-
-#     if not os.path.exists(f):
-#         print(f"⚠️ Missing PVE file: {f}")
-#         continue
-
-#     try:
-#         roi_table_catchexceptions(f, atlas_native, out_csv)
-#         print(f"✅ Processed {os.path.basename(f)} → {os.path.basename(out_csv)}")
-#     except Exception as e:
-#         print(f"❌ Failed on {f}: {e}")
 
 # 2. Compute global stats
 all_results = []

@@ -40,39 +40,16 @@ def get_scanbase(filename):
         return None
 
     # Remove the trailing MNI bit
-    base = re.sub(r'_toMPRAGE_MNI\.nii\.gz$', '', base)
+    #base = re.sub(r'_toMPRAGE_MNI\.nii\.gz$', '', base)
+    base = re.sub(r'_alignedtoRef_toMPRAGE_MNI\.nii\.gz$', '', base)
+
 
     # Remove align/bet suffixes
-    base = re.sub(r'_bet_align12dof$', '', base)
-    base = re.sub(r'_align12dof$', '', base)
-    base = re.sub(r'_bet$', '', base)
+    #base = re.sub(r'_bet_align12dof$', '', base)
+    #base = re.sub(r'_align12dof$', '', base)
+    #base = re.sub(r'_bet$', '', base)
 
     return base
-
-
-# # -------- Helper functions --------
-# def fsl_mean_std(in_files, out_prefix):
-#     """Compute mean and std using FSL (fslmerge + fslmaths)."""
-#     if len(in_files) == 0:
-#         print(f"⚠️ No files for {out_prefix}")
-#         return
-#     if len(in_files) == 1:
-#         subprocess.run(["cp", in_files[0], f"{out_prefix}_mean.nii.gz"], check=True)
-#         subprocess.run(["fslmaths", in_files[0], "-mul", "0", f"{out_prefix}_std.nii.gz"], check=True)
-#         print(f"✅ {out_prefix}: 1 file (copied as mean, zero std)")
-#         return
-
-#     merged_4d = f"{out_prefix}_merged.nii.gz"
-#     subprocess.run(["fslmerge", "-t", merged_4d] + in_files, check=True)
-#     subprocess.run(["fslmaths", merged_4d, "-Tmean", f"{out_prefix}_mean.nii.gz"], check=True)
-#     subprocess.run(["fslmaths", merged_4d, "-Tstd", f"{out_prefix}_std.nii.gz"], check=True)
-#     try:
-#         os.remove(merged_4d)
-#     except OSError:
-#         pass
-#     print(f"✅ {out_prefix}: computed mean/std (n={len(in_files)})")
-
-
 
 def fsl_mean_std(in_files, out_prefix):
     """Compute mean and std using FSL (fslmerge + fslmaths), skip if already exists."""
