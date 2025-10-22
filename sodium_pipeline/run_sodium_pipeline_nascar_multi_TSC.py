@@ -8,6 +8,7 @@ import nibabel as nib
 import numpy as np
 import pandas as pd
 import xml.etree.ElementTree as ET
+import tempfile
 
 
 # ---------- USER CONFIG ----------
@@ -350,6 +351,53 @@ def run_bet(files):
 
 
 
+# # --- FLIRT section ---
+# def run_flirt(files, reference_file, apply_xfm=False):
+#     """
+#     Run FSL FLIRT alignment to reference.
+#     - If apply_xfm=True, expects a corresponding *_to_ref.mat file and applies transform.
+#     - Otherwise, runs full 12-dof alignment.
+#     Returns list of aligned filenames.
+#     """
+#     if isinstance(files, str):
+#         files = [files]
+
+#     aligned_files = []
+#     for f in files:
+#         if "_align12dof" in f or "_alignedtoRef" in f:
+#             print(f"ℹ️ Skipping {f}, looks like a FLIRT output already")
+#             continue
+
+#         base = strip_ext(f)
+#         align_file = f"{base}_align12dof.nii.gz"
+#         mat_file   = f"{base}_to_ref.mat"
+
+#         if os.path.exists(align_file):
+#             print(f"⏭️ Skipping FLIRT, already exists: {align_file}")
+#         else:
+#             if apply_xfm and os.path.exists(mat_file):
+#                 print(f"🟢 Applying existing transform: {f} -> {align_file}")
+#                 run([
+#                     "flirt",
+#                     "-in", f,
+#                     "-ref", reference_file,
+#                     "-out", align_file,
+#                     "-init", mat_file,
+#                     "-applyxfm"
+#                 ])
+#             else:
+#                 print(f"🟢 Running full FLIRT: {f} -> {align_file}")
+#                 run([
+#                     "flirt",
+#                     "-in", f,
+#                     "-ref", reference_file,
+#                     "-out", align_file,
+#                     "-omat", mat_file
+#                 ])
+
+#         aligned_files.append(align_file)
+#     return aligned_files
+
 # --- FLIRT section ---
 def run_flirt(files, reference_file, apply_xfm=False):
     """
@@ -363,12 +411,15 @@ def run_flirt(files, reference_file, apply_xfm=False):
 
     aligned_files = []
     for f in files:
-        if "_align12dof" in f or "_alignedtoRef" in f:
+        fname = os.path.basename(f)
+
+        # ✅ Skip if already aligned (prevents repeated re-alignment)
+        if "_alignedtoRef" in fname:
             print(f"ℹ️ Skipping {f}, looks like a FLIRT output already")
             continue
 
         base = strip_ext(f)
-        align_file = f"{base}_align12dof.nii.gz"
+        align_file = f"{base}_alignedtoRef.nii.gz"      # ✅ new consistent naming
         mat_file   = f"{base}_to_ref.mat"
 
         if os.path.exists(align_file):
@@ -395,7 +446,9 @@ def run_flirt(files, reference_file, apply_xfm=False):
                 ])
 
         aligned_files.append(align_file)
+
     return aligned_files
+
 
 # Ensure TSC variables are lists of strings
 radial_tsc_list   = radial_tsc_file if isinstance(radial_tsc_file, list) else [radial_tsc_file] if radial_tsc_file else []
@@ -413,9 +466,26 @@ floret_tsc_bet_files   = run_bet(floret_tsc_list) if floret_tsc_list else []
 seiffert_tsc_bet_files = run_bet(seiffert_tsc_list) if seiffert_tsc_list else []
 
 # Step 2a: FLIRT 12-dof on BET images (estimate transforms)
-radial_bet_align   = run_flirt(radial_bet_files, sodium_ref_file)
-floret_bet_align   = run_flirt(floret_bet_files, sodium_ref_file)
-seiffert_bet_align = run_flirt(seiffert_bet_files, sodium_ref_file)
+# radial_bet_align   = run_flirt(radial_bet_files, sodium_ref_file)
+# floret_bet_align   = run_flirt(floret_bet_files, sodium_ref_file)
+# seiffert_bet_align = run_flirt(seiffert_bet_files, sodium_ref_file)
+
+# Step 2a: Estimate transform using BET images (save .mat only)
+for f in radial_bet_files + floret_bet_files + seiffert_bet_files:
+    mat_file = f"{strip_ext(f)}_to_ref.mat"
+    if not os.path.exists(mat_file):
+        tmp_out = f"{strip_ext(f)}_tmpflirt.nii.gz"
+        print(f"🧠 Estimating transform only (BET): {f}")
+        run([
+            "flirt",
+            "-in", f,
+            "-ref", sodium_ref_file,
+            "-omat", mat_file,
+            "-out", tmp_out
+        ])
+        os.remove(tmp_out)
+    else:
+        print(f"⏭️ Transform already exists for: {f}")
 
 
 # Step 2b: Apply transforms to original + TSC files (using *_bet_to_ref.mat)

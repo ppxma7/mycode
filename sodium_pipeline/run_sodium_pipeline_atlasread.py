@@ -182,7 +182,8 @@ for suffix in ["", "_TSC", "_2375", "_TSC_2375"]:
 
 # --- 2. Add non-reference sodiums (alignedtoRef convention) ---
 for name in others:
-    for suffix in ["", "_TSC", "_2375", "_TSC_2375", "_TSC_3_bottles", "_TSC_3_bottles_2375"]:
+    #for suffix in ["", "_TSC", "_2375", "_TSC_2375", "_TSC_3_bottles", "_TSC_3_bottles_2375"]:
+    for suffix in ["", "_TSC", "_2375", "_TSC_2375", "_TSC_3_bottles", "_TSC_3_bottles_2375", "_TSC_B1"]:
         matches = glob.glob(os.path.join(outputs_native, f"{name}{suffix}_alignedtoRef.nii*"))
         if matches:
             native_sodiums.extend(matches)

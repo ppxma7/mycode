@@ -11,8 +11,8 @@ source heph_venv/bin/activate
 # echo "⏸️ Pausing 2 seconds..."
 # sleep 2
 sh $mypath/sodium_pipeline/run_sodium_pipeline_nascar.sh Subject1 seiffert site3
-# echo "⏸️ Pausing 2 seconds..."
-# sleep 2
+echo "⏸️ Pausing 2 seconds..."
+sleep 2
 
 # sh $mypath/sodium_pipeline/run_sodium_pipeline_nascar.sh Subject2 seiffert site1
 # echo "⏸️ Pausing 2 seconds..."
