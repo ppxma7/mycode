@@ -381,7 +381,6 @@ for fast_file in fast_matches:
     else:
         print(f"Skipping {out_file} (already exists)")
 
-
 # --- Binarise the pve masks and apply them to TSC files ---
 print("\n--- Processing FAST masks and applying to TSC files ---")
 
@@ -413,6 +412,29 @@ for pve_file in pve_masks:
     else:
         print(f"Skipping {bin_file} (already exists)")
     binarised_masks.append(bin_file)
+
+
+# --- 2a. Erode the PVE2 masks (WM) ---
+print("\n--- Eroding PVE2 (WM) masks ---")
+pve2_files = [f for f in binarised_masks if "_pve_2_bin.nii.gz" in f]
+for pve2_file in pve2_files:
+    pve2_ero_file = pve2_file.replace(".nii.gz", "_ero.nii.gz")
+    if not os.path.exists(pve2_ero_file):
+        run([
+            f"{FSLDIR}/bin/fslmaths",
+            pve2_file,
+            "-kernel", "sphere", "3.5",
+            "-ero",
+            pve2_ero_file
+        ])
+        print(f"✅ Eroded {pve2_file} → {pve2_ero_file}")
+    else:
+        print(f"Skipping {pve2_ero_file} (already exists)")
+
+    # Replace the non-eroded file in binarised_masks
+    idx = binarised_masks.index(pve2_file)
+    binarised_masks[idx] = pve2_ero_file
+
 
 # 3. Find TSC files to apply masks to
 #all_tsc_files = glob.glob(os.path.join(ARG1, "*TSC*.nii.gz"))
@@ -452,13 +474,23 @@ else:
 # 4. Apply each binary mask to each TSC file
 for tsc_file in tsc_files:
     tsc_base = strip_ext(os.path.basename(tsc_file))
+    tsc_img = nib.load(tsc_file)
+    tsc_shape = tsc_img.shape
+
     for mask in binarised_masks:
         mask_base = os.path.basename(mask).replace(".nii.gz", "")
         # Strip any trailing _bin to avoid _bin_bin_bin outputs
-        if mask_base.endswith("_bin"):
-            mask_base = mask_base[:-4]
 
+        mask_base = mask_base.replace("_bin", "").replace("_ero", "")
         out_file = os.path.join(ARG1, f"{tsc_base}_masked_{mask_base}_bin.nii.gz")
+
+        mask_img = nib.load(mask)
+        mask_shape = mask_img.shape
+
+        # --- Handle shape mismatch ---
+        if tsc_shape != mask_shape:
+            print(f"⚠️ Shape mismatch for {tsc_base}: TSC {tsc_shape} vs Mask {mask_shape} — skipping")
+            continue
 
         if not os.path.exists(out_file):
             run([
@@ -491,4 +523,92 @@ for f in pve_files:
 
     shutil.move(f, dest)
     print(f"📦 Moved {os.path.basename(f)} → {outputs_pve_native}/")
+
+
+# --- Move FAST outputs to MNI space as well
+print("\n--- Transforming FAST outputs to MNI space ---")
+
+for fast_file in fast_matches:
+    base = os.path.basename(fast_file)
+    out_file = os.path.join(ARG3, base.replace("MPRAGE_optibrain", "fast_in_MNI"))
+
+    if not os.path.exists(out_file):
+        run([
+            f"{FSLDIR}/bin/flirt",
+            "-in", fast_file,
+            "-ref", MNI_TEMPLATE,
+            "-applyxfm",
+            "-init", affine_mprage_to_mni,
+            "-interp", "nearestneighbour",
+            "-out", out_file
+        ])
+        print(f"✅ Transformed {base} → {out_file}")
+    else:
+        print(f"⏭️ Skipping {out_file} (already exists)")
+
+# --- Binarise the pve masks in MNI space ---
+print("\n--- Processing FAST masks ---")
+
+# 1. 
+pve_masks = sorted(
+    f for f in glob.glob(os.path.join(ARG3, "*fast_in_MNI_pve_*.nii.gz"))
+    if "_bin" not in f
+)
+if not pve_masks:
+    raise FileNotFoundError(f"No PVE masks found in {ARG3}")
+
+# 2. Binarise each PVE mask
+binarised_masks = []
+for pve_file in pve_masks:
+    bin_file = pve_file.replace(".nii.gz", "_bin.nii.gz")
+    if not os.path.exists(bin_file):
+        run([
+            f"{FSLDIR}/bin/fslmaths",
+            pve_file,
+            "-thr", str(PVE_THRESHOLD),
+            "-bin",
+            bin_file
+        ])
+        print(f"✅ Binarised {pve_file} → {bin_file}")
+    else:
+        print(f"Skipping {bin_file} (already exists)")
+    binarised_masks.append(bin_file)
+
+
+# --- 2a. Erode the PVE2 masks (WM) ---
+print("\n--- Eroding PVE2 (WM) masks ---")
+pve2_files = [f for f in binarised_masks if "_pve_2_bin.nii.gz" in f]
+for pve2_file in pve2_files:
+    pve2_ero_file = pve2_file.replace(".nii.gz", "_ero.nii.gz")
+    if not os.path.exists(pve2_ero_file):
+        run([
+            f"{FSLDIR}/bin/fslmaths",
+            pve2_file,
+            "-kernel", "sphere", "2",
+            "-ero",
+            pve2_ero_file
+        ])
+        print(f"✅ Eroded {pve2_file} → {pve2_ero_file}")
+    else:
+        print(f"Skipping {pve2_ero_file} (already exists)")
+
+    # Replace the non-eroded file in binarised_masks
+    idx = binarised_masks.index(pve2_file)
+    binarised_masks[idx] = pve2_ero_file
+
+
+
+#### MOVING MNI FAST OUTPUTS
+outputs_pve_mni = os.path.join(parent_dir, "outputs_pve_mni")
+os.makedirs(outputs_pve_mni, exist_ok=True)
+
+pve_files = glob.glob(os.path.join(ARG3, "*MNI_pve_*.nii*"))
+
+for f in pve_files:
+    if not os.path.exists(f):
+        print(f"⚠️ Missing source file: {f}")
+        continue
+    dest = os.path.join(outputs_pve_mni, os.path.basename(f))
+    shutil.copy(f, dest)
+    print(f"📦 Copied {os.path.basename(f)} → {outputs_pve_mni}/")
 
