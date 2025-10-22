@@ -10,6 +10,7 @@ import nibabel as nib
 import sys
 import pandas as pd
 import subprocess
+import shutil
 
 # -------- Configuration --------
 ROOTDIR = "/Volumes/nemosine/SAN/NASCAR"
@@ -91,21 +92,31 @@ for site in sites:
 
 site_mean_masks = {}  # site -> list of masks
 for site in sites:
-    masks_for_site = glob.glob(os.path.join(OUTDIR, f"*_{site}.nii.gz"))
+    masks_for_site = [
+        f for f in glob.glob(os.path.join(OUTDIR, f"*fast_in_MNI_pve_*_{site}.nii.gz"))
+        if "_masked_" not in f
+    ]
     site_mean_masks[site] = masks_for_site
-    print(f"{site}: {masks_for_site}")
+
+    #print(f"{site}: {masks_for_site}")
 
 # Loop over sites
 for site in sites:
     # Get all site-specific mean/std/TSC images
+
+    print(site)
+
     site_files = [
-        f for f in glob.glob(os.path.join(OUTDIR, f"{site}_*_acrossSubjects_*.nii.gz"))
+        f for f in glob.glob(os.path.join(OUTDIR, f"{site}_*_TSC*_acrossSubjects_*.nii.gz"))
         if "_masked_" not in f
+        and "fast_in_MNI_pve" not in f
     ]
 
     print(site_files)
+    print(f"Number of site files = {len(site_files)}")
 
-    sys.exit(0)
+    #sys.exit(0)
+
 
     # Loop over each site mask
     for mask_file in site_mean_masks[site]:
@@ -113,7 +124,7 @@ for site in sites:
         
         for img_file in site_files:
             out_file = os.path.join(
-                OUTDIR,
+                groupstats_pve_across_subs,
                 f"{os.path.basename(img_file).replace('.nii.gz','')}_masked_{mask_base}.nii.gz"
             )
 
@@ -129,22 +140,73 @@ for site in sites:
                 print(f"⏭️ Skipping {out_file} (already exists)")
 
 #### MOVING
+#sys.exit(0)
+
+# files = glob.glob(os.path.join(OUTDIR, "*masked_acrossSubjects_fast_in_MNI_pve_*.nii.gz"))
+
+# for f in files:
+#     if not os.path.exists(f):
+#         print(f"⚠️ Missing source file: {f}")
+#         continue
+#     dest = os.path.join(groupstats_pve_across_subs, os.path.basename(f))
+#     shutil.move(f, dest)
+#     print(f"📦 Moved {os.path.basename(f)} → {groupstats_pve_across_subs}/")
+
+# print(f"✅ Moved {len(files)} files to {groupstats_pve_across_subs}")
 
 
-files = glob.glob(os.path.join(OUTDIR, "*masked_acrossSubjects_fast_in_MNI_pve_*.nii.gz"))
+## now get ROI stats
+all_results = []
+shuttledFiles = sorted(glob.glob(os.path.join(groupstats_pve_across_subs, "*.nii.gz")))
+for f in shuttledFiles:
+    summary_csv = os.path.join(groupstats_pve_across_subs, "PVE_global_summary_MNI.csv")
+    #out_csv = f"{strip_ext(f)}_ROIstats.csv"  # keep your naming convention
 
-for f in files:
+    # if os.path.exists(summary_csv):
+    #     print(f"⏭️ Skipping (already processed): {os.path.basename(summary_csv)}")
+    #     continue
+
     if not os.path.exists(f):
-        print(f"⚠️ Missing source file: {f}")
+        print(f"⚠️ Missing file: {f}")
         continue
-    dest = os.path.join(groupstats_pve_across_subs, os.path.basename(f))
-    shutil.move(f, dest)
-    print(f"📦 Moved {os.path.basename(f)} → {groupstats_pve_across_subs}/")
 
-print(f"✅ Moved {len(files)} files to {groupstats_pve_across_subs}")
+    try:
+        img = nib.load(f)
+        data = img.get_fdata()
 
+        # Clean up: drop NaNs and zeros (optional)
+        data = data[np.isfinite(data)]
+        data = data[data > 0]
 
+        # Compute stats
+        mean_val = np.mean(data)
+        std_val = np.std(data)
+        median_val = np.median(data)
+        q75, q25 = np.percentile(data, [75, 25])
+        iqr_val = q75 - q25
 
+        # Create DataFrame (easy to append or merge later)
+        df = pd.DataFrame({
+            "Filename": [os.path.basename(f)],
+            "Mean": [mean_val],
+            "Std": [std_val],
+            "Median": [median_val],
+            "IQR": [iqr_val]
+        })
 
+        # Save single CSV per file
+        all_results.append(df)
+        #df.to_csv(out_csv, index=False)
+        #print(f"✅ Saved global stats → {os.path.basename(out_csv)}")
+
+    except Exception as e:
+        print(f"❌ Failed on {f}: {e}")
+
+# Save combined summary at the end
+if all_results:
+    pd.concat(all_results, ignore_index=True).to_csv(summary_csv, index=False)
+    print(f"📊 Saved combined summary → {summary_csv}")
+else:
+    print("⚠️ No results to save.")
 
 
