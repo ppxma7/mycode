@@ -106,7 +106,7 @@ for i = 1:4:n
     labels_swapped(idx) = legendLabels(new_order);
 end
 
-
+%%
 
 
 
@@ -138,6 +138,52 @@ g.export('file_name',filename, ...
     'export_path',...
     savedir,...
     'file_type','pdf')
+%% plot with error bars gramm style
+
+T.ymin = T.Y - T.stdev;
+T.ymax = T.Y + T.stdev;
+
+
+clc
+close all
+figure('Position',[100 100 1000 500]);
+
+dodgeVal = 0.8;
+
+g = gramm( ...
+    'x', T.Subject, ...
+    'y', T.Y, ...
+    'color', T.Label, ...
+    'ymin', T.ymin, ...
+    'ymax', T.ymax);
+
+% Bars + your own SD errorbars
+g.geom_bar('width',0.8, 'stacked',false,'dodge',dodgeVal,'LineWidth',0.2) 
+%g.geom_interval('geom','errorbar','dodge',0.5,'width',1);   % <- uses ymin/ymax that you defined
+
+% Optional styling
+g.set_names('x',[],'y','Mean T','color','Condition');
+%g.set_title('Positive T-values');
+g.axe_property('FontSize',12,'ylim',[0 35],'XGrid','on','YGrid','on');
+g.set_order_options('x',0,'color',0)
+g.set_color_options('map',cmapped)
+g.no_legend
+g.draw();
+
+g.update()
+g.geom_interval('geom','errorbar','dodge',dodgeVal,'width',0.6);   % <- uses ymin/ymax that you defined
+comesInBlack = ones(4,3).*0.3;
+g.set_color_options('map',comesInBlack)
+g.no_legend
+g.draw()
+
+filename = ('tstatfmriplot_grammstyle');
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
+
+
 
 %% manual plot - optional with error bars (stdev)
 close all

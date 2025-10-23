@@ -189,10 +189,22 @@ labelsG_neg = labelsG(negDex,:);
 subs = repmat({'sub01','sub02','sub03','sub04','sub05','sub06','sub07','sub08','sub09','sub10'},4,1);
 subs = subs(:);
 
+% we need to swap rows for plotting on left
+meansG_pos = [meansG_pos(3:4,:); meansG_pos(1:2,:)];
+stdsG_pos = [stdsG_pos(3:4,:); stdsG_pos(1:2,:)];
+meansG_neg = [meansG_neg(3:4,:); meansG_neg(1:2,:)];
+stdsG_neg = [stdsG_neg(3:4,:); stdsG_neg(1:2,:)];
+labelsG_pos = [labelsG_pos(3:4,:); labelsG_pos(1:2,:)];
+labelsG_neg = [labelsG_neg(3:4,:); labelsG_neg(1:2,:)];
+
+
 posStack = table(meansG_pos(:), stdsG_pos(:), labelsG_pos(:),subs,...
     'VariableNames', {'Mean','Std','Label','Subject'});
 negStack = table(meansG_neg(:), stdsG_neg(:), labelsG_neg(:),subs,...
     'VariableNames', {'Mean','Std','Label','Subject'});
+
+writetable(posStack, fullfile(savedir,'outputraw.csv'));
+
 
 % Initialise gramm
 % % Make sure Subject is categorical for cleaner grouping
@@ -231,7 +243,7 @@ g.geom_bar('width',0.8, 'stacked',false,'dodge',dodgeVal,'LineWidth',0.2)
 
 % Optional styling
 g.set_names('x',[],'y','Mean T','color','Condition');
-%g.set_title('Positive T-values');
+g.set_title('fMRI T-values');
 g.axe_property('FontSize',12,'ylim',[0 16],'XGrid','on','YGrid','on');
 g.set_order_options('x',0,'color',0)
 g.set_color_options('map',cmapped)
