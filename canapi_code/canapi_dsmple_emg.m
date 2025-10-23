@@ -837,21 +837,34 @@ peakxcsubset_flippedLR = peakxcsubset_flippedLR(:);
 % ch1vch2_xcorr_peakXC_subset(2,:) = NaN;
 % ch1vch2_xcorr_peakXC_subset(4,:) = NaN;
 % ch1vch2_xcorr_peakXC_subset = ch1vch2_xcorr_peakXC_subset(~isnan(ch1vch2_xcorr_peakXC_subset));
-
+%%
+dodgeVal = 0.8;
 clear g
-figure('Position',[100 100 1200 600])
+figure('Position',[100 100 900 600])
 g = gramm('x', subs, 'y', peakxcsubset_flippedLR, 'color', run_labels_stack);
 %g.geom_jitter2('dodge', 0);  % adds subject dots
 %g.geom_point()
-g.stat_summary('geom', {'bar'}, 'dodge', 0.6);  % mean over subjects
-g.set_names('x','Participant','y','Amplitude cross-correlation index','color','Task');
+g.geom_bar('width',0.8, 'stacked',false,'dodge',dodgeVal,'LineWidth',0.2) 
+%g.stat_summary('geom', {'bar'}, 'dodge', 0.6);  % mean over subjects
+g.set_names('x',[],'y','Amplitude cross-correlation index','color','Task');
 %g.set_title('Max T stat per task');
 g.set_title('Per-run amplitude cross-correlation between EMG1 & EMG2');
 
-g.set_text_options('Font','Helvetica', 'base_size', 16)
-g.set_point_options('base_size',12)
+g.set_text_options('Font','Helvetica', 'base_size', 12)
+g.axe_property('FontSize',16,'ylim',[0 16],'XGrid','on','YGrid','on');
 g.set_color_options("map",cmapped)
 g.set_order_options("color",0)
+g.no_legend()
+
+% Optional styling
+% g.set_names('x',[],'y','Mean T','color','Condition');
+% g.set_title('fMRI T-values');
+% g.axe_property('FontSize',12,'ylim',[0 16],'XGrid','on','YGrid','on');
+% g.set_order_options('x',0,'color',0)
+% g.set_color_options('map',cmapped)
+% g.no_legend
+% g.draw();
+
 
 %g.axe_property('YLim', [0 30]);
 g.draw();

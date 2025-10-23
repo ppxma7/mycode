@@ -243,8 +243,8 @@ g.geom_bar('width',0.8, 'stacked',false,'dodge',dodgeVal,'LineWidth',0.2)
 
 % Optional styling
 g.set_names('x',[],'y','Mean T','color','Condition');
-g.set_title('fMRI T-values');
-g.axe_property('FontSize',12,'ylim',[0 16],'XGrid','on','YGrid','on');
+g.set_title('fMRI T-values','FontSize',16);
+g.axe_property('FontSize',16,'ylim',[0 16],'XGrid','on','YGrid','on');
 g.set_order_options('x',0,'color',0)
 g.set_color_options('map',cmapped)
 g.no_legend
