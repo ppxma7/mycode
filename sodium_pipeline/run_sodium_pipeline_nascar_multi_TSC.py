@@ -67,7 +67,7 @@ if len(sodium_ref_matches) == 0:
 elif len(sodium_ref_matches) > 1:
     print(f"Multiple sodium ref files found, using first: {sodium_ref_matches[0]}")
 sodium_ref_file = sodium_ref_matches[0]
-
+print(f"This is the sodium reference: {sodium_ref_file}")
 
 # 3. Reference sodium TSC
 ref_base = os.path.splitext(os.path.basename(sodium_ref_file))[0]
@@ -84,21 +84,32 @@ else:
     print(f"Found sodium ref TSC files: {sodium_ref_tsc_matches}")
     sodium_ref_tsc_files = sodium_ref_tsc_matches
 
+# --- Self-register reference sodium (for consistent headers) ---
+print(f"🔁 Self-registering reference sodium to itself for header consistency")
 
-# if len(sodium_ref_tsc_matches) == 0:
-#     print(f"No sodium ref TSC file found in {ARG2} for {ref_base}, continuing without TSC")
-#     sodium_ref_tsc_file = None
-# elif len(sodium_ref_tsc_matches) > 1:
-#     print(f"Multiple sodium ref TSC files found, using first: {sodium_ref_tsc_matches[0]}")
-#     sodium_ref_tsc_file = sodium_ref_tsc_matches[0]
-# else:
-#     sodium_ref_tsc_file = sodium_ref_tsc_matches[0]
+def self_register_to_ref(ref_file, tsc_files):
+    all_files = [ref_file] + tsc_files
+    out_files = []
+    for src in all_files:
+        base = strip_ext(src)
+        out_file = f"{base}_alignedtoRef.nii.gz"
+        if os.path.exists(out_file):
+            print(f"⏭️ Skipping (already aligned): {os.path.basename(out_file)}")
+            continue
+        print(f"🟢 Self-registering {os.path.basename(src)} to itself")
+        run([
+            "flirt",
+            "-in", src,
+            "-ref", ref_file,
+            "-out", out_file,
+            "-applyxfm",
+            "-usesqform"
+        ])
+        out_files.append(out_file)
+    return out_files
 
-
-#print(sodium_ref_file)
-print(f"This is the sodium reference: {sodium_ref_file}")
-
-#print(sodium_ref_tsc_file)
+# Apply to reference sodium and its TSCs
+ref_aligned = self_register_to_ref(sodium_ref_file, sodium_ref_tsc_files)
 
 # 4. Grab the other sodium files
 sodium_types = ["floret", "radial", "seiffert"]
@@ -207,31 +218,6 @@ def strip_ext(fname):
         return fname[:-7]  # strip 7 chars for '.nii.gz'
     else:
         return os.path.splitext(fname)[0]
-
-
-
-# # Step 1) Resample Seiffert if present
-# if other_sodium_files.get("seiffert"):
-#     seiffert_file = other_sodium_files["seiffert"]
-#     resampled_seiffert = f"{os.path.splitext(seiffert_file)[0]}_2375.nii.gz"
-#     print(resampled_seiffert)    
-#     if os.path.exists(resampled_seiffert):
-#         print(f" Skipping Seiffert resample, already exists: {resampled_seiffert}")
-#     else:
-#         run(["flirt", "-in", seiffert_file, "-ref", seiffert_file,
-#              "-out", resampled_seiffert, "-applyisoxfm", "2.375"])
-
-#     if other_tsc_files.get("seiffert"):
-#         seiffert_tsc = other_tsc_files["seiffert"]
-#         resampled_seiffert_tsc = f"{os.path.splitext(seiffert_tsc)[0]}_2375.nii.gz"
-
-#         if os.path.exists(resampled_seiffert_tsc):
-#             print(f" Skipping Seiffert TSC resample, already exists: {resampled_seiffert_tsc}")
-#         else:
-#             run(["flirt", "-in", seiffert_tsc, "-ref", seiffert_tsc,
-#                  "-out", resampled_seiffert_tsc, "-applyisoxfm", "2.375"])
-# else:
-#     print(" No Seiffert sodium file found, skipping resampling.")
 
 
 # Step 1) Resample Seiffert if present (reference or other)
@@ -348,55 +334,6 @@ def run_bet(files):
     return bet_files
 
 
-
-
-
-# # --- FLIRT section ---
-# def run_flirt(files, reference_file, apply_xfm=False):
-#     """
-#     Run FSL FLIRT alignment to reference.
-#     - If apply_xfm=True, expects a corresponding *_to_ref.mat file and applies transform.
-#     - Otherwise, runs full 12-dof alignment.
-#     Returns list of aligned filenames.
-#     """
-#     if isinstance(files, str):
-#         files = [files]
-
-#     aligned_files = []
-#     for f in files:
-#         if "_align12dof" in f or "_alignedtoRef" in f:
-#             print(f"ℹ️ Skipping {f}, looks like a FLIRT output already")
-#             continue
-
-#         base = strip_ext(f)
-#         align_file = f"{base}_align12dof.nii.gz"
-#         mat_file   = f"{base}_to_ref.mat"
-
-#         if os.path.exists(align_file):
-#             print(f"⏭️ Skipping FLIRT, already exists: {align_file}")
-#         else:
-#             if apply_xfm and os.path.exists(mat_file):
-#                 print(f"🟢 Applying existing transform: {f} -> {align_file}")
-#                 run([
-#                     "flirt",
-#                     "-in", f,
-#                     "-ref", reference_file,
-#                     "-out", align_file,
-#                     "-init", mat_file,
-#                     "-applyxfm"
-#                 ])
-#             else:
-#                 print(f"🟢 Running full FLIRT: {f} -> {align_file}")
-#                 run([
-#                     "flirt",
-#                     "-in", f,
-#                     "-ref", reference_file,
-#                     "-out", align_file,
-#                     "-omat", mat_file
-#                 ])
-
-#         aligned_files.append(align_file)
-#     return aligned_files
 
 # --- FLIRT section ---
 def run_flirt(files, reference_file, apply_xfm=False):
