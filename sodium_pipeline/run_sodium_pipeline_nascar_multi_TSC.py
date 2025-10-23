@@ -44,7 +44,16 @@ def get_extension(fname):
         return ".nii.gz"
     return os.path.splitext(fname)[1]
 
+def run(cmd, check=True):
+    print("🔧 Running:", " ".join(cmd))
+    subprocess.run(cmd, check=check)
 
+def strip_ext(fname):
+    if fname.endswith(".nii.gz"):
+        return fname[:-7]  # strip 7 chars for '.nii.gz'
+    else:
+        return os.path.splitext(fname)[0]
+        
 
 subject = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(ARG1))))
 print(f"Running: {subject}")
@@ -91,12 +100,19 @@ def self_register_to_ref(ref_file, tsc_files):
     all_files = [ref_file] + tsc_files
     out_files = []
     for src in all_files:
+        fname = os.path.basename(src)
+        # ✅ Skip already aligned files
+        if "_alignedtoRef" in fname:
+            print(f"⏭️ Skipping (already aligned): {fname}")
+            continue
+
         base = strip_ext(src)
         out_file = f"{base}_alignedtoRef.nii.gz"
         if os.path.exists(out_file):
-            print(f"⏭️ Skipping (already aligned): {os.path.basename(out_file)}")
+            print(f"⏭️ Skipping (already exists): {fname}")
             continue
-        print(f"🟢 Self-registering {os.path.basename(src)} to itself")
+
+        print(f"🟢 Self-registering {fname} to itself")
         run([
             "flirt",
             "-in", src,
@@ -107,6 +123,7 @@ def self_register_to_ref(ref_file, tsc_files):
         ])
         out_files.append(out_file)
     return out_files
+
 
 # Apply to reference sodium and its TSCs
 ref_aligned = self_register_to_ref(sodium_ref_file, sodium_ref_tsc_files)
@@ -207,17 +224,6 @@ print("Other sodium TSC files:", other_tsc_files)
 # the 3dt1
 
 ######################
-
-
-def run(cmd, check=True):
-    print("🔧 Running:", " ".join(cmd))
-    subprocess.run(cmd, check=check)
-
-def strip_ext(fname):
-    if fname.endswith(".nii.gz"):
-        return fname[:-7]  # strip 7 chars for '.nii.gz'
-    else:
-        return os.path.splitext(fname)[0]
 
 
 # Step 1) Resample Seiffert if present (reference or other)
