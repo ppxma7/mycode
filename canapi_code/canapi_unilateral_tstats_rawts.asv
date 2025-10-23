@@ -102,17 +102,6 @@ for iSub = 1:length(dataset)
 
     % now do means separately
     % --- Compute mean and SD for each ---
-    % pairs = {
-    %     'RbyL_pos', vRbyL_pos;
-    %     'RbyL_neg', vRbyL_neg;
-    %     'RbyR_pos', vRbyR_pos;
-    %     'RbyR_neg', vRbyR_neg;
-    %     'LbyR_pos', vLbyR_pos;
-    %     'LbyR_neg', vLbyR_neg;
-    %     'LbyL_pos', vLbyL_pos;
-    %     'LbyL_neg', vLbyL_neg;
-    % };
-
     pairs = {
         'RbyL_pos', vRbyL_pos;
         'RbyL_neg', vRbyL_neg;
@@ -202,9 +191,6 @@ negStack = table(meansG_neg(:), stdsG_neg(:), labelsG_neg(:),subs,...
 posStack.ymin = posStack.Mean - posStack.Std;
 posStack.ymax = posStack.Mean + posStack.Std;
 
-negStack.ymin = negStack.Mean - negStack.Std;
-negStack.ymax = negStack.Mean + negStack.Std;
-
 
 
 cmap = {'#e31a1c','#fd8d3c','#0570b0','#74a9cf'};
@@ -216,8 +202,6 @@ clc
 close all
 figure('Position',[100 100 1000 500]);
 
-dodgeVal = 0.8;
-
 g = gramm( ...
     'x', posStack.Subject, ...
     'y', posStack.Mean, ...
@@ -226,20 +210,19 @@ g = gramm( ...
     'ymax', posStack.ymax);
 
 % Bars + your own SD errorbars
-g.geom_bar('width',0.8, 'stacked',false,'dodge',dodgeVal,'LineWidth',0.2) 
+g.geom_bar('width', 0.6, 'stacked',false,'dodge',0.4,'LineWidth',0.2) 
 %g.geom_interval('geom','errorbar','dodge',0.5,'width',1);   % <- uses ymin/ymax that you defined
 
 % Optional styling
 g.set_names('x',[],'y','Mean T','color','Condition');
 %g.set_title('Positive T-values');
-g.axe_property('FontSize',12,'ylim',[0 16],'XGrid','on','YGrid','on');
+g.axe_property('FontSize',12,'ylim',[0 20],'XGrid','on','YGrid','on');
 g.set_order_options('x',0,'color',0)
 g.set_color_options('map',cmapped)
-g.no_legend
 g.draw();
 
 g.update()
-g.geom_interval('geom','errorbar','dodge',dodgeVal,'width',0.6);   % <- uses ymin/ymax that you defined
+g.geom_interval('geom','errorbar','dodge',0.4,'width',0.6);   % <- uses ymin/ymax that you defined
 comesInBlack = ones(4,3).*0.3;
 g.set_color_options('map',comesInBlack)
 g.no_legend
@@ -252,45 +235,6 @@ g.export('file_name',filename, ...
     'file_type','pdf')
 
 
-%% same for neg
-clc
-close all
-figure('Position',[100 100 1000 500]);
-
-dodgeVal = 0.8;
-
-g = gramm( ...
-    'x', negStack.Subject, ...
-    'y', negStack.Mean, ...
-    'color', negStack.Label, ...
-    'ymin', negStack.ymin, ...
-    'ymax', negStack.ymax);
-
-% Bars + your own SD errorbars
-g.geom_bar('width',0.8, 'stacked',false,'dodge',dodgeVal,'LineWidth',0.2) 
-%g.geom_interval('geom','errorbar','dodge',0.5,'width',1);   % <- uses ymin/ymax that you defined
-
-% Optional styling
-g.set_names('x',[],'y','Mean T','color','Condition');
-%g.set_title('Positive T-values');
-g.axe_property('FontSize',12,'ylim',[-10 0],'XGrid','on','YGrid','on');
-g.set_order_options('x',0,'color',0)
-g.set_color_options('map',cmapped)
-g.no_legend
-g.draw();
-
-g.update()
-g.geom_interval('geom','errorbar','dodge',dodgeVal,'width',0.6);   % <- uses ymin/ymax that you defined
-comesInBlack = ones(4,3).*0.3;
-g.set_color_options('map',comesInBlack)
-g.no_legend
-g.draw()
-
-filename = ('rawtstatfmriplot_neg');
-g.export('file_name',filename, ...
-    'export_path',...
-    savedir,...
-    'file_type','pdf')
 
 
 
