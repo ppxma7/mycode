@@ -153,7 +153,7 @@ for subj in subjects:
             in_files.extend(site_files)
 
         # If ANY site missing, skip this scanbase for this subject
-        if missing_sites:
+        if missing_sites or len(in_files) < len(sites):
             msg = (f"SKIP (across-sites) {subj}/{scanbase}: missing sites "
                    f"{', '.join(missing_sites)} (found {len(in_files)} files)")
             print(f"    ⚠️ {msg}")
@@ -209,7 +209,7 @@ for site in sites:
             in_files.extend(subj_files)
 
         # If ANY subject missing, skip this scanbase for this site
-        if missing_subjects:
+        if missing_subjects or len(in_files) < len(subjects):
             msg = (f"SKIP (across-subjects) {site}/{scanbase}: missing subjects "
                    f"{', '.join(missing_subjects)} (found {len(in_files)} files)")
             print(f"    ⚠️ {msg}")
