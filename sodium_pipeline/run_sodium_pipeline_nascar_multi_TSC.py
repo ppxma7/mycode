@@ -33,6 +33,9 @@ ARG2 = args.ARG2
 ARG3 = args.ARG3
 ARG4 = args.ARG4
 
+FORCE_DIRECT_FLIRT = False  # set True to run direct FLIRT on non-BET images
+
+
 def get_extension(fname):
     """Return file extension (.nii.gz or .nii) even if input is a list."""
     if isinstance(fname, list):
@@ -471,10 +474,54 @@ def apply_transform(src_files, ref_file, bet_file_list):
     return out_files
 
 
-# Apply to originals and TSCs
-radial_apply   = apply_transform([radial_file] + radial_tsc_list, sodium_ref_file, radial_bet_files)
-floret_apply   = apply_transform([floret_file] + floret_tsc_list, sodium_ref_file, floret_bet_files)
-seiffert_apply = apply_transform([resampled_seiffert] + seiffert_tsc_list, sodium_ref_file, seiffert_bet_files)
+
+
+# --- Optional: Direct robust FLIRT (skip BET) ---
+if FORCE_DIRECT_FLIRT:
+    print("⚡ FORCE_DIRECT_FLIRT is ON — running direct robust FLIRT on non-BET images")
+
+    def run_direct_flirt(files, ref_file):
+        """Run robust FLIRT directly on full-head inputs (no BET dependency)."""
+        if isinstance(files, str):
+            files = [files]
+
+        for f in files:
+            fname = os.path.basename(f)
+            if any(tag in fname for tag in ["_alignedtoRef", "_bet", "_align12dof"]):
+                print(f"⏭️ Skipping already aligned/BET file: {fname}")
+                continue
+
+            out_file = f"{strip_ext(f)}_alignedtoRef.nii.gz"
+            if os.path.exists(out_file):
+                print(f"⏭️ Skipping existing: {out_file}")
+                continue
+
+            mat_file = f"{strip_ext(f)}_to_ref.mat"
+            print(f"🧭 Direct FLIRT: {f} → {out_file}")
+            run([
+                "flirt",
+                "-in", f,
+                "-ref", ref_file,
+                "-out", out_file,
+                "-omat", mat_file,
+                "-bins", "256",
+                "-cost", "corratio",
+                "-searchrx", "-90", "90",
+                "-searchry", "-90", "90",
+                "-searchrz", "-90", "90",
+                "-dof", "12",
+                "-interp", "trilinear"
+            ])
+
+    # Example: only rerun Seiffert
+    run_direct_flirt([resampled_seiffert] + seiffert_tsc_list, sodium_ref_file)
+else:
+    # Apply to originals and TSCs
+    radial_apply   = apply_transform([radial_file] + radial_tsc_list, sodium_ref_file, radial_bet_files)
+    floret_apply   = apply_transform([floret_file] + floret_tsc_list, sodium_ref_file, floret_bet_files)
+    seiffert_apply = apply_transform([resampled_seiffert] + seiffert_tsc_list, sodium_ref_file, seiffert_bet_files)
+
+
 
 
 #sys.exit(0)

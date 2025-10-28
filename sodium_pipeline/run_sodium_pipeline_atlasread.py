@@ -159,42 +159,108 @@ for f in mni_sodiums:
 
 
 
-#--- Process native-space sodiums ---
-# Determine reference sodium (passed from command line)
+# #--- Process native-space sodiums ---
+# # Determine reference sodium (passed from command line)
+# reference = ARG1.lower()
+
+# # Define all possible sodium types
+# all_sodiums = ["floret", "radial", "seiffert"]
+
+# # The non-reference ones
+# others = [s for s in all_sodiums if s != reference]
+
+# # Start list
+# native_sodiums = []
+
+# # --- 1. Add reference sodium files (no align12dof) ---
+# for suffix in ["", "_TSC", "_2375", "_TSC_2375"]:
+#     matches = glob.glob(os.path.join(outputs_native, f"{reference}{suffix}.nii*"))
+#     if matches:
+#         native_sodiums.extend(matches)
+#     else:
+#         print(f"⚠️ Missing reference sodium file: {reference}{suffix}.nii*")
+
+# # --- 2. Add non-reference sodiums (alignedtoRef convention) ---
+# for name in others:
+#     #for suffix in ["", "_TSC", "_2375", "_TSC_2375", "_TSC_3_bottles", "_TSC_3_bottles_2375"]:
+#     #for suffix in ["", "_TSC", "_2375", "_TSC_2375", "_TSC_3_bottles", "_TSC_3_bottles_2375", "_TSC_B1"]:
+#     for suffix in [
+#         "",
+#         "_TSC",
+#         "_2375",
+#         "_TSC_2375",
+#         "_TSC_B1",
+#         "_TSC_B1_2375",
+#         "_TSC_B1_mode",
+#         "_TSC_B1_mode_2375",
+#         "_TSC_3_bottles",
+#         "_TSC_3_bottles_2375",
+#     ]:
+#         matches = glob.glob(os.path.join(outputs_native, f"{name}{suffix}_alignedtoRef.nii*"))
+#         if matches:
+#             native_sodiums.extend(matches)
+#         else:
+#             print(f"⚠️ Missing aligned sodium file: {name}{suffix}_alignedtoRef.nii*")
+
+# print("🧾 Files to process:")
+# for f in native_sodiums:
+#     print(f"  - {os.path.basename(f)}")
+
+
+# for f in native_sodiums:
+#     if os.path.exists(f):
+#         out_csv = f"{strip_ext(f)}_ROIstats.csv"
+#         if os.path.exists(out_csv):
+#             print("skipping")
+#         else:
+#             roi_table_catchexceptions(f, atlas_native, out_csv)
+#     else:
+#         print(f"⚠️ Missing sodium file: {f}")
+
+# --- Process native-space sodiums ---
 reference = ARG1.lower()
-
-# Define all possible sodium types
 all_sodiums = ["floret", "radial", "seiffert"]
-
-# The non-reference ones
-others = [s for s in all_sodiums if s != reference]
-
-# Start list
 native_sodiums = []
 
-# --- 1. Add reference sodium files (no align12dof) ---
-for suffix in ["", "_TSC", "_2375", "_TSC_2375"]:
-    matches = glob.glob(os.path.join(outputs_native, f"{reference}{suffix}.nii*"))
-    if matches:
-        native_sodiums.extend(matches)
-    else:
-        print(f"⚠️ Missing reference sodium file: {reference}{suffix}.nii*")
+# Comprehensive suffix list
+suffixes = [
+    "",
+    "_TSC",
+    "_2375",
+    "_TSC_2375",
+    "_TSC_B1",
+    "_TSC_B1_2375",
+    "_TSC_B1_mode",
+    "_TSC_B1_mode_2375",
+    "_TSC_3_bottles",
+    "_TSC_3_bottles_2375",
+]
 
-# --- 2. Add non-reference sodiums (alignedtoRef convention) ---
-for name in others:
-    #for suffix in ["", "_TSC", "_2375", "_TSC_2375", "_TSC_3_bottles", "_TSC_3_bottles_2375"]:
-    for suffix in ["", "_TSC", "_2375", "_TSC_2375", "_TSC_3_bottles", "_TSC_3_bottles_2375", "_TSC_B1"]:
-        matches = glob.glob(os.path.join(outputs_native, f"{name}{suffix}_alignedtoRef.nii*"))
-        if matches:
-            native_sodiums.extend(matches)
+# Unified loop: handle reference + others
+for name in all_sodiums:
+    for suffix in suffixes:
+        # For reference sodium, check both raw and aligned versions
+        if name == reference:
+            patterns = [
+                f"{name}{suffix}.nii*",
+                f"{name}{suffix}_alignedtoRef.nii*",
+            ]
         else:
-            print(f"⚠️ Missing aligned sodium file: {name}{suffix}_alignedtoRef.nii*")
+            # For non-reference sodiums, only alignedtoRef versions make sense
+            patterns = [f"{name}{suffix}_alignedtoRef.nii*"]
+
+        for pattern in patterns:
+            matches = glob.glob(os.path.join(outputs_native, pattern))
+            if matches:
+                native_sodiums.extend(matches)
+            else:
+                print(f"⚠️ Missing sodium file: {pattern}")
 
 print("🧾 Files to process:")
 for f in native_sodiums:
     print(f"  - {os.path.basename(f)}")
 
-
+# --- Run ROI extraction ---
 for f in native_sodiums:
     if os.path.exists(f):
         out_csv = f"{strip_ext(f)}_ROIstats.csv"
@@ -204,6 +270,7 @@ for f in native_sodiums:
             roi_table_catchexceptions(f, atlas_native, out_csv)
     else:
         print(f"⚠️ Missing sodium file: {f}")
+
 
 
 # now apply atlas code to pve native space

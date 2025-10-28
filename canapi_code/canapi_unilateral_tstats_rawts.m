@@ -222,6 +222,29 @@ negStack.ymax = negStack.Mean + negStack.Std;
 cmap = {'#e31a1c','#fd8d3c','#0570b0','#74a9cf'};
 cmapped = validatecolor(cmap,'multiple');
 
+%% can we run stats on the differences?
+
+evenDex = 2:2:40;
+oddDex = 1:2:40;
+conipsi_diff = zeros(20,1);
+for ii = 1:20
+    thisEvenDex = evenDex(ii);
+    thisOddDex = oddDex(ii);
+    conipsi_diff(ii) = posStack.Mean(thisOddDex)-posStack.Mean(thisEvenDex);
+end
+
+newLabel = repmat({'Left','Right'},1,10)';
+
+% conipsi_diff is 20x1: [Left1, Right1, Left2, Right2, ... Left10, Right10]
+leftVals  = conipsi_diff(1:2:end);
+rightVals = conipsi_diff(2:2:end);
+
+% Run paired t-test
+[~, p, ~, stats] = ttest(leftVals, rightVals);
+fprintf('Paired t-test: t(%d) = %.3f, p = %.4f\n', stats.df, stats.tstat, p);
+
+
+
 
 %% Build gramm object
 clc
@@ -306,6 +329,128 @@ g.export('file_name',filename, ...
 
 
 
+%% lets copy the cluster weighted script canapi_unilateral_tstats.m and correlate with EMG traces
+%
+emgrmspath = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/miscdata/'];
+
+% Load EMG RMS data and correlate with T-statistics
+%emgDataStruct = load(fullfile(emgrmspath, 'canapi_rms_emg.mat'));
+emgDataStruct = load(fullfile(emgrmspath, 'canapi_xcorr_emg.mat')); % cheeky try looking at amplitude xcorr not RMS
+
+%emgData = emgDataStruct.ch1_vs_ch2;
+emgData = emgDataStruct.ch1vch2_xcorr_peakXC;
+
+
+
+% correlationResults = corr(weightedTs(:), emgData.RMS);
+% disp(['Correlation between T-statistics and EMG RMS: ', num2str(correlationResults)]);
+
+% Assume you have:
+% rms_data (4x10)
+% fmri_data (4x10)
+
+% Select rows of interest: 1barR (row 1) and 1barL (row 3)
+emg_1barR = emgData(1,:); % 1 x 10
+emg_1barL = emgData(3,:); % 1 x 10
+
+emg_1barR = emg_1barR(:);
+emg_1barL = emg_1barL(:);
+
+% need to adapt this here to my table
+LcontraDex = 1:4:40;
+LipsiDex = 2:4:40;
+RcontraDex = 3:4:40;
+RipsiDex = 4:4:40;
+
+posStack.Label(LcontraDex)
+posStack.Label(LipsiDex)
+posStack.Label(RcontraDex)
+posStack.Label(RipsiDex)
+
+fmri_1barR_contra = posStack.Mean(RcontraDex); % contralateral
+fmri_1barR_ipsi   = posStack.Mean(RipsiDex); % ipsilateral
+fmri_1barL_contra = posStack.Mean(LcontraDex);
+fmri_1barL_ipsi   = posStack.Mean(LipsiDex);
+
+% Compute ratios (contralateral / ipsilateral * 100)
+fmri_ratio_1barR = (fmri_1barR_contra ./ fmri_1barR_ipsi) * 100;
+fmri_ratio_1barL = (fmri_1barL_contra ./ fmri_1barL_ipsi) * 100;
+
+fmri_ratio_1barR = fmri_ratio_1barR(:);
+fmri_ratio_1barL = fmri_ratio_1barL(:);
+
+
+disp('fMRI Contra/Ipsi ratio (%):')
+disp('1barR:')
+disp(fmri_ratio_1barR)
+disp('1barL:')
+disp(fmri_ratio_1barL)
+
+[r_R, p_R] = corr(emg_1barR, fmri_ratio_1barR,'Type','Spearman');
+[r_L, p_L] = corr(emg_1barL, fmri_ratio_1barL,'Type','Spearman');
+
+fprintf('Correlation 1barR: r=%.3f, p=%.3f\n', r_R, p_R);
+fprintf('Correlation 1barL: r=%.3f, p=%.3f\n', r_L, p_L);
+%% plotting
+nSubjects = 10;
+
+%colors = cbrewer('qual', 'Set3', nSubjects);
+
+% Define your custom colors as an n×3 RGB matrix (scaled 0–1)
+colors = [
+    166 206 227
+     31 120 180
+    178 223 138
+     51 160  44
+    251 154 153
+    227  26  28
+    253 191 111
+    255 127   0
+    202 178 214
+    106  61 154
+] ./ 255;  % convert from 0–255 to 0–1
+
+subject_labels = compose('sub%02d', 1:nSubjects);
+close all
+clear g
+figure('Position',[100 100 1200 600])
+g(1,1) = gramm('x',emg_1barL,'y',fmri_ratio_1barL) ;
+g(1,1).stat_glm('geom','line');
+g(1,1).set_title(['r=' num2str(r_L) ' p=' num2str(p_L)]);
+
+g(1,2) = gramm('x',emg_1barR,'y',fmri_ratio_1barR);
+g(1,2).stat_glm('geom','line');
+g(1,2).set_title(['r=' num2str(r_R) ' p=' num2str(p_R)]);
+g.draw()
+g(1,1).update('color',subject_labels);
+g(1,1).geom_point()
+g(1,2).update('color',subject_labels);
+g(1,2).geom_point()
+
+
+g.set_text_options('Font','Helvetica', 'base_size', 16)
+g.set_point_options('base_size',12)
+g.set_color_options("map",colors)
+g.set_order_options("color",0)
+g.axe_property('XGrid',1,'YGrid',1) %,'YLim',[80 200],'XLim',[0 800])
+g.set_names('x','Amp XCorr EMG','y','fMRI Contra/Ipsi (%)','color','Participant');
+
+g.draw()
+
+
+ax = gcf;             % current figure
+allAxes = findall(ax, 'type', 'axes');
+
+for i = 1:numel(allAxes)
+    axes(allAxes(i));  % make this subplot active
+    xline(100, '--k', 'LineWidth', 1.2);  % example at x=100
+end
+
+filename = ('xcorr_vs_raw_tstat');
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
 
 
 
