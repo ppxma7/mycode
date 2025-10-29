@@ -203,7 +203,12 @@ posStack = table(meansG_pos(:), stdsG_pos(:), labelsG_pos(:),subs,...
 negStack = table(meansG_neg(:), stdsG_neg(:), labelsG_neg(:),subs,...
     'VariableNames', {'Mean','Std','Label','Subject'});
 
-writetable(posStack, fullfile(savedir,'outputraw.csv'));
+%writetable(posStack, fullfile(savedir,'outputraw.csv'));
+
+newLabel = repmat({'1barL_contralateral','1barL_ipsilateral','1barR_contralateral','1barR_ipsilateral'}',10,1);
+newTable = table(posStack.Subject, posStack.Mean, posStack.Std,newLabel,...
+    'VariableNames', {'Subject','Y','stdev','Label'});
+writetable(newTable, fullfile(savedir,'outputraw_rearrangedfornikki.csv'));
 
 
 % Initialise gramm

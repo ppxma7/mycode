@@ -234,6 +234,8 @@ suffixes = [
     "_TSC_B1_mode_2375",
     "_TSC_3_bottles",
     "_TSC_3_bottles_2375",
+    "_TSC_3_bottles_mode",
+    "_TSC_3_bottles_mode_2375"
 ]
 
 # Unified loop: handle reference + others
