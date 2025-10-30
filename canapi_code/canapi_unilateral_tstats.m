@@ -58,13 +58,12 @@ end
 toc
 % now plot?
 
+% swap sub10 because he's left handed
+weightedTs(:,10) = [weightedTs(3:4,10); weightedTs(1:2,10)];
+weightedStd(:,10) = [weightedStd(3:4,10); weightedStd(1:2,10)];
+
 y = weightedTs(:);
 y_std = weightedStd(:);
-%y = tfiles;
-%yflip = [y(1:2,:); y(4,:); y(3,:)]; % bug, because L_L comes before 
-%yflip = yflip(:);
-
-%myfiles_flip = {'1barR_Lmask.csv','1barR_Rmask.csv','1barL_Rmask.csv','1barL_Lmask.csv'};
 
 
 
@@ -106,38 +105,77 @@ for i = 1:4:n
     labels_swapped(idx) = legendLabels(new_order);
 end
 
-%%
-
-
-
 T = table(subs, y_swapped, y_swapped_std, labels_swapped, ...
           'VariableNames', {'Subject','Y','stdev','Label'});
 writetable(T, fullfile(savedir,'output.csv'));
 
 
-close all
-clear g
-figure('Position',[100 100 1200 600])
-g = gramm('x', subs, 'y', y_swapped, 'color', labels_swapped);
-%g.geom_jitter2('dodge', 0);  % adds subject dots
-%g.geom_point()
-g.stat_summary('geom', {'bar'}, 'dodge', 0.6);  % mean over subjects
-g.set_names('x','Participant','y','T Stat','color','Task');
-%g.set_title('Max T stat per task');
-g.set_title('Cluster-size weighted average T-score per task');
 
-g.set_text_options('Font','Helvetica', 'base_size', 16)
-g.set_point_options('base_size',12)
-g.set_color_options("map",cmapped)
-g.set_order_options("color",0)
+%%
 
-g.axe_property('YLim', [0 30]);
-g.draw();
-filename = ('tstat_unilateral_weighted');
-g.export('file_name',filename, ...
-    'export_path',...
-    savedir,...
-    'file_type','pdf')
+% 
+% close all
+% clear g
+% figure('Position',[100 100 1200 600])
+% g = gramm('x', subs, 'y', y_swapped, 'color', labels_swapped);
+% %g.geom_jitter2('dodge', 0);  % adds subject dots
+% %g.geom_point()
+% g.stat_summary('geom', {'bar'}, 'dodge', 0.6);  % mean over subjects
+% g.set_names('x','Participant','y','T Stat','color','Task');
+% %g.set_title('Max T stat per task');
+% g.set_title('Cluster-size weighted average T-score per task');
+% 
+% g.set_text_options('Font','Helvetica', 'base_size', 16)
+% g.set_point_options('base_size',12)
+% g.set_color_options("map",cmapped)
+% g.set_order_options("color",0)
+% 
+% g.axe_property('YLim', [0 30]);
+% g.draw();
+% filename = ('tstat_unilateral_weighted');
+% g.export('file_name',filename, ...
+%     'export_path',...
+%     savedir,...
+%     'file_type','pdf')
+
+%% also run ANOVA
+anovaLabels = split(T.Label,'_');
+RLgroup = anovaLabels(:,1);
+ContraIpsigroup = anovaLabels(:,2);
+[p,tbl,stats] = anovan(T.Y, {RLgroup,ContraIpsigroup},'model','interaction');
+
+% multcompare
+figure
+[c,m,h,gnames] = multcompare(stats,"Dimension",1,'Display','on','CriticalValueType','bonferroni');
+tbldom = array2table(c,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A")=gnames(tbldom.("Group A"));
+tbldom.("Group B")=gnames(tbldom.("Group B"));
+title('Right vs Left task')
+writecell(tbl,[savedir 'clust_anova_canapi' ],'FileType','spreadsheet')
+writetable(tbldom,[savedir 'clust_mult_d1_canapi' ],'FileType','spreadsheet')
+theTable.Properties.VariableNames{1} = 'StructName';
+figure
+[c,m,h,gnames] = multcompare(stats,"Dimension",2,'Display','on','CriticalValueType','bonferroni');
+tbldom = array2table(c,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A")=gnames(tbldom.("Group A"));
+tbldom.("Group B")=gnames(tbldom.("Group B"));
+title('Contra vs Ipsi')
+writetable(tbldom,[savedir 'clust_mult_d2_canapi' ],'FileType','spreadsheet')
+theTable.Properties.VariableNames{1} = 'StructName';
+figure
+[c,m,h,gnames] = multcompare(stats,"Dimension",[1 2],'Display','on','CriticalValueType','bonferroni');
+tbldom = array2table(c,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A")=gnames(tbldom.("Group A"));
+tbldom.("Group B")=gnames(tbldom.("Group B"));
+title('Contra vs Ipsi')
+writetable(tbldom,[savedir 'clust_mult_d12_canapi' ],'FileType','spreadsheet')
+theTable.Properties.VariableNames{1} = 'StructName';
+
+
+
 %% plot with error bars gramm style
 
 T.ymin = T.Y - T.stdev;
@@ -186,124 +224,124 @@ g.export('file_name',filename, ...
 
 
 %% manual plot - optional with error bars (stdev)
-close all
-clc
-
-uniqueSubs = unique(subs);
-uniqueTasks = unique(labels_swapped);
-
-nSub = numel(uniqueSubs);
-nTask = numel(uniqueTasks);
-
-
-% turn into 4 columns of 10
-Y = reshape(y_swapped,nTask,nSub)';
-Yerr = reshape(y_swapped_std,nTask,nSub)';
-
-bloop = figure('Position',[100 100 1200 600]);
-set(bloop, 'PaperOrientation', 'landscape');
-hb = bar(Y, 'grouped'); % each row = subject, each column = task
-hold on
-
-for i = 1:numel(hb)
-    hb(i).FaceColor = cmapped(i,:);  % RGB for task i
-end
-
-% Add error bars
-[ngroups, nbars] = size(Y);
-groupwidth = min(0.8, nbars/(nbars + 1.5));
-
-for ibar = 1:nbars
-    x = (1:ngroups) - groupwidth/2 + (2*ibar-1) * groupwidth / (2*nbars); % x positions for bars in group
-    errorbar(x, Y(:,ibar), Yerr(:,ibar), 'k', 'linestyle', 'none', 'LineWidth', 1.5);
-end
-
-% Labels
-set(gca,'XTick',1:nSub,'XTickLabel',uniqueSubs)
-ylabel('Cluster-size weighted T')
-ylim([0 35])
-legend(uniqueTasks,'Location','Best','Interpreter', 'none')
-title('Cluster-size weighted average T-score per task')
-grid on
-(cmapped)
-h = gcf;
-
-thisFilename = [savedir 'tstat_unilateral_weighted_wstdevbars'];
-print(h, '-dpdf', thisFilename, '-r300');  % -r300 sets the resolution to 300 DPI
-
-
-
-
-
-%% also plot separately
-weightedTs_R = weightedTs(1:2,:);
-weightedTs_L = weightedTs(3:4,:);
-yR = weightedTs_R(:);
-yL = weightedTs_L(:);
-subs = repmat({'sub01','sub02','sub03','sub04','sub05','sub06','sub07','sub08','sub09','sub10'},2,1);
-subs = subs(:);
-filestackR = repmat(myfiles(1:2),length(dataset),1);
-filestackL = repmat(myfiles(3:4),length(dataset),1);
-filestackR = filestackR';
-filestackL = filestackL';
-filestackR = filestackR(:);
-filestackL = filestackL(:);
-
-legendLabelsR = filestackR; % start with same names
-legendLabelsR(strcmpi(filestackR, '1barR_Lmask.csv')) = {'1barR_contralateral'};
-legendLabelsR(strcmpi(filestackR, '1barR_Rmask.csv')) = {'1barR_ipsilateral'};
-legendLabelsL = filestackL; % start with same names
-legendLabelsL(strcmpi(filestackL, '1barL_Lmask.csv')) = {'1barL_ipsilateral'};
-legendLabelsL(strcmpi(filestackL, '1barL_Rmask.csv')) = {'1barL_contralateral'};
+% close all
+% clc
+% 
+% uniqueSubs = unique(subs);
+% uniqueTasks = unique(labels_swapped);
+% 
+% nSub = numel(uniqueSubs);
+% nTask = numel(uniqueTasks);
+% 
+% 
+% % turn into 4 columns of 10
+% Y = reshape(y_swapped,nTask,nSub)';
+% Yerr = reshape(y_swapped_std,nTask,nSub)';
+% 
+% bloop = figure('Position',[100 100 1200 600]);
+% set(bloop, 'PaperOrientation', 'landscape');
+% hb = bar(Y, 'grouped'); % each row = subject, each column = task
+% hold on
+% 
+% for i = 1:numel(hb)
+%     hb(i).FaceColor = cmapped(i,:);  % RGB for task i
+% end
+% 
+% % Add error bars
+% [ngroups, nbars] = size(Y);
+% groupwidth = min(0.8, nbars/(nbars + 1.5));
+% 
+% for ibar = 1:nbars
+%     x = (1:ngroups) - groupwidth/2 + (2*ibar-1) * groupwidth / (2*nbars); % x positions for bars in group
+%     errorbar(x, Y(:,ibar), Yerr(:,ibar), 'k', 'linestyle', 'none', 'LineWidth', 1.5);
+% end
+% 
+% % Labels
+% set(gca,'XTick',1:nSub,'XTickLabel',uniqueSubs)
+% ylabel('Cluster-size weighted T')
+% ylim([0 35])
+% legend(uniqueTasks,'Location','Best','Interpreter', 'none')
+% title('Cluster-size weighted average T-score per task')
+% grid on
+% (cmapped)
+% h = gcf;
+% 
+% thisFilename = [savedir 'tstat_unilateral_weighted_wstdevbars'];
+% print(h, '-dpdf', thisFilename, '-r300');  % -r300 sets the resolution to 300 DPI
+% 
+% 
+% 
 
 
-close all
-clear g
-figure('Position',[100 100 1200 600])
-g = gramm('x', subs, 'y', yR, 'color', legendLabelsR);
-%g.geom_jitter2('dodge', 0);  % adds subject dots
-%g.geom_point()
-g.stat_summary('geom', {'bar'}, 'dodge', 0.6);  % mean over subjects
-g.set_names('x','Participant','y','T Stat','color','Task');
-%g.set_title('Max T stat per task');
-g.set_title('Cluster-size weighted average T-score per task');
-
-g.set_text_options('Font','Helvetica', 'base_size', 16)
-g.set_point_options('base_size',12)
-g.set_color_options("map",cmapped)
-g.set_order_options("color",0)
-
-g.axe_property('YLim', [0 30]);
-g.draw();
-filename = ('tstat_unilateral_weighted_R');
-g.export('file_name',filename, ...
-    'export_path',...
-    savedir,...
-    'file_type','pdf')
-
-close all
-clear g
-figure('Position',[100 100 1200 600])
-g = gramm('x', subs, 'y', yL, 'color', legendLabelsL);
-%g.geom_jitter2('dodge', 0);  % adds subject dots
-%g.geom_point()
-g.stat_summary('geom', {'bar'}, 'dodge', 0.6);  % mean over subjects
-g.set_names('x','Participant','y','T Stat','color','Task');
-%g.set_title('Max T stat per task');
-g.set_title('Cluster-size weighted average T-score per task');
-
-g.set_text_options('Font','Helvetica', 'base_size', 16)
-g.set_point_options('base_size',12)
-g.set_color_options("map",cmapped(3:4,:))
-g.set_order_options("color",0)
-
-g.axe_property('YLim', [0 30]);
-g.draw();
-filename = ('tstat_unilateral_weighted_L');
-g.export('file_name',filename, ...
-    'export_path',...
-    savedir,...
-    'file_type','pdf')
+ %% also plot separately
+% weightedTs_R = weightedTs(1:2,:);
+% weightedTs_L = weightedTs(3:4,:);
+% yR = weightedTs_R(:);
+% yL = weightedTs_L(:);
+% subs = repmat({'sub01','sub02','sub03','sub04','sub05','sub06','sub07','sub08','sub09','sub10'},2,1);
+% subs = subs(:);
+% filestackR = repmat(myfiles(1:2),length(dataset),1);
+% filestackL = repmat(myfiles(3:4),length(dataset),1);
+% filestackR = filestackR';
+% filestackL = filestackL';
+% filestackR = filestackR(:);
+% filestackL = filestackL(:);
+% 
+% legendLabelsR = filestackR; % start with same names
+% legendLabelsR(strcmpi(filestackR, '1barR_Lmask.csv')) = {'1barR_contralateral'};
+% legendLabelsR(strcmpi(filestackR, '1barR_Rmask.csv')) = {'1barR_ipsilateral'};
+% legendLabelsL = filestackL; % start with same names
+% legendLabelsL(strcmpi(filestackL, '1barL_Lmask.csv')) = {'1barL_ipsilateral'};
+% legendLabelsL(strcmpi(filestackL, '1barL_Rmask.csv')) = {'1barL_contralateral'};
+% 
+% 
+% close all
+% clear g
+% figure('Position',[100 100 1200 600])
+% g = gramm('x', subs, 'y', yR, 'color', legendLabelsR);
+% %g.geom_jitter2('dodge', 0);  % adds subject dots
+% %g.geom_point()
+% g.stat_summary('geom', {'bar'}, 'dodge', 0.6);  % mean over subjects
+% g.set_names('x','Participant','y','T Stat','color','Task');
+% %g.set_title('Max T stat per task');
+% g.set_title('Cluster-size weighted average T-score per task');
+% 
+% g.set_text_options('Font','Helvetica', 'base_size', 16)
+% g.set_point_options('base_size',12)
+% g.set_color_options("map",cmapped)
+% g.set_order_options("color",0)
+% 
+% g.axe_property('YLim', [0 30]);
+% g.draw();
+% filename = ('tstat_unilateral_weighted_R');
+% g.export('file_name',filename, ...
+%     'export_path',...
+%     savedir,...
+%     'file_type','pdf')
+% 
+% close all
+% clear g
+% figure('Position',[100 100 1200 600])
+% g = gramm('x', subs, 'y', yL, 'color', legendLabelsL);
+% %g.geom_jitter2('dodge', 0);  % adds subject dots
+% %g.geom_point()
+% g.stat_summary('geom', {'bar'}, 'dodge', 0.6);  % mean over subjects
+% g.set_names('x','Participant','y','T Stat','color','Task');
+% %g.set_title('Max T stat per task');
+% g.set_title('Cluster-size weighted average T-score per task');
+% 
+% g.set_text_options('Font','Helvetica', 'base_size', 16)
+% g.set_point_options('base_size',12)
+% g.set_color_options("map",cmapped(3:4,:))
+% g.set_order_options("color",0)
+% 
+% g.axe_property('YLim', [0 30]);
+% g.draw();
+% filename = ('tstat_unilateral_weighted_L');
+% g.export('file_name',filename, ...
+%     'export_path',...
+%     savedir,...
+%     'file_type','pdf')
 
 
 
@@ -328,6 +366,9 @@ emgData = emgDataStruct.ch1vch2_xcorr_peakXC;
 % fmri_data (4x10)
 
 % Select rows of interest: 1barR (row 1) and 1barL (row 3)
+% swap sub10 because he's left handed
+emgData(:,10) = [emgData(3:4,10); emgData(1:2,10)];
+
 emg_1barR = emgData(1,:); % 1 x 10
 emg_1barL = emgData(3,:); % 1 x 10
 
@@ -421,28 +462,103 @@ g.export('file_name',filename, ...
     'file_type','pdf')
 
 
+%% plot emg xcorr again
+run_labels = {'1barL', '1barR'};
+run_labels_stack = repmat(run_labels,1,length(dataset))';
+subs = repmat({'sub01','sub02','sub03','sub04','sub05','sub06','sub07','sub08','sub09','sub10'},length(run_labels),1);
+subs = subs(:);
 
+cmap = {'#238b45','#66c2a4','#b2e2e2','#edf8fb'};
+cmapped = validatecolor(cmap,'multiple');
+
+channel_labels = {'EMG ch1', 'EMG ch2'};
+
+emgData_forplot = [emgData(3,:); emgData(1,:)];
+emgData_forplot = emgData_forplot(:);
+
+% remove subject3
+sub3dex = strcmpi(subs,'sub03');
+subs_no3 = subs(~sub3dex);
+emgData_forplot_no3 = emgData_forplot(~sub3dex);
+run_labels_stack_no3 = run_labels_stack(~sub3dex);
+removeSub3 = 'True';
+
+dodgeVal = 0.8;
+clear g
+figure('Position',[100 100 900 600])
+if removeSub3
+    g = gramm('x', subs_no3, 'y', emgData_forplot_no3, 'color', run_labels_stack_no3);
+else
+    g = gramm('x', subs, 'y', emgData_forplot, 'color', run_labels_stack);
+end
+
+g.geom_bar('width',0.8, 'stacked',false,'dodge',dodgeVal,'LineWidth',0.2) 
+%g.stat_summary('geom', {'bar'}, 'dodge', 0.6);  % mean over subjects
+g.set_names('x',[],'y','Amplitude cross-correlation','color','Task');
+%g.set_title('Max T stat per task');
+g.set_title('EMG leg 1 and leg 2 cross-correlation');
+
+g.set_text_options('Font','Helvetica', 'base_size', 12) 
+g.axe_property('FontSize',16,'ylim',[0 16],'XGrid','on','YGrid','on');
+g.set_color_options("map",cmapped)
+g.set_order_options("color",0)
+g.no_legend()
+
+% Optional styling
+% g.set_names('x',[],'y','Mean T','color','Condition');
+% g.set_title('fMRI T-values');
+% g.axe_property('FontSize',12,'ylim',[0 16],'XGrid','on','YGrid','on');
+% g.set_order_options('x',0,'color',0)
+% g.set_color_options('map',cmapped)
+% g.no_legend
+% g.draw();
+
+
+%g.axe_property('YLim', [0 30]);
+g.draw();
+if removeSub3
+    filename = 'xcorr_emg_no3';
+else
+    filename = 'xcorr_emg';
+end
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
+
+%% stats
+[B I] = sort(run_labels_stack_no3);
+emgData_sorted = emgData_forplot_no3(I);
+emgData_leftVals = emgData_sorted(1:9);
+emgData_rightVals = emgData_sorted(10:18);
+[~, p, ~, stats] = ttest(emgData_leftVals, emgData_rightVals);
+%fprintf('Paired t-test: t(%d) = %.3f, p = %.4f\n', stats.df, stats.tstat, p);
+
+% Format the output string
+outstr = sprintf('Paired t-test: t(%d) = %.3f, p = %.4f\n', stats.df, stats.tstat, p);
+fprintf(outstr)
+outfile = fullfile(savedir, 'emg_pairedttest_results.txt');
+writelines(outstr, outfile)
 
 %% matrix
-%tfilesflip = [tfiles(1:2,:); tfiles(4,:); tfiles(3,:)];
-
-figure('Position', [100 100 600 200])
-imagesc(tfiles)
-%clim([0 12])
-colorbar
-colormap inferno
-xlabel('Participant');
-ylabel('Task');
-%title('RMS of EMG traces');
-h = gcf;
-thisFilename = [savedir 'tstat_unilateral_matrix'];
-%print(h, '-dpdf', thisFilename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
-print(h, '-dpdf', thisFilename, '-r300');  % -r300 sets the resolution to 300 DPI
-
-
-
-
-
+% 
+% figure('Position', [100 100 600 200])
+% imagesc(tfiles)
+% %clim([0 12])
+% colorbar
+% colormap inferno
+% xlabel('Participant');
+% ylabel('Task');
+% %title('RMS of EMG traces');
+% h = gcf;
+% thisFilename = [savedir 'tstat_unilateral_matrix'];
+% %print(h, '-dpdf', thisFilename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
+% print(h, '-dpdf', thisFilename, '-r300');  % -r300 sets the resolution to 300 DPI
+% 
+% 
+% 
+% 
+% 
 
 
 

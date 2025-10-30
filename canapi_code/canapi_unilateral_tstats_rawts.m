@@ -36,8 +36,14 @@ for iSub = 1:length(dataset)
     disp(['Running subject ' dataset{iSub}])
 
     % --- Paths to t-maps ---
-    tRfile = ['/Volumes/kratos/' dataset{iSub} '/spm_analysis/first_level/spmT_0001.nii']; % Right leg
-    tLfile = ['/Volumes/kratos/' dataset{iSub} '/spm_analysis/first_level/spmT_0003.nii']; % Left leg
+    if iSub == 10
+        % swap these round because sub10 is left handed
+        tRfile = ['/Volumes/kratos/' dataset{iSub} '/spm_analysis/first_level/spmT_0003.nii']; % Right leg
+        tLfile = ['/Volumes/kratos/' dataset{iSub} '/spm_analysis/first_level/spmT_0001.nii']; % Left leg
+    elseif iSub ~= 10
+        tRfile = ['/Volumes/kratos/' dataset{iSub} '/spm_analysis/first_level/spmT_0001.nii']; % Right leg
+        tLfile = ['/Volumes/kratos/' dataset{iSub} '/spm_analysis/first_level/spmT_0003.nii']; % Left leg
+    end
     
     % --- Load SPM volumes ---
     vT_R = spm_vol(tRfile);
@@ -126,6 +132,7 @@ for iSub = 1:length(dataset)
     
     means = nan(height(cell2table(pairs)),1);
     stds  = nan(height(cell2table(pairs)),1);
+    numVals = nan(height(cell2table(pairs)),1);
     labels = pairs(:,1);
     
     for idex = 1:numel(labels)
@@ -134,10 +141,12 @@ for iSub = 1:length(dataset)
         if isempty(vals)
             means(idex) = NaN;
             stds(idex)  = NaN;
+            numVals(idex) = NaN;
             fprintf('⚠️ %s: no voxels passed threshold\n', labels{idex});
         else
             means(idex) = mean(vals);
             stds(idex)  = std(vals);
+            numVals(idex) = numel(vals);
             fprintf('%s → mean = %.3f, SD = %.3f (n=%d)\n', ...
                     labels{idex}, means(idex), stds(idex), numel(vals));
         end
@@ -146,6 +155,7 @@ for iSub = 1:length(dataset)
     meansG(:,iSub) = means;
     stdsG(:,iSub) = stds;
     labelsG(:,iSub) = labels;
+    valsG(:,iSub) = numVals;
 
 
     % sanity check
@@ -185,6 +195,8 @@ stdsG_pos = stdsG(posDex,:);
 stdsG_neg = stdsG(negDex,:);
 labelsG_pos = labelsG(posDex,:);
 labelsG_neg = labelsG(negDex,:);
+valsG_pos = valsG(posDex,:);
+valsG_neg = valsG(negDex,:);
 
 subs = repmat({'sub01','sub02','sub03','sub04','sub05','sub06','sub07','sub08','sub09','sub10'},4,1);
 subs = subs(:);
@@ -196,12 +208,13 @@ meansG_neg = [meansG_neg(3:4,:); meansG_neg(1:2,:)];
 stdsG_neg = [stdsG_neg(3:4,:); stdsG_neg(1:2,:)];
 labelsG_pos = [labelsG_pos(3:4,:); labelsG_pos(1:2,:)];
 labelsG_neg = [labelsG_neg(3:4,:); labelsG_neg(1:2,:)];
+valsG_pos = [valsG_pos(3:4,:); valsG_pos(1:2,:)];
+valsG_neg = [valsG_neg(3:4,:); valsG_neg(1:2,:)];
 
-
-posStack = table(meansG_pos(:), stdsG_pos(:), labelsG_pos(:),subs,...
-    'VariableNames', {'Mean','Std','Label','Subject'});
-negStack = table(meansG_neg(:), stdsG_neg(:), labelsG_neg(:),subs,...
-    'VariableNames', {'Mean','Std','Label','Subject'});
+posStack = table(meansG_pos(:), stdsG_pos(:), labelsG_pos(:),subs,valsG_pos(:),...
+    'VariableNames', {'Mean','Std','Label','Subject','numVox'});
+negStack = table(meansG_neg(:), stdsG_neg(:), labelsG_neg(:),subs,valsG_neg(:),...
+    'VariableNames', {'Mean','Std','Label','Subject','numVox'});
 
 %writetable(posStack, fullfile(savedir,'outputraw.csv'));
 
@@ -211,9 +224,10 @@ newTable = table(posStack.Subject, posStack.Mean, posStack.Std,newLabel,...
 writetable(newTable, fullfile(savedir,'outputraw_rearrangedfornikki.csv'));
 
 
-% Initialise gramm
-% % Make sure Subject is categorical for cleaner grouping
-% posStack.Subject = categorical(posStack.Subject);
+% just name, bit easier for legend
+posStack.Label = newLabel;
+negStack.Label = newLabel;
+
 
 % Compute error limits for gramm
 posStack.ymin = posStack.Mean - posStack.Std;
@@ -238,7 +252,7 @@ for ii = 1:20
     conipsi_diff(ii) = posStack.Mean(thisOddDex)-posStack.Mean(thisEvenDex);
 end
 
-newLabel = repmat({'Left','Right'},1,10)';
+%newLabel = repmat({'Left','Right'},1,10)';
 
 % conipsi_diff is 20x1: [Left1, Right1, Left2, Right2, ... Left10, Right10]
 leftVals  = conipsi_diff(1:2:end);
@@ -246,10 +260,82 @@ rightVals = conipsi_diff(2:2:end);
 
 % Run paired t-test
 [~, p, ~, stats] = ttest(leftVals, rightVals);
-fprintf('Paired t-test: t(%d) = %.3f, p = %.4f\n', stats.df, stats.tstat, p);
+%fprintf('Paired t-test: t(%d) = %.3f, p = %.4f\n', stats.df, stats.tstat, p);
+% Format the output string
+outstr = sprintf('Paired t-test: t(%d) = %.3f, p = %.4f\n', stats.df, stats.tstat, p);
+fprintf(outstr)
+outfile = fullfile(savedir, 'rawts_emg_pairedttest_results.txt');
+writelines(outstr, outfile)
 
+%% also run ANOVA
+anovaLabels = split(posStack.Label,'_');
+RLgroup = anovaLabels(:,1);
+ContraIpsigroup = anovaLabels(:,2);
+[p,tbl,stats] = anovan(posStack.Mean, {RLgroup,ContraIpsigroup},'model','interaction');
 
+% multcompare
+figure
+[c,m,h,gnames] = multcompare(stats,"Dimension",1,'Display','on','CriticalValueType','bonferroni');
+tbldom = array2table(c,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A")=gnames(tbldom.("Group A"));
+tbldom.("Group B")=gnames(tbldom.("Group B"));
+title('Right vs Left task')
+writecell(tbl,[savedir 'rawt_anova_canapi' ],'FileType','spreadsheet')
+writetable(tbldom,[savedir 'rawt_mult_d1_canapi' ],'FileType','spreadsheet')
+theTable.Properties.VariableNames{1} = 'StructName';
+figure
+[c,m,h,gnames] = multcompare(stats,"Dimension",2,'Display','on','CriticalValueType','bonferroni');
+tbldom = array2table(c,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A")=gnames(tbldom.("Group A"));
+tbldom.("Group B")=gnames(tbldom.("Group B"));
+title('Contra vs Ipsi')
+writetable(tbldom,[savedir 'rawt_mult_d2_canapi' ],'FileType','spreadsheet')
+theTable.Properties.VariableNames{1} = 'StructName';
+figure
+[c,m,h,gnames] = multcompare(stats,"Dimension",[1 2],'Display','on','CriticalValueType','bonferroni');
+tbldom = array2table(c,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A")=gnames(tbldom.("Group A"));
+tbldom.("Group B")=gnames(tbldom.("Group B"));
+title('Contra vs Ipsi')
+writetable(tbldom,[savedir 'rawt_mult_d12_canapi' ],'FileType','spreadsheet')
+theTable.Properties.VariableNames{1} = 'StructName';
 
+%% also run ANOVA on numVoxels
+
+[p,tbl,stats] = anovan(posStack.numVox, {RLgroup,ContraIpsigroup},'model','interaction');
+
+% multcompare
+figure
+[c,m,h,gnames] = multcompare(stats,"Dimension",1,'Display','on','CriticalValueType','bonferroni');
+tbldom = array2table(c,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A")=gnames(tbldom.("Group A"));
+tbldom.("Group B")=gnames(tbldom.("Group B"));
+title('Right vs Left task')
+writecell(tbl,[savedir 'rawt_anova_canapi_numvox' ],'FileType','spreadsheet')
+writetable(tbldom,[savedir 'rawt_mult_d1_canapi_numvox' ],'FileType','spreadsheet')
+theTable.Properties.VariableNames{1} = 'StructName';
+figure
+[c,m,h,gnames] = multcompare(stats,"Dimension",2,'Display','on','CriticalValueType','bonferroni');
+tbldom = array2table(c,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A")=gnames(tbldom.("Group A"));
+tbldom.("Group B")=gnames(tbldom.("Group B"));
+title('Contra vs Ipsi')
+writetable(tbldom,[savedir 'rawt_mult_d2_canapi_numvox' ],'FileType','spreadsheet')
+theTable.Properties.VariableNames{1} = 'StructName';
+figure
+[c,m,h,gnames] = multcompare(stats,"Dimension",[1 2],'Display','on','CriticalValueType','bonferroni');
+tbldom = array2table(c,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A")=gnames(tbldom.("Group A"));
+tbldom.("Group B")=gnames(tbldom.("Group B"));
+title('Contra vs Ipsi')
+writetable(tbldom,[savedir 'rawt_mult_d12_canapi_numvox' ],'FileType','spreadsheet')
+theTable.Properties.VariableNames{1} = 'StructName';
 
 %% Build gramm object
 clc
@@ -286,6 +372,38 @@ g.no_legend
 g.draw()
 
 filename = ('rawtstatfmriplot');
+g.export('file_name',filename, ...
+    'export_path',...
+    savedir,...
+    'file_type','pdf')
+
+%% also want to plot numVals
+clc
+close all
+figure('Position',[100 100 1000 500]);
+
+dodgeVal = 0.8;
+
+g = gramm( ...
+    'x', posStack.Subject, ...
+    'y', posStack.numVox, ...
+    'color', posStack.Label);
+
+% Bars + your own SD errorbars
+g.geom_bar('width',0.8, 'stacked',false,'dodge',dodgeVal,'LineWidth',0.2) 
+%g.geom_interval('geom','errorbar','dodge',0.5,'width',1);   % <- uses ymin/ymax that you defined
+
+% Optional styling
+g.set_names('x',[],'y','Number of Voxels','color','Condition');
+g.set_title('fMRI T-values','FontSize',16);
+g.axe_property('FontSize',16,'XGrid','on','YGrid','on');
+g.set_order_options('x',0,'color',0)
+g.set_color_options('map',cmapped)
+%g.no_legend
+g.draw();
+
+
+filename = ('rawtstatfmriplot_numVox');
 g.export('file_name',filename, ...
     'export_path',...
     savedir,...
