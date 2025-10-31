@@ -271,71 +271,144 @@ writelines(outstr, outfile)
 anovaLabels = split(posStack.Label,'_');
 RLgroup = anovaLabels(:,1);
 ContraIpsigroup = anovaLabels(:,2);
-[p,tbl,stats] = anovan(posStack.Mean, {RLgroup,ContraIpsigroup},'model','interaction');
 
-% multcompare
-figure
-[c,m,h,gnames] = multcompare(stats,"Dimension",1,'Display','on','CriticalValueType','bonferroni');
-tbldom = array2table(c,"VariableNames", ...
-    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
-tbldom.("Group A")=gnames(tbldom.("Group A"));
-tbldom.("Group B")=gnames(tbldom.("Group B"));
-title('Right vs Left task')
+
+[p, tbl, stats] = anovan(posStack.Mean, ...
+    {subs, RLgroup, ContraIpsigroup}, ...
+    'random', 1, ...                      % subject is random effect
+    'model', 'interaction', ...           % include main + interaction
+    'varnames', {'Subject','Task','Hemisphere'});
 writecell(tbl,[savedir 'rawt_anova_canapi' ],'FileType','spreadsheet')
-writetable(tbldom,[savedir 'rawt_mult_d1_canapi' ],'FileType','spreadsheet')
-theTable.Properties.VariableNames{1} = 'StructName';
-figure
-[c,m,h,gnames] = multcompare(stats,"Dimension",2,'Display','on','CriticalValueType','bonferroni');
-tbldom = array2table(c,"VariableNames", ...
+
+[c,m,h,gnames] = multcompare(stats, 'Dimension', 2, ...
+    'Display','on','CriticalValueType','bonferroni');
+tbldom = array2table(c, 'VariableNames', ...
     ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
-tbldom.("Group A")=gnames(tbldom.("Group A"));
-tbldom.("Group B")=gnames(tbldom.("Group B"));
-title('Contra vs Ipsi')
+tbldom.("Group A") = gnames(tbldom.("Group A"));
+tbldom.("Group B") = gnames(tbldom.("Group B"));
+title('Right vs Left task')
 writetable(tbldom,[savedir 'rawt_mult_d2_canapi' ],'FileType','spreadsheet')
-theTable.Properties.VariableNames{1} = 'StructName';
-figure
-[c,m,h,gnames] = multcompare(stats,"Dimension",[1 2],'Display','on','CriticalValueType','bonferroni');
-tbldom = array2table(c,"VariableNames", ...
+
+[c,m,h,gnames] = multcompare(stats, 'Dimension', 3, ...
+    'Display','on','CriticalValueType','bonferroni');
+tbldom = array2table(c, 'VariableNames', ...
     ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
-tbldom.("Group A")=gnames(tbldom.("Group A"));
-tbldom.("Group B")=gnames(tbldom.("Group B"));
+tbldom.("Group A") = gnames(tbldom.("Group A"));
+tbldom.("Group B") = gnames(tbldom.("Group B"));
 title('Contra vs Ipsi')
-writetable(tbldom,[savedir 'rawt_mult_d12_canapi' ],'FileType','spreadsheet')
-theTable.Properties.VariableNames{1} = 'StructName';
+writetable(tbldom,[savedir 'rawt_mult_d3_canapi' ],'FileType','spreadsheet')
+
+[c,m,h,gnames] = multcompare(stats, 'Dimension', [2 3], ...
+    'Display','on','CriticalValueType','bonferroni');
+tbldom = array2table(c, 'VariableNames', ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A") = gnames(tbldom.("Group A"));
+tbldom.("Group B") = gnames(tbldom.("Group B"));
+title('Interaction')
+writetable(tbldom,[savedir 'rawt_mult_d23_canapi' ],'FileType','spreadsheet')
+%
+
+
+% [p,tbl,stats] = anovan(posStack.Mean, {RLgroup,ContraIpsigroup},'model','interaction');
+% 
+% % multcompare
+% figure
+% [c,m,h,gnames] = multcompare(stats,"Dimension",1,'Display','on','CriticalValueType','bonferroni');
+% tbldom = array2table(c,"VariableNames", ...
+%     ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+% tbldom.("Group A")=gnames(tbldom.("Group A"));
+% tbldom.("Group B")=gnames(tbldom.("Group B"));
+% title('Right vs Left task')
+% writecell(tbl,[savedir 'rawt_anova_canapi' ],'FileType','spreadsheet')
+% writetable(tbldom,[savedir 'rawt_mult_d1_canapi' ],'FileType','spreadsheet')
+% theTable.Properties.VariableNames{1} = 'StructName';
+% figure
+% [c,m,h,gnames] = multcompare(stats,"Dimension",2,'Display','on','CriticalValueType','bonferroni');
+% tbldom = array2table(c,"VariableNames", ...
+%     ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+% tbldom.("Group A")=gnames(tbldom.("Group A"));
+% tbldom.("Group B")=gnames(tbldom.("Group B"));
+% title('Contra vs Ipsi')
+% writetable(tbldom,[savedir 'rawt_mult_d2_canapi' ],'FileType','spreadsheet')
+% theTable.Properties.VariableNames{1} = 'StructName';
+% figure
+% [c,m,h,gnames] = multcompare(stats,"Dimension",[1 2],'Display','on','CriticalValueType','bonferroni');
+% tbldom = array2table(c,"VariableNames", ...
+%     ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+% tbldom.("Group A")=gnames(tbldom.("Group A"));
+% tbldom.("Group B")=gnames(tbldom.("Group B"));
+% title('Contra vs Ipsi')
+% writetable(tbldom,[savedir 'rawt_mult_d12_canapi' ],'FileType','spreadsheet')
+% theTable.Properties.VariableNames{1} = 'StructName';
 
 %% also run ANOVA on numVoxels
 
-[p,tbl,stats] = anovan(posStack.numVox, {RLgroup,ContraIpsigroup},'model','interaction');
-
-% multcompare
-figure
-[c,m,h,gnames] = multcompare(stats,"Dimension",1,'Display','on','CriticalValueType','bonferroni');
-tbldom = array2table(c,"VariableNames", ...
-    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
-tbldom.("Group A")=gnames(tbldom.("Group A"));
-tbldom.("Group B")=gnames(tbldom.("Group B"));
-title('Right vs Left task')
+[p, tbl, stats] = anovan(posStack.numVox, ...
+    {subs, RLgroup, ContraIpsigroup}, ...
+    'random', 1, ...                      % subject is random effect
+    'model', 'interaction', ...           % include main + interaction
+    'varnames', {'Subject','Task','Hemisphere'});
 writecell(tbl,[savedir 'rawt_anova_canapi_numvox' ],'FileType','spreadsheet')
-writetable(tbldom,[savedir 'rawt_mult_d1_canapi_numvox' ],'FileType','spreadsheet')
-theTable.Properties.VariableNames{1} = 'StructName';
-figure
-[c,m,h,gnames] = multcompare(stats,"Dimension",2,'Display','on','CriticalValueType','bonferroni');
-tbldom = array2table(c,"VariableNames", ...
+
+[c,m,h,gnames] = multcompare(stats, 'Dimension', 2, ...
+    'Display','on','CriticalValueType','bonferroni');
+tbldom = array2table(c, 'VariableNames', ...
     ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
-tbldom.("Group A")=gnames(tbldom.("Group A"));
-tbldom.("Group B")=gnames(tbldom.("Group B"));
-title('Contra vs Ipsi')
+tbldom.("Group A") = gnames(tbldom.("Group A"));
+tbldom.("Group B") = gnames(tbldom.("Group B"));
+title('Right vs Left task')
 writetable(tbldom,[savedir 'rawt_mult_d2_canapi_numvox' ],'FileType','spreadsheet')
-theTable.Properties.VariableNames{1} = 'StructName';
-figure
-[c,m,h,gnames] = multcompare(stats,"Dimension",[1 2],'Display','on','CriticalValueType','bonferroni');
-tbldom = array2table(c,"VariableNames", ...
+
+[c,m,h,gnames] = multcompare(stats, 'Dimension', 3, ...
+    'Display','on','CriticalValueType','bonferroni');
+tbldom = array2table(c, 'VariableNames', ...
     ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
-tbldom.("Group A")=gnames(tbldom.("Group A"));
-tbldom.("Group B")=gnames(tbldom.("Group B"));
+tbldom.("Group A") = gnames(tbldom.("Group A"));
+tbldom.("Group B") = gnames(tbldom.("Group B"));
 title('Contra vs Ipsi')
-writetable(tbldom,[savedir 'rawt_mult_d12_canapi_numvox' ],'FileType','spreadsheet')
-theTable.Properties.VariableNames{1} = 'StructName';
+writetable(tbldom,[savedir 'rawt_mult_d3_canapi_numvox' ],'FileType','spreadsheet')
+
+[c,m,h,gnames] = multcompare(stats, 'Dimension', [2 3], ...
+    'Display','on','CriticalValueType','bonferroni');
+tbldom = array2table(c, 'VariableNames', ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+tbldom.("Group A") = gnames(tbldom.("Group A"));
+tbldom.("Group B") = gnames(tbldom.("Group B"));
+title('Interaction')
+writetable(tbldom,[savedir 'rawt_mult_d23_canapi_numvox' ],'FileType','spreadsheet')
+%
+
+% [p,tbl,stats] = anovan(posStack.numVox, {RLgroup,ContraIpsigroup},'model','interaction');
+% 
+% % multcompare
+% figure
+% [c,m,h,gnames] = multcompare(stats,"Dimension",1,'Display','on','CriticalValueType','bonferroni');
+% tbldom = array2table(c,"VariableNames", ...
+%     ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+% tbldom.("Group A")=gnames(tbldom.("Group A"));
+% tbldom.("Group B")=gnames(tbldom.("Group B"));
+% title('Right vs Left task')
+% writecell(tbl,[savedir 'rawt_anova_canapi_numvox' ],'FileType','spreadsheet')
+% writetable(tbldom,[savedir 'rawt_mult_d1_canapi_numvox' ],'FileType','spreadsheet')
+% theTable.Properties.VariableNames{1} = 'StructName';
+% figure
+% [c,m,h,gnames] = multcompare(stats,"Dimension",2,'Display','on','CriticalValueType','bonferroni');
+% tbldom = array2table(c,"VariableNames", ...
+%     ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+% tbldom.("Group A")=gnames(tbldom.("Group A"));
+% tbldom.("Group B")=gnames(tbldom.("Group B"));
+% title('Contra vs Ipsi')
+% writetable(tbldom,[savedir 'rawt_mult_d2_canapi_numvox' ],'FileType','spreadsheet')
+% theTable.Properties.VariableNames{1} = 'StructName';
+% figure
+% [c,m,h,gnames] = multcompare(stats,"Dimension",[1 2],'Display','on','CriticalValueType','bonferroni');
+% tbldom = array2table(c,"VariableNames", ...
+%     ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+% tbldom.("Group A")=gnames(tbldom.("Group A"));
+% tbldom.("Group B")=gnames(tbldom.("Group B"));
+% title('Contra vs Ipsi')
+% writetable(tbldom,[savedir 'rawt_mult_d12_canapi_numvox' ],'FileType','spreadsheet')
+% theTable.Properties.VariableNames{1} = 'StructName';
 
 %% Build gramm object
 clc
