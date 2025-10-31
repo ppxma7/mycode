@@ -68,14 +68,8 @@ writetable(tbldom,[savedir 'MVCplot_stats'],'FileType','spreadsheet')
 
 %% and just get the numbers
 
-mvc_mean = mean([T.MVCRightLegBar; T.MVCLeftLegBar]);
-mvc_std = std([T.MVCRightLegBar; T.MVCLeftLegBar]);
+mvc_mean = mean([T.MVCRightLegBar; T.MVCLeftLegBar])
+mvc_std = std([T.MVCRightLegBar; T.MVCLeftLegBar])
 
-low_mean = mean([T.x15_Right; T.x15_Left]);
-low_std = std([T.x15_Right; T.x15_Left]);
-
-% Format the output string
-outstr = sprintf('MVC: Mean (stdev): %.3f (%.3f)\n  Low: Mean (stdev): %.3f (%.3f)\n', mvc_mean, mvc_std, low_mean, low_std);
-fprintf(outstr)
-outfile = fullfile(savedir, 'mvc_vals.txt');
-writelines(outstr, outfile)
+fifteen_mean([T.x15_Right; T.x15_Left])
+std([T.x15_Right; T.x15_Left])
