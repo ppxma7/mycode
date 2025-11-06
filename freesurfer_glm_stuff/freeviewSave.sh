@@ -38,25 +38,40 @@ for hemi in "${hemi_list[@]}"; do
         fi
 
         # --- Generate screenshots only if overlay exists ---
+        # --- Generate screenshots only if overlay exists ---
+        # --- Generate screenshots only if overlay exists ---
         if [[ -f "$overlay_file" ]]; then
-
-       		# Build output directory to mirror input structure
           outdir="${OUTPUT_ROOT}/${hemi}.${meas}.NexpoStudy_eTIV_wafirm_wsashb_g2only.10.glmdir/${contrast}"
           mkdir -p "$outdir"
 
           for view in lateral medial; do
-            out_img="${outdir}/${hemi}_${meas}_${contrast}_${polarity}_${view}.png"
-			freeview \
-			  -f ${surf_file}:overlay=${overlay_file}:overlay_method=linearopaque:overlay_threshold=1.3,2.0,10.0 \
-			  --viewport 3d \
-			  --view $view \
-			  --colorscale \
-			  --screenshot "$out_img" 1 autotrim
-			echo "✅ Saved $out_img"
+            base="${hemi}_${meas}_${contrast}_${polarity}_${view}"
+
+            # 1) Capture as BMP (vanilla raster = PPT-safe)
+            out_bmp="${outdir}/${base}.bmp"
+            freeview \
+              -f ${surf_file}:overlay=${overlay_file}:overlay_method=linearopaque:overlay_threshold=1.3,2.0,10.0 \
+              --viewport 3d \
+              --view "$view" \
+              --colorscale \
+              --screenshot "$out_bmp" 1 autotrim
+
+            # 2) Also produce a macOS-QuickLook re-rendered PNG (very clean)
+            #    qlmanage creates "<filename>.bmp.png" in the output dir.
+            qlmanage -t -s 2400 -o "$outdir" "$out_bmp" >/dev/null 2>&1
+            if [[ -f "${outdir}/${base}.bmp.png" ]]; then
+              mv "${outdir}/${base}.bmp.png" "${outdir}/${base}.png"
+              # strip any extended attributes just in case
+              xattr -c "${outdir}/${base}.png" 2>/dev/null || true
+            fi
+
+            echo "✅ Saved $out_bmp (PPT-safe) and ${outdir}/${base}.png (QuickLook-clean)"
           done
         else
           echo "⚠️  No overlay file for $contrast_dir ($polarity)"
         fi
+
+
       done
     done
   done

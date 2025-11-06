@@ -29,7 +29,9 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 #root_path = "/Volumes/r15/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_QUAD_MBRES/qa_output_nordic_middle24/"
 #root_path = "/Users/spmic/data/postDUST_HEAD_MBHIRES_1p25/qa_outputs/"
 #root_path = "/Volumes/r15/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_MBSENSE_QUAD_200225/qa_outputs_middle24/"
-root_path = "/Users/spmic/data/qa_outputs_1p5/"
+#root_path = "/Users/spmic/data/qa_outputs_1p5/"
+#root_path = "/Volumes/DRS-7TfMRI/GR_replace/postGR_MB-matrix_031125/qa_outputs/"
+root_path = "/Users/spmic/data/qa_outputs_postGR_061125/"
 
 folder_pattern = "qa_output*"
 
@@ -39,10 +41,10 @@ mode = 'doroi'  # Example mode
 # Check mode and set ROI
 if mode.lower() == 'doroi':
     ROI = 1
-    tSNRmax = 400
+    tSNRmax = 170
 elif mode.lower() == 'dogen':
     ROI = 0
-    tSNRmax = 400
+    tSNRmax = 100
 else:
     ROI = None  # Handle unexpected values if needed
 
@@ -77,11 +79,35 @@ def extract_numeric_suffix_nordic(folder_name):
     match = re.search(r"_(\d+)_nordic_clipped$", folder_name)
     return int(match.group(1)) if match else float('inf')  # Use inf for folders without a match
 
+
+def extract_sort_key_new(folder_name):
+    """
+    Extract a numeric sort key from names like:
+      XXXX_MB2_SENSE2p5_XXX_15_nordic
+    Sorts by MB value first, then SENSE value.
+    """
+    # Extract MB value (e.g. MB2, MB2.5)
+    mb_match = re.search(r"MB(\d+(?:\.\d+)?)", folder_name, re.IGNORECASE)
+    mb_val = float(mb_match.group(1)) if mb_match else float('inf')
+
+    # Extract SENSE value (e.g. SENSE2p5 → 2.5)
+    sense_match = re.search(r"SENSE(\d+(?:p\d+)?)", folder_name, re.IGNORECASE)
+    if sense_match:
+        sense_val = float(sense_match.group(1).replace('p', '.'))
+    else:
+        sense_val = float('inf')
+
+    return (mb_val, sense_val)
+
+
+
+
 # Sort the subfolders using the combined key
-if "nordic" in root_path:
-    subfolders.sort(key=extract_numeric_suffix_nordic)
-else:
-    subfolders.sort(key=extract_numeric_suffix)
+# if "nordic" in root_path:
+#     subfolders.sort(key=extract_numeric_suffix_nordic)
+# else:
+#     subfolders.sort(key=extract_numeric_suffix)
+subfolders.sort(key=extract_sort_key_new)
 
 # Print sorted subfolders to check the order
 print("Sorted Subfolders:")
@@ -100,7 +126,7 @@ tSNRmin = -10
 # Process each folder
 for folder in subfolders:
     print(folder)
-    nii_path = os.path.join(root_path, folder, "classic_tsnr_tsnr_map.nii.gz")
+    nii_path = os.path.join(root_path, folder, "tsnr_tsnr_map.nii.gz")
     
     if os.path.exists(nii_path):
         try:
@@ -120,7 +146,7 @@ for folder in subfolders:
             #roi_center = (35, 70)  # (x, y) center of the ROI
             #roi_center = (45, 70)  # (x, y) center of the ROI
             #roi_center = (45, 60)  # (x, y) center of the ROI
-            roi_center = (40, 82)
+            roi_center = (40, 50)
             roi_size = (20, 20)  # (width, height) of the ROI
 
             # Calculate ROI bounds in 2D
@@ -131,7 +157,7 @@ for folder in subfolders:
 
             # Extract the 2D ROI data
             #slice_index = round(data_shape[2] * 2 / 3)
-            slice_index = 12
+            slice_index = 24
             print(f"Slice index: {slice_index}")
 
             slice_data = data[:, :, slice_index]
