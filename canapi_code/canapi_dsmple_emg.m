@@ -127,7 +127,7 @@ for iSub = 1:length(dataset)
 
     for ii = 1:4
 
-        mypath=['/Volumes/kratos/' dataset{iSub} '/EEG/Export/'];
+        mypath=['/Volumes/kratos/CANAPI/' dataset{iSub} '/EEG/Export/'];
 
         
         thisSlice =mySlices{iSub}(ii);
@@ -929,7 +929,9 @@ g.export('file_name',filename, ...
 % disp(mdl)  % Gives R², p-value, CI, etc.
 
 
-
+% some plotting fixes
+opMatsubs_noconv{3, 1, 8} = detrend(opMatsubs_noconv{3, 1, 8});
+opMatsubs_noconv{3, 1, 5} = detrend(opMatsubs_noconv{3, 1, 5});
 
 
 %% Now plot individual traces of EMG plots
@@ -937,7 +939,7 @@ run_idx = 1;  % Choose which run to plot (1 = '1barR', etc.)
 run_label = {'1barR', 'lowR', '1barL', 'lowL'};
 channel_colors = {'#1f78b4', '#d95f02'};  % ch1 = blue, ch2 = orange
 
-for iRun = 1:4
+for iRun = 3
     % Prepare figure
     figure('Position', [100 100 1400 600]);
     tiledlayout(2,5);  % 2 rows × 5 columns
@@ -988,10 +990,12 @@ for iRun = 1:4
 
     thisFilename = [savedir 'renormemg_traces_per_subj_legend' run_label{iRun}];
     h = gcf;
+    xx = 20;
+    yy = 9;
     set(h, 'PaperOrientation', 'landscape');
     set(h, 'PaperUnits', 'inches');
-    set(h, 'PaperSize', [15 9]);  % Increase the paper size to 20x12 inches
-    set(h, 'PaperPosition', [0 0 15 9]);  % Adjust paper position to fill the paper size
+    set(h, 'PaperSize', [xx yy]);  % Increase the paper size to 20x12 inches
+    set(h, 'PaperPosition', [0 0 xx yy]);  % Adjust paper position to fill the paper size
     print(h, '-dpdf', thisFilename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
 
 
