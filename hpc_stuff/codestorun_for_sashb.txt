@@ -1,0 +1,4 @@
+checkMagPhase_loop.m -> fixes the T1 map
+7Tbrc_pipeline_loop_SASHB.sh -> run T1 and T2 
+dti_run_sashb.sh -> Run DTI
+t1_mapping_longform_hpc_shell_torun_sashb.sh --> t1_mapping_longform_hpc.py (this runs T1mapping)

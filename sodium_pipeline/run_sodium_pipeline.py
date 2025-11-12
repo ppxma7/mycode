@@ -52,7 +52,9 @@ elif len(sodium_mprage_matches) > 1:
 sodium_mprage_file = sodium_mprage_matches[0]
 
 # 3. Sodium image (must contain subject ID + 23Na)
-sodium_matches = glob.glob(os.path.join(ARG3, f"{subject}_WIP_23Na_*_401.nii*"))
+#sodium_matches = glob.glob(os.path.join(ARG3, f"{subject}_WIP_23Na_*_401.nii*"))
+sodium_matches = glob.glob(os.path.join(ARG3, f"{subject}*_23Na_*.nii*"))
+
 if len(sodium_matches) == 0:
     raise FileNotFoundError(f"No sodium image found in {ARG3}")
 elif len(sodium_matches) > 1:

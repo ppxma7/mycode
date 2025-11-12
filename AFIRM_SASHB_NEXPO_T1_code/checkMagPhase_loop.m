@@ -2,7 +2,7 @@ clear all
 close all
 clc
 
-parentDir = '/Volumes/nemosine/SAN/AFIRM/afirm_new_ins/';
+parentDir = '/Volumes/nemosine/SAN/SASHB/inputs/';
 
 % Get all entries in the directory
 dirInfo = dir(parentDir);
@@ -18,6 +18,9 @@ folderNames = folderNames(~ismember(folderNames, {'.', '..'}));
 % thisGuy = contains(folderNames,'17311-002b');
 % thisGuydata = folderNames(thisGuy);
 % folderNames = thisGuydata; % temp overwrite for this subject
+
+% fudge to overwrite
+folderNames = {'156862_004', '156862_005'};
 
 for ii = 1:length(folderNames)
     folderPath = fullfile(parentDir, folderNames{ii},'T1mapping'); % Full path to the folder

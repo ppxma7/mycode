@@ -29,6 +29,12 @@
 
 - For the FreeSurfer data, you need to run runMrisPreproc.sh, runGLMs.sh, runClustSims.sh and clustSimToTable.sh
 - You need to check your FSGD and Contrast files - https://andysbrainbook.readthedocs.io/en/latest/FreeSurfer/FS_ShortCourse/FS_07_FSGD.html
+- These codes are in `mycode/freesurfer_glm_stuff/`
 
 - For the t1 analysis, you should use fsl_randomise https://chatgpt.com/share/68b9ac1e-f01c-800c-8bf0-598a54ad6ac4
-- Look at fslrandomise_notes.txt for help
+- Look at `fslrandomise_notes.txt` for help
+
+- NEW for t1 analysis:
+	- We need to remove CSF as well `register_t1_to_mni_local_shell_nocsfver.sh` calls a bash script and python script to do this
+	- `fsl_smooth_and_merge.sh` will need to be edited, so you need to smooth your files before running fsl randomise
+	-

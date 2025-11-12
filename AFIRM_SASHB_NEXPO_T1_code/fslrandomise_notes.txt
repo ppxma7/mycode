@@ -14,4 +14,4 @@ randomise -i all_subjects_4D.nii.gz \
 
 randomise -i smoothed/all_subjects_4D.nii.gz -o t1_rand_results -d design.mat -t design.con -n 5000 -T -R -m $FSLDIR/data/standard/MNI152_T1_1mm_brain_mask.nii.gz
 
-% make sure for the design.con file, there's no extra spaces or hashes
+% make sure for the design.con file, there's no extra spaces or hashes 

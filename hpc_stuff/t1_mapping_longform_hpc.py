@@ -216,17 +216,18 @@ def main(data_dir, output_dir, subject):
     print(f"Processing subject: {subject}")
 
     # Get all matching .nii files
-    #all_nifti_files = glob.glob(os.path.join(subject_path, "*T1mapping*.nii"))
+    all_nifti_files = glob.glob(os.path.join(subject_path, "*T1mapping*.nii"))
     #all_nifti_files = glob.glob(os.path.join(subject_path, "fixed_wh_1mm*.nii"))
-    all_nifti_files = glob.glob(os.path.join(subject_path, "fixed_T1mapping*.nii"))	
+    #all_nifti_files = glob.glob(os.path.join(subject_path, "fixed_T1mapping*.nii"))	
 
-    # Enforce correct pattern with regex
+    # Enforce correct pattern with regex - SASHB
     #t1_files = [f for f in all_nifti_files if re.search(r"(?<!_ph)\.nii$", f) and "real" not in f and "imaginary" not in f]
     #ph_files = [f for f in all_nifti_files if re.search(r"_ph\.nii$", f) and "real" not in f and "imaginary" not in f]
 
     # Enforce correct pattern using regex
     #t1_files = [f for f in all_nifti_files if re.search(r"fixed_wh_1mm.*01\.nii$", f)]
     #ph_files = [f for f in all_nifti_files if re.search(r"fixed_wh_1mm.*01_ph\.nii$", f)]
+
     t1_files = [f for f in all_nifti_files if re.search(r"fixed_T1mapping.*01\.nii$", f)]
     ph_files = [f for f in all_nifti_files if re.search(r"fixed_T1mapping.*01_ph\.nii$", f)]
 

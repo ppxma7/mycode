@@ -9,15 +9,16 @@
 echo "Running on `hostname`"
 
 module load extension/imaging/
-module load brc-pipelines-img/1.6.6
+module load brc-pipelines-img/1.7.2
 
 # Directory
 export DATA_DIR="/spmstore/project/SASHB/SASHB/inputs"  # Change to your actual data path
 export OUTPUT_DIR="/spmstore/project/SASHB/SASHB/t1mapping_out"
 
 # List of subjects (update as necessary)
-SUBJECT=("16905_004" "16905_005" "17880001" \
-          "17880002")
+#SUBJECT=("16905_004" "16905_005" "17880001" \
+#          "17880002")
+SUBJECT=("156862_004")
 
 # Loop through each subject
 for subject in "${SUBJECT[@]}"; do
