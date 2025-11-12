@@ -33,8 +33,8 @@ for subj in "${subjects[@]}"; do
         echo "  $file1 -> $file1out"
         echo "  $file2 -> $file2out"
 
-        #cp "$file1" "$file1out"
-        #cp "$file2" "$file2out"
+        cp "$file1" "$file1out"
+        cp "$file2" "$file2out"
     else
         echo "⚠️  Missing files for subject $subj"
     fi
