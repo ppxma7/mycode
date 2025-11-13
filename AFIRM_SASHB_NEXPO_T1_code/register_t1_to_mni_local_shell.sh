@@ -94,13 +94,14 @@ OUTPUT_DIR="/Volumes/nemosine/SAN/SASHB/t1mapping_out/"
 # "16994-002A" "16999-002B" "17057-002C" "17058-002A" "17059-002a")
 
 # SUBJECT=("17311-002b")
-SUBJECT=("17880002" "16905_004" "16905_005" "17880001")
+#SUBJECT=("17880002" "16905_004" "16905_005" "17880001")
+SUBJECT=("156862_004")
 
 # Loop through each subject
 for subject in "${SUBJECT[@]}"; do
     #python3 /gpfs01/home/ppzma/code/register_t1_to_mni_standalone.py -d "$DATA_DIR" -o "$OUTPUT_DIR" -s "$subject"
     #python3 /Users/spmic/Documents/MATLAB/mycode/t1mapping_struct_preproc_on_hpc/register_t1_to_mni_standalone_fixing.py -d "$DATA_DIR" -o "$OUTPUT_DIR" -s "$subject"
-    python3 /Users/ppzma/Documents/MATLAB/mycode/t1mapping_struct_preproc_on_hpc/register_t1_to_mni_standalone_fixing.py -d "$DATA_DIR" -o "$OUTPUT_DIR" -s "$subject"
+    python3 /Users/ppzma/Documents/MATLAB/mycode/AFIRM_SASHB_NEXPO_T1_code/register_t1_to_mni_standalone_fixing.py -d "$DATA_DIR" -o "$OUTPUT_DIR" -s "$subject"
     #python3 /Users/spmic/Documents/MATLAB/mycode/apply_extract_atlas_t1.py -o "$OUTPUT_DIR" -s "$subject"
 
 done

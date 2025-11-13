@@ -138,6 +138,8 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
         ], check=True)
         print(f"✅ {subject}: MPRAGE registered to T1 space.")
 
+    
+
     # STEP 2: Apply same transform to MPRAGE mask
     if not os.path.exists(mprage_mask_to_t1):
         print("🔄 Applying transform to MPRAGE mask...")
