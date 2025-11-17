@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # Set base directory containing the glmdir folders
-base_dir="/Volumes/DRS-GBPerm/other/outputs/etiv_doss_wage_wafirm_wsashb/"  # Change this to the actual path
+base_dir="/Volumes/DRS-GBPerm/other/outputs/etiv_doss_predialy/"  # Change this to the actual path
 
 # Set export directory
-export_dir="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/etiv_doss_wage_wafirm_wsashb"
+export_dir="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/etiv_doss_predialy"
 
 # List of GLM folders
 glmdir_list=(
-  "lh.thickness.NexpoStudy_eTIV_wafirm_wsashb.10.glmdir"
-  "lh.volume.NexpoStudy_eTIV_wafirm_wsashb.10.glmdir"
-  "rh.thickness.NexpoStudy_eTIV_wafirm_wsashb.10.glmdir"
-  "rh.volume.NexpoStudy_eTIV_wafirm_wsashb.10.glmdir"
+  "lh.thickness.NexpoStudy_predialy.10.glmdir"
+  "lh.volume.NexpoStudy_predialy.10.glmdir"
+  "rh.thickness.NexpoStudy_predialy.10.glmdir"
+  "rh.volume.NexpoStudy_predialy.10.glmdir"
 )
 
 # Loop through each GLM dir

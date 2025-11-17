@@ -2,19 +2,24 @@
 
 # === CONFIGURATION ===
 SUBJECTS_DIR=/Volumes/DRS-GBPerm/other/outputs
-ROOT_DIR=/Volumes/DRS-GBPerm/other/outputs/etiv_doss_wage_wafirm_wsashb_g2only
-OUTPUT_ROOT="/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/etiv_doss_wage_wafirm_wsashb_g2only"
+ROOT_DIR=/Volumes/DRS-GBPerm/other/outputs/etiv_doss_predialy
+OUTPUT_ROOT="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/etiv_doss_predialy"
 
 hemi_list=("lh" "rh")
-measure_list=("thickness" "volume")
+# measure_list=("thickness" "volume")
+# contrast_dirs=(
+#   Age_overall g2_vs_g5 g2_vs_g6 g5_vs_g6
+# )
+
+measure_list=("thickness")
 contrast_dirs=(
-  Age_overall g2_vs_g5 g2_vs_g6 g5_vs_g6
+  Age_overall
 )
 
 # === MAIN LOOP ===
 for hemi in "${hemi_list[@]}"; do
   for meas in "${measure_list[@]}"; do
-    glm_dir="${ROOT_DIR}/${hemi}.${meas}.NexpoStudy_eTIV_wafirm_wsashb_g2only.10.glmdir"
+    glm_dir="${ROOT_DIR}/${hemi}.${meas}.NexpoStudy_predialy.10.glmdir"
     surf_file="${SUBJECTS_DIR}/fsaverage/surf/${hemi}.inflated"
 
     for contrast in "${contrast_dirs[@]}"; do
@@ -41,13 +46,13 @@ for hemi in "${hemi_list[@]}"; do
         # --- Generate screenshots only if overlay exists ---
         # --- Generate screenshots only if overlay exists ---
         if [[ -f "$overlay_file" ]]; then
-          outdir="${OUTPUT_ROOT}/${hemi}.${meas}.NexpoStudy_eTIV_wafirm_wsashb_g2only.10.glmdir/${contrast}"
+          outdir="${OUTPUT_ROOT}/${hemi}.${meas}.NexpoStudy_predialy.10.glmdir/${contrast}"
           mkdir -p "$outdir"
 
           for view in lateral medial; do
             base="${hemi}_${meas}_${contrast}_${polarity}_${view}"
 
-            # 1) Capture as BMP (vanilla raster = PPT-safe)
+            #1) Capture as BMP (vanilla raster = PPT-safe)
             out_bmp="${outdir}/${base}.bmp"
             freeview \
               -f ${surf_file}:overlay=${overlay_file}:overlay_method=linearopaque:overlay_threshold=1.3,2.0,10.0 \

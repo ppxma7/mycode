@@ -2,7 +2,7 @@ from nilearn import plotting, surface
 import nibabel as nib
 import os
 
-group = "nexpo"
+group = "sashb_postdialy"
 
 # --- Paths ---
 subjects_dir = "/Volumes/DRS-GBPerm/other/outputs"

@@ -7,8 +7,8 @@ SMOOTH_SIGMA=2
 # mkdir -p smoothed
 
 # List of group folders (update if your folder names differ)
-groups=(group2 group5 group6)
-
+#groups=(group2 group5 group6)
+groups=(group6)
 # Process each group
 for group in "${groups[@]}"; do
     echo "Processing $group..."
