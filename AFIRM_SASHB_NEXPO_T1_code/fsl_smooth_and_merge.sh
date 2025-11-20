@@ -8,7 +8,8 @@ SMOOTH_SIGMA=2
 
 # List of group folders (update if your folder names differ)
 #groups=(group2 group5 group6)
-groups=(group6)
+groups=(group1 group2 group3 group4)
+#groups=(group2)
 # Process each group
 for group in "${groups[@]}"; do
     echo "Processing $group..."
@@ -28,10 +29,17 @@ done
 
 # Merge all groups into a single 4D file
 echo "Merging all groups into all_subjects_4D.nii.gz..."
+# fslmerge -t smoothed/all_subjects_4D.nii.gz \
+#     smoothed/group2_4D.nii.gz \
+#     smoothed/group5_4D.nii.gz \
+#     smoothed/group6_4D.nii.gz \
+
 fslmerge -t smoothed/all_subjects_4D.nii.gz \
+    smoothed/group1_4D.nii.gz \
     smoothed/group2_4D.nii.gz \
-    smoothed/group5_4D.nii.gz \
-    smoothed/group6_4D.nii.gz \
+    smoothed/group3_4D.nii.gz \
+    smoothed/group4_4D.nii.gz \
+
 
 echo "Done! Final file: smoothed/all_subjects_4D.nii.gz"
 
