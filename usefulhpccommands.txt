@@ -1,0 +1,14 @@
+rsync -azv ppzma@hpclogin01.ada.nottingham.ac.uk:/gpfs01/home/ppzma/code/t1_mapping_longform_hpc.py ~/Documents/MATLAB/mycode/AFIRM_SASHB_NEXPO_T1_code/
+
+rsync -azv ppzma@hpclogin01.ada.nottingham.ac.uk:/gpfs01/home/ppzma/code/t1_mapping_longform_hpc.py ~/Documents/MATLAB/mycode/AFIRM_SASHB_NEXPO_T1_code/
+
+rsync -azv ~/Documents/MATLAB/mycode/AFIRM_SASHB_NEXPO_T1_code/t1_mapping_longform_hpc_alteredTIs.py ppzma@hpclogin01.ada.nottingham.ac.uk:/gpfs01/home/ppzma/code/
+
+rsync -azv ~/Documents/MATLAB/mycode/AFIRM_SASHB_NEXPO_T1_code/t1_mapping_longform_hpc_shell_torun_sashb.sh ppzma@hpclogin01.ada.nottingham.ac.uk:/gpfs01/home/ppzma/code/
+
+rsync -av --include='*/' --include='MPRAGE/***' --include='FLAIR/***' --include='T1mapping/***' --include='DTI/***' --exclude='*' //Volumes/DRS-GBPerm/other/SASHB_inputs/156862_004 ppzma@hpclogin01.ada.nottingham.ac.uk:/spmstore/project/SASHB/SASHB/inputs/
+
+rsync -av --include='*/' --include='T1mapping/***' --exclude='*' //Volumes/DRS-GBPerm/other/SASHB_inputs/17880002 ppzma@hpclogin01.ada.nottingham.ac.uk:/spmstore/project/SASHB/SASHB/inputs/
+
+
+rsync -azv ppzma@hpclogin01.ada.nottingham.ac.uk:/spmstore/project/SASHB/SASHB/t1mapping_out/17880001/ /Volumes/nemosine/SAN/SASHB/t1mapping_out/17880001/

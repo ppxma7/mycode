@@ -20,7 +20,7 @@ folderNames = folderNames(~ismember(folderNames, {'.', '..'}));
 % folderNames = thisGuydata; % temp overwrite for this subject
 
 % fudge to overwrite
-folderNames = {'156862_004', '156862_005'};
+folderNames = {'16905_004', '16905_005'};
 
 for ii = 1:length(folderNames)
     folderPath = fullfile(parentDir, folderNames{ii},'T1mapping'); % Full path to the folder
@@ -29,6 +29,7 @@ for ii = 1:length(folderNames)
 
     
 
+    %thisFile = dir(fullfile(folderPath,'*01_cropped.nii'));
     thisFile = dir(fullfile(folderPath,'*01.nii'));
 
    

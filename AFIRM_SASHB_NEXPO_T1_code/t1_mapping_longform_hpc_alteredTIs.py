@@ -12,10 +12,10 @@ import argparse
 import re
 
 # Input MR parameters
-nTIs=8; 
+nTIs=7; 
 MBfactor=2; 
 TR=4500
-sliceOffsets=[0,12,24,36,48,60,72,84]
+sliceOffsets=[0,12,36,48,60,72,84]
 minTI=32 
 
 def size(A):
@@ -228,8 +228,23 @@ def main(data_dir, output_dir, subject):
     #t1_files = [f for f in all_nifti_files if re.search(r"fixed_wh_1mm.*01\.nii$", f)]
     #ph_files = [f for f in all_nifti_files if re.search(r"fixed_wh_1mm.*01_ph\.nii$", f)]
 
-    t1_files = [f for f in all_nifti_files if re.search(r"fixed_T1mapping.*01\.nii$", f)]
-    ph_files = [f for f in all_nifti_files if re.search(r"fixed_T1mapping.*01_ph\.nii$", f)]
+    #t1_files = [f for f in all_nifti_files if re.search(r"fixed_T1mapping.*01\.nii$", f)]
+    #ph_files = [f for f in all_nifti_files if re.search(r"fixed_T1mapping.*01_ph\.nii$", f)]
+
+    t1_files = [
+        f for f in all_nifti_files
+        if re.fullmatch(r"fixed_T1mapping_\d+_cropped\.nii(\.gz)?",
+                        os.path.basename(f))
+    ]
+
+
+
+    ph_files = [
+        f for f in all_nifti_files
+        if re.fullmatch(r"fixed_T1mapping_\d+_cropped_ph\.nii(\.gz)?",
+                        os.path.basename(f))
+    ]
+
 
     # Locate required files
     #t1_files = [f for f in glob.glob(os.path.join(subject_path, "*T1mapping*.nii")) if "real" not in f and "imaginary" not in f]
@@ -243,13 +258,16 @@ def main(data_dir, output_dir, subject):
     t1_file = t1_files[0]  # Use the first match
     ph_file = ph_files[0]
 
+    print(t1_file)
+
+
     # Define temporary output filenames
     t1_trimmed = os.path.join(sub_dir, "T1mapping_clv.nii.gz")
     ph_trimmed = os.path.join(sub_dir, "T1mapping_clv_ph.nii.gz")
 
     # Remove last dynamic (9 -> keep first 8)
-    subprocess.run(["fslroi", t1_file, t1_trimmed, "0", "8"], check=True)
-    subprocess.run(["fslroi", ph_file, ph_trimmed, "0", "8"], check=True)
+    subprocess.run(["fslroi", t1_file, t1_trimmed, "0", "7"], check=True)
+    subprocess.run(["fslroi", ph_file, ph_trimmed, "0", "7"], check=True)
 
     # Load trimmed data
     imgm = nib.load(t1_trimmed)
@@ -257,14 +275,14 @@ def main(data_dir, output_dir, subject):
     imgp = nib.load(ph_trimmed)
     imgp_img = imgp.get_fdata()
 
-    # 🔥 Fix for DICOM phase values (divide by 1000)
+    #  Fix for DICOM phase values (divide by 1000)
     #imgp_img = imgp_img / 1000.0
 
     # Save the corrected phase image back
     #imgp_corrected = nib.Nifti1Image(imgp_img, affine=imgp.affine, header=imgp.header)
     #nib.save(imgp_corrected, ph_trimmed)  # Overwrite the original file
 
-    # ✅ Print min/max phase values
+    # Print min/max phase values
     #print(f"Min phase value: {np.min(imgp_img)}")
     #print(f"Max phase value: {np.max(imgp_img)}")
 
