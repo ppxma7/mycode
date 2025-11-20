@@ -10,7 +10,9 @@ MPRAGE_DIR="$1"
 T1_DIR="$2"
 SUBJECT="$3"
 
-MPRAGE_BRAIN="${MPRAGE_DIR}/${SUBJECT}_MPRAGE_optibrain.nii.gz"
+#MPRAGE_BRAIN="${MPRAGE_DIR}/${SUBJECT}_MPRAGE_optibrain.nii.gz"
+MPRAGE_BRAIN="${MPRAGE_DIR}/${SUBJECT}_MPRAGE_brain.nii.gz"
+
 T1MAP="${T1_DIR}/${SUBJECT}_T1_to_MPRAGE.nii.gz"
 OUTPUT="${T1_DIR}/${SUBJECT}_T1_to_MPRAGE_noCSF.nii.gz"
 
@@ -23,7 +25,7 @@ fi
 echo "🔹 Processing subject: $SUBJECT"
 
 # -------- 1. Run FAST segmentation on MPRAGE --------
-FAST_PREFIX="${MPRAGE_DIR}/${SUBJECT}_MPRAGE_optibrain"
+FAST_PREFIX="${MPRAGE_DIR}/${SUBJECT}_MPRAGE_brain"
 if [[ ! -f "${FAST_PREFIX}_pve_0.nii.gz" ]]; then
     echo "🧠 Running FAST segmentation..."
     fast -t 1 -n 3 -H 0.1 -I 4 -l 20.0 -o "$FAST_PREFIX" "$MPRAGE_BRAIN"

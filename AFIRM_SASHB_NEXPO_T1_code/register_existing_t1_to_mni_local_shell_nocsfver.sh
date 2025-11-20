@@ -1,6 +1,8 @@
 #!/bin/bash
-MPRAGE_DIR="/Volumes/nemosine/SAN/SASHB/inputs/"
-T1_DIR="/Volumes/nemosine/SAN/SASHB/t1mapping_out/"
+#MPRAGE_DIR="/Volumes/nemosine/SAN/SASHB/inputs/"
+MPRAGE_DIR="/Volumes/DRS-GBPerm/other/NEXPO_inputs"
+#T1_DIR="/Volumes/nemosine/SAN/SASHB/t1mapping_out/"
+T1_DIR="/Volumes/DRS-GBPerm/other/t1mapping_out/"
 
 # SUBJECTS=(
 # "03143_174" "05017_014" "06398_005" "09376_062" "09849" "10469" "10760_130" "12162_005" "12181_004" "12185_004"
@@ -37,7 +39,7 @@ T1_DIR="/Volumes/nemosine/SAN/SASHB/t1mapping_out/"
 #     "16905_004" "16905_005" "17880001" "17880002"
 # )
 SUBJECTS=(
-	"156862_004"
+	"17207_003"
 )
 
 total=${#SUBJECTS[@]}

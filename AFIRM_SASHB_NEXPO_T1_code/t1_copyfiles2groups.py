@@ -4,9 +4,9 @@ import pandas as pd
 
 # Path setup
 #excel_file = "/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_plots/t1_groups_n180_medianoutliers.xlsx"
-excel_file = "/Volumes/nemosine/SAN/t1mnispace/t1_groups_n180_medianoutliers.xlsx"
+excel_file = "/Volumes/nemosine/SAN/t1mnispace/nocsfver_justnexpo/t1_groups_n180_medianoutliers.xlsx"
 source_base = "/Volumes/DRS-GBPerm/other/t1mapping_out"
-dest_base = "/Volumes/nemosine/SAN/t1mnispace/nocsfver"
+dest_base = "/Volumes/nemosine/SAN/t1mnispace/nocsfver_justnexpo"
 
 # Load Excel
 df = pd.read_excel(excel_file)
@@ -38,8 +38,16 @@ for _, row in df.iterrows():
         print(f"❌ File missing for subject {subj}")
         continue
 
+    # 👉 Skip if file already copied
+    if os.path.exists(dest_file):
+        print(f"⏩ Skipping {subj} (already copied)")
+        continue
+
     try:
         shutil.copyfile(src_file, dest_file)
         print(f"✅ Copied {subj} → group{group}")
     except Exception as e:
         print(f"⚠️ Error copying {subj}: {e}")
+
+
+
