@@ -12,3 +12,8 @@ rsync -av --include='*/' --include='T1mapping/***' --exclude='*' //Volumes/DRS-G
 
 
 rsync -azv ppzma@hpclogin01.ada.nottingham.ac.uk:/spmstore/project/SASHB/SASHB/t1mapping_out/17880001/ /Volumes/nemosine/SAN/SASHB/t1mapping_out/17880001/
+
+rsync -azv ppzma@hpclogin01.ada.nottingham.ac.uk:/spmstore/project/SASHB/SASHB/inputs/17880002/DTI /Volumes/nemosine/SAN/SASHB/inputs/17880002/
+
+rsync -azv /Volumes/nemosine/SAN/SASHB/inputs/156862_004/DTI/ ppzma@hpclogin01.ada.nottingham.ac.uk:/spmstore/project/SASHB/SASHB/inputs/156862_004/DTI/
+rsync -azv /Volumes/nemosine/SAN/SASHB/inputs/156862_005/DTI/ ppzma@hpclogin01.ada.nottingham.ac.uk:/spmstore/project/SASHB/SASHB/inputs/156862_005/DTI/

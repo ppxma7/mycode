@@ -26,7 +26,7 @@ x = 1 + jitter
 plt.figure(figsize=(6,6))
 
 # Points
-plt.scatter(x, y, s=60)
+plt.scatter(x, y, s=20)
 
 #Labels
 for xi, yi, subj in zip(x, y, df["subject"]):
