@@ -2,7 +2,7 @@
 
 # Source and destination directories
 SRC="/Volumes/kratos/dti_data/datasets"
-DST="/Volumes/kratos/dti_data/tbss_analysis"
+DST="/Volumes/kratos/dti_data/tbss_analysis_justnexpo"
 
 # Make sure destination exists
 mkdir -p "$DST"
