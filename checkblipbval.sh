@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Base path
-base_dir="/Volumes/kratos/NEXPODTIS/ppzma-20250923_145236"
-not_in_line="${base_dir}/not_in_line"
+base_dir="/Volumes/kratos/CHAIN/"
+not_in_line="${base_dir}"
 
 # Create 'not_in_line' folder if it doesn't exist
 mkdir -p "$not_in_line"

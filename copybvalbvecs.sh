@@ -1,6 +1,6 @@
 #!/bin/bash
 
-root="/Volumes/kratos/NEXPODTIS/ppzma-20250923_145236/not_in_line"
+root="/Volumes/kratos/CHAIN_inputs/"
 
 find "$root" -type f -path "*/DTI/*.nii" | while read -r nifti; do
     dir=$(dirname "$nifti")
@@ -11,14 +11,14 @@ find "$root" -type f -path "*/DTI/*.nii" | while read -r nifti; do
 
     # Only create if they don't exist
     if [ ! -f "$bval" ]; then
-        echo "0" > "$bval"
+        echo "0 0 0" > "$bval"
         echo "✅ Created $bval"
     else
         echo "⏭️ Skipping existing $bval"
     fi
 
     if [ ! -f "$bvec" ]; then
-        printf "0\n0\n0\n" > "$bvec"
+        printf "0 0 0\n0 0 0\n0 0 0\n" > "$bvec"
         echo "✅ Created $bvec"
     else
         echo "⏭️ Skipping existing $bvec"
