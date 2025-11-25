@@ -1,7 +1,7 @@
 #!/bin/sh
 
-TBSSDIR="/Volumes/kratos/dti_data/tbss_analysis_justnexpo"
-MAPFILE="/Volumes/kratos/dti_data/tbss_analysis_justnexpo/mapfilenexpo.txt"
+TBSSDIR="/Volumes/kratos/dti_data/tbss_analysis_sashbprepost"
+MAPFILE="/Volumes/kratos/dti_data/tbss_analysis_sashbprepost/mapfile.txt"
 OUTFILE="${TBSSDIR}/renamed_files.txt"
 > "$OUTFILE"       # empty/overwrite the file before starting
 
@@ -23,19 +23,27 @@ while IFS='' read -r line || [ -n "$line" ]; do
     echo "DEBUG: subj='$subj' group='$group'"
 
     # Map group numbers → names
+    # case "$group" in
+    #     1) groupname="NEXPOG1" ;;
+    #     2) groupname="NEXPOG2" ;;
+    #     3) groupname="NEXPOG3" ;;
+    #     4) groupname="NEXPOG4" ;;
+    #     *)
+    #         echo "⚠️ Unknown group '$group' for $subj — skipping."
+    #         continue
+    #         ;;
+    # esac
     case "$group" in
-        1) groupname="NEXPOG1" ;;
-        2) groupname="NEXPOG2" ;;
-        3) groupname="NEXPOG3" ;;
-        4) groupname="NEXPOG4" ;;
+        1) groupname="SASHB1" ;;
+        2) groupname="SASHB2" ;;
         *)
             echo "⚠️ Unknown group '$group' for $subj — skipping."
             continue
             ;;
     esac
 
-    src="${TBSSDIR}/origdata/${subj}_dti_FA.nii.gz"
-    dest="${TBSSDIR}/origdata/${groupname}_${subj}_dti_FA.nii.gz"
+    src="${TBSSDIR}/${subj}_dti_FA.nii.gz"
+    dest="${TBSSDIR}/${groupname}_${subj}_dti_FA.nii.gz"
 
     if [ -f "$src" ]; then
         #echo "📦 Would rename $(basename "$src") → $(basename "$dest")"

@@ -1,8 +1,13 @@
 #!/bin/bash
 
+
+
+# This code looks inside a source folder, and finds all dti_FA files in all subj folders and copies them to a new 
+# destination folder, renaming them "SUBJ_dti_FA"
+
 # Source and destination directories
-SRC="/Volumes/kratos/dti_data/datasets"
-DST="/Volumes/kratos/dti_data/tbss_analysis_justnexpo"
+SRC="/Volumes/kratos/dti_data/chaindatasets"
+DST="/Volumes/kratos/dti_data/tbss_analysis_wchain"
 
 # Make sure destination exists
 mkdir -p "$DST"
