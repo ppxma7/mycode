@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Root folder containing subject directories
-rootfolder="/Volumes/kratos/FMHS1030124/"
+rootfolder="/Volumes/kratos/CHAIN_inputs_mricrogl/v6/"
 
 # Loop through all subject directories
 for subjdir in "$rootfolder"/*/; do
@@ -11,7 +11,7 @@ for subjdir in "$rootfolder"/*/; do
     echo "Processing subject: $subj"
 
     # Run dcm2niix on the subject folder
-    /Applications/MRIcron.app/Contents/Resources/dcm2niix "$subjdir"
+    /Applications/MRIcroGL.app/Contents/Resources/dcm2niix "$subjdir"
 
     echo "Completed subject: $subj"
     echo "----------------------------"

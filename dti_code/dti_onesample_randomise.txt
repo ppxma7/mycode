@@ -1,0 +1,48 @@
+# make diffs
+fslmaths SASHB1_16905_004_dti_FA_FA_to_target.nii.gz -sub SASHB2_16905_005_dti_FA_FA_to_target.nii.gz sub01_diff
+
+fslmaths SASHB1_156862_004_dti_FA_FA_to_target.nii.gz -sub SASHB2_156862_005_dti_FA_FA_to_target.nii.gz sub02_diff
+
+fslmaths SASHB1_17880001_dti_FA_FA_to_target.nii.gz -sub SASHB2_17880002_dti_FA_FA_to_target.nii.gz sub03_diff
+
+# merge
+fslmerge -t diffs_all sub01_diff sub02_diff sub03_diff
+
+randomise -i diffs_all -o paired_diff_oneSample -1 -T -n 500
+
+##
+You have 3 subjects, so only 
+2
+3
+=
+8
+2
+3
+=8 possible sign-flips.
+
+TFCE (or any permutation-based correction) calculates corrected p-values by ranking your observed TFCE statistic against all possible permutations.
+
+With 8 permutations, the smallest possible non-zero p-value is 
+1
+/
+8
+=
+0.125
+1/8=0.125.
+
+randomise reports p = 0 only if the TFCE statistic is larger than all permutations, which is unlikely with 3 subjects.
+
+In practice, FSL sets all voxels to 0 if the p-value is effectively 1/8 but you requested a “corrected” map, because the limited number of permutations doesn’t allow meaningful TFCE correction.
+
+With N = 10, number of sign-flips = 
+2
+10
+=
+1024
+2
+10
+=1024 → enough permutations to do TFCE properly.
+
+Corrected p-values (*_tfce_corrp_tstat1.nii.gz) will now be meaningful.
+
+Permutations control family-wise error voxelwise without the need for arbitrary cluster thresholds.
