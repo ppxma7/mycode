@@ -94,6 +94,10 @@ subjects = [
     "16905_004", "16905_005", "17880001", "17880002", "156862_004"
 ]
 
+# subjects = [
+#     "16905_004"
+# ]
+
 print(f"Number of subjects: {len(subjects)}")
 
 
@@ -122,6 +126,7 @@ else:
         r2_data = r2_img.get_fdata()
 
         # Optional brain mask
+        # Mask R2 with *_MPRAGEmask_to_T1.nii.gz if it exists
         mask_path = os.path.join(root_dir, subject, f"{subject}_MPRAGEmask_to_T1.nii.gz")
         if os.path.exists(mask_path):
             mask_data = nib.load(mask_path).get_fdata()
@@ -142,6 +147,8 @@ else:
 
         r2_nonzero = r2_data[r2_data > 0]
         # Bottom 10% mean (artifact-sensitive)
+        # Mean of the bottom 10% of R2 values
+        # Sensitive to low-R2 tail
         p10 = np.percentile(r2_nonzero, 10)
         mean_bottom10 = np.mean(r2_nonzero[r2_nonzero <= p10])
 
@@ -151,14 +158,14 @@ else:
 
         p90 = np.percentile(r2_nonzero, 90)
         p10 = np.percentile(r2_nonzero, 10)
+        # A principled “width” metric of the R2 distribution
         tail_width = p90 - p10
 
-        mode_val = mode(r2_nonzero, keepdims=False).mode
+        #mode_val = mode(r2_nonzero, keepdims=False).mode
         stats = {
             "subject": subject,
             "mean": np.mean(r2_nonzero),
             "median": np.median(r2_nonzero),
-            "mode": mode_val,
             "mean_bottom10": mean_bottom10,
             "std": np.std(r2_nonzero),
             "iqr": iqr,
@@ -187,10 +194,10 @@ Q3_med = df["median"].quantile(0.75)
 IQR_med = Q3_med - Q1_med
 df["median_outlier"] = (df["median"] < (Q1_med - 1.5 * IQR_med)) | (df["median"] > (Q3_med + 1.5 * IQR_med))
 
-df["mode_outlier"] = False
-df_mode = df.dropna(subset=["mode"])
-df.loc[df_mode.index, "mode_z"] = (df_mode["mode"] - df_mode["mode"].mean()) / df_mode["mode"].std()
-df.loc[df_mode.index, "mode_outlier"] = df.loc[df_mode.index, "mode_z"].abs() > 2.5
+# df["mode_outlier"] = False
+# df_mode = df.dropna(subset=["mode"])
+# df.loc[df_mode.index, "mode_z"] = (df_mode["mode"] - df_mode["mode"].mean()) / df_mode["mode"].std()
+# df.loc[df_mode.index, "mode_outlier"] = df.loc[df_mode.index, "mode_z"].abs() > 2.5
 
 csv_path2 = os.path.join(out_dir, f"{group_name}_r2_qc_stats_outliers.csv")
 
@@ -202,7 +209,8 @@ else:
     df.to_csv(csv_path2, index=False)
 
 # Combine all outlier subjects
-outlier_subjects = df[df["median_outlier"] | df["mode_outlier"]]["subject"].unique()
+#outlier_subjects = df[df["median_outlier"] | df["mode_outlier"]]["subject"].unique()
+outlier_subjects = df[df["median_outlier"]]["subject"].unique()
 
 # Save to text file
 outlier_txt_path = os.path.join(out_dir, f"{group_name}_r2_outlier_subjects.txt")
@@ -215,20 +223,37 @@ print(f"📄 Outlier subject list saved to:\n{outlier_txt_path}")
 
 # === Plotting ===
 # Reshape to long format
-df_long = df.melt(id_vars="subject", value_vars=["mean", "median", "mode", "std", "iqr"],
+df_long = df.melt(id_vars="subject", value_vars=["mean", "median", "std", "iqr", "mean_bottom10"],
                   var_name="statistic", value_name="value")
 
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(8, 6))
 
 # Boxplot first
 sns.boxplot(x="statistic", y="value", data=df_long, palette="pastel",
-            showfliers=False, width=0.5, notch=True)
+            showfliers=False, width=0.5, notch=False)
 
 # Then overlay dots
 sns.stripplot(x="statistic", y="value", data=df_long,
               color='black', size=4, alpha=0.6, jitter=True)
 
-plt.title("R2 Distribution Statistics Across Subjects (with Mode)")
+# x-position of the category we want to label
+x_pos = df_long["statistic"].unique().tolist().index("mean_bottom10")
+
+df_mb10 = df[["subject", "mean_bottom10"]].dropna()
+
+for _, row in df_mb10.iterrows():
+    plt.text(
+        x_pos,                         # categorical x
+        row["mean_bottom10"] + 0.002,        # y value
+        row["subject"],
+        fontsize=5,
+        rotation=45,                   # helps overlap
+        ha="right",
+        va="center"
+    )
+
+
+plt.title("R2 Distribution Statistics Across Subjects")
 plt.ylabel("R2 Value")
 plt.grid(True)
 plt.tight_layout()
@@ -239,10 +264,24 @@ print(f"📊 Boxplot saved to: {plot_path}")
 
 # === Scatter: Mean R2 vs Distribution Width ===
 plt.figure(figsize=(6,6))
-plt.scatter(df["mean"], df["tail_width"], c=df["noisy"], cmap="coolwarm", s=60)
-plt.xlabel("Mean R2")
-plt.ylabel("R2 Distribution Width (p90 - p10)")
-plt.title("R2 Mean vs Distribution Width")
+plt.scatter(df["tail_width"], df["mean"], c=df["noisy"], cmap="coolwarm", s=60)
+#Labels
+for _, row in df.iterrows():
+    plt.text(
+        row["tail_width"],          # small x offset
+        row["mean"] - 0.003,
+        row["subject"],
+        fontsize=5,
+        rotation=0,
+        horizontalalignment='center',
+        verticalalignment='center'
+    )
+
+
+
+plt.xlabel("R2 Distribution Width (p90 - p10)")
+plt.ylabel("Mean R2")
+plt.title("Distribution Width vs R2 Mean")
 plt.grid(True)
 
 scatter_path = os.path.join(out_dir, f"{group_name}_r2_mean_vs_width.png")
