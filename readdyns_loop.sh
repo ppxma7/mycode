@@ -3,8 +3,8 @@
 rootfolder="/Volumes/kratos/CHAIN_inputs_mricrogl/v6/"
 outcsv="$rootfolder/dti_dynamics.csv"
 
-# Create / reset CSV and write header
-echo "subject,filename,dim4" > "$outcsv"
+# Create / reset CSV
+echo "subject,filename,dim4,n_bvals" > "$outcsv"
 
 for subjdir in "$rootfolder"/*/; do
     subj=$(basename "$subjdir")
@@ -18,12 +18,23 @@ for subjdir in "$rootfolder"/*/; do
 
         fname=$(basename "$nifti")
 
+        # --- dim4 from NIfTI ---
         ndyn=$(fslinfo "$nifti" | awk '/^dim4/ {print $2}')
+        ndyn=${ndyn:-NA}
 
-        echo "  $fname → $ndyn dynamics"
+        # --- corresponding .bval ---
+        bval="${nifti%.nii}"
+        bval="${bval%.gz}.bval"
 
-        # Append row to CSV
-        echo "$subj,$fname,$ndyn" >> "$outcsv"
+        if [ -f "$bval" ]; then
+            nbval=$(wc -w < "$bval")
+        else
+            nbval="NA"
+        fi
+
+        echo "  $fname → dim4=$ndyn | bvals=$nbval"
+
+        echo "$subj,$fname,$ndyn,$nbval" >> "$outcsv"
     done
 
     echo "----------------------------"
