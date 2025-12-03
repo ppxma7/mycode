@@ -1,5 +1,7 @@
 function nordic_hpc(fn_magn_in)
 
+addpath(genpath('/gpfs01/home/ppzma/code'))
+
 set(0,'DefaultFigureVisible','off')
 
 if endsWith(fn_magn_in,'.nii.gz')
