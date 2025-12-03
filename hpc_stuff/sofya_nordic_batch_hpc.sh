@@ -27,5 +27,5 @@ newfilename=${newfilename%.nii.gz}
 echo "Directory: $dir"
 echo "Filename without extension: $newfilename"
 
-#matlab -nodisplay -nosplash -nodesktop -r \
-#"addpath(genpath('/gpfs01/home/ppzma/matlab')); run_nordic_hpc('${param}'); quit"
+matlab -nodisplay -nosplash -nodesktop -r \
+"addpath(genpath('/gpfs01/home/ppzma/matlab')); nordic_hpc('${param}'); quit"
