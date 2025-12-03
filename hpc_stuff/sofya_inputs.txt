@@ -1,0 +1,2 @@
+/gpfs01/home/ppzma/sofya_nexpo_data/sub-01/rest/mag.nii.gz
+/gpfs01/home/ppzma/sofya_nexpo_data/sub-02/rest/mag.nii.gz
