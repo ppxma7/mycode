@@ -29,3 +29,5 @@ echo "Filename without extension: $newfilename"
 
 matlab -nodisplay -nosplash -nodesktop -r \
 "addpath(genpath('/gpfs01/home/ppzma/matlab')); nordic_hpc('${param}'); quit"
+
+echo "NORDIC processing completed for $param"

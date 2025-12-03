@@ -62,21 +62,25 @@ if isfield(ARG,'magnitude_only') && ARG.magnitude_only == 1
 end
 
 if isfield(ARG,'noise_volume_last') && ARG.noise_volume_last == 1
-    if ~exist([data_path,'Noise_input/'],'dir')
-        mkdir([data_path,'Noise_input/'])
-        disp('Creating new folder for Nordic correction using noise volume')        
+    noise_dir = fullfile(data_path,'Noise_input');
+    if ~exist(noise_dir,'dir')
+        mkdir(noise_dir)
+        disp('Creating new folder for Nordic correction using noise volume')
     end
-    data_path = [data_path,'Noise_input/'];
-    ARG.DIROUT = data_path;
+    data_path   = noise_dir;
+    ARG.DIROUT  = data_path;
 else
-    if ~exist([data_path,'/No_noise/'],'dir')
-        mkdir([data_path,'/No_noise/'])
-        disp('Creating new folder for Nordic correction without using noise volume')        
-    end    
-    data_path = [data_path,'/No_noise/'];
-    ARG.DIROUT = data_path;
-    fn_out = [fn_out,'_NoNoise'];
+    nonoise_dir = fullfile(data_path,'No_noise');
+    if ~exist(nonoise_dir,'dir')
+        mkdir(nonoise_dir)
+        disp('Creating new folder for Nordic correction without using noise volume')
+    end
+    data_path   = nonoise_dir;
+    ARG.DIROUT  = data_path;
+    fn_out = [fn_out '_NoNoise'];
 end
+
+fprintf('NORDIC output dir: %s\n', ARG.DIROUT);
 
 %% RUNNING the correction
 NIFTI_NORDIC(fn_magn_in,fn_phase_in,fn_out,ARG)
