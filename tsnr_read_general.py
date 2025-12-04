@@ -41,7 +41,7 @@ mode = 'doroi'  # Example mode
 # Check mode and set ROI
 if mode.lower() == 'doroi':
     ROI = 1
-    tSNRmax = 170
+    tSNRmax = 100
 elif mode.lower() == 'dogen':
     ROI = 0
     tSNRmax = 100
