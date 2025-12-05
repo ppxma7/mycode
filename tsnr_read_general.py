@@ -30,8 +30,8 @@ grouped_x_positions = []  # Track grouped positions for each multiband factor
 #root_path = "/Users/spmic/data/postDUST_HEAD_MBHIRES_1p25/qa_outputs/"
 #root_path = "/Volumes/r15/DRS-7TfMRI/DUST_upgrade/postDUST/postDUST_MBSENSE_QUAD_200225/qa_outputs_middle24/"
 #root_path = "/Users/spmic/data/qa_outputs_1p5/"
-#root_path = "/Volumes/DRS-7TfMRI/GR_replace/postGR_MB-matrix_031125/qa_outputs/"
-root_path = "/Users/spmic/data/qa_outputs_postGR_061125/"
+root_path = "/Volumes/DRS-7TfMRI/MB_artefact_021225/qa_outputs/"
+#root_path = "/Users/spmic/data/qa_outputs_postGR_061125/"
 
 folder_pattern = "qa_output*"
 
@@ -41,7 +41,7 @@ mode = 'doroi'  # Example mode
 # Check mode and set ROI
 if mode.lower() == 'doroi':
     ROI = 1
-    tSNRmax = 170
+    tSNRmax = 100
 elif mode.lower() == 'dogen':
     ROI = 0
     tSNRmax = 100
