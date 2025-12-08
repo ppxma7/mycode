@@ -6,8 +6,10 @@
 # destination folder, renaming them "SUBJ_dti_FA"
 
 # Source and destination directories
-SRC="/Volumes/kratos/dti_data/chaindatasets"
-DST="/Volumes/kratos/dti_data/tbss_analysis_wchain"
+SRC="/Volumes/kratos/dti_data/nexpodatasets"
+DST="/Volumes/kratos/dti_data/MD/nexpo"
+
+#DST="/Volumes/kratos/dti_data/tbss_analysis_wchain"
 
 # Make sure destination exists
 mkdir -p "$DST"
@@ -19,8 +21,10 @@ for d in "$SRC"/*/analysis/dMRI/processed/data/data.dti; do
 
     
 
-    src_file="${d}/dti_FA.nii.gz"
-    dest_file="${DST}/${subj}_dti_FA.nii.gz"
+    # src_file="${d}/dti_FA.nii.gz"
+    # dest_file="${DST}/${subj}_dti_FA.nii.gz"
+    src_file="${d}/dti_MD.nii.gz"
+    dest_file="${DST}/${subj}_dti_MD.nii.gz"
 
     echo $src_file
     echo $dest_file
@@ -32,8 +36,8 @@ for d in "$SRC"/*/analysis/dMRI/processed/data/data.dti; do
         cp -n "$src_file" "$dest_file"
         #echo "Would copy $src_file → $dest_file"
     else
-        echo "⚠️ Missing FA file for $subj"
+        echo "⚠️ Missing MD file for $subj"
     fi
 done
 
-echo "✅ All available FA maps copied to $DST"
+echo "✅ All available MD maps copied to $DST"
