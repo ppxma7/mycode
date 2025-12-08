@@ -1,7 +1,7 @@
 #!/bin/bash
 
-TBSSDIR="/Volumes/kratos/dti_data/tbss_analysis"
-MAPFILE="/Volumes/kratos/dti_data/tbss_analysis/mapfile.txt"
+TBSSDIR="/Volumes/kratos/dti_data/tbss_analysis_wchain"
+MAPFILE="/Volumes/kratos/dti_data/tbss_analysis_wchain/mapfile.txt"
 
 # group_map.txt contains two columns: subjectID   groupNumber
 # Example lines:
@@ -12,7 +12,7 @@ MAPFILE="/Volumes/kratos/dti_data/tbss_analysis/mapfile.txt"
 # Group name mapping
 # Call with bash so avoids error wtih zsh not liking declare
 declare -A groupnames=(
-    [2]="NEXPO"
+    [1]="CHAIN"
     [5]="AFIRM"
     [6]="SASHB"
 )
@@ -34,7 +34,7 @@ while read -r subj group; do
     if [ -f "$src" ]; then
         echo "📦 Renaming $src → $(basename "$dest")"
         mv -n "$src" "$dest"
-        #echo "Would move $src to $dest"
+        echo "Would move $src to $dest"
     else
         echo "⚠️  Missing FA file for $subj"
     fi
