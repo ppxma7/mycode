@@ -13,19 +13,16 @@ module load brc-pipelines-img/1.7.2
 export DATA_DIR="/gpfs01/home/ppzma/chain_dti/inputs/"
 export OUTPUT_DIR="/gpfs01/home/ppzma/chain_dti/outputs/"
 
-# subjects=("15234-003B" "16469-002A" "16498-002A" \
-# "16500-002B" "16501-002b" "16521-001b" "16523_002b" \
-# "16602-002B" "16707-002A" "16708-03A" "16797-002C" \
-# "16798-002A" "16821-002A" "16835-002A" "16885-002A" \
-# "16994-002A" "16999-002B" "17057-002C" "17058-002A" "17059-002a" "17311-002b")
 
-#subjects=("1688-002C")
-#subjects=("17059-002a" "17311-002b")
-#subjects=("16905_004" "16905_005" "17880001" "17880002")
+# subjects=("CHN002_V6" "CHN003_V6" "CHN005_V6" "CHN006_V6" \
+# "CHN007_V6" "CHN008_V6" "CHN009_V6" "CHN010_V6" "CHN012_V6" \
+# "CHN013_V6" "CHN014_V6" "CHN015_V6" "CHN019_V6")
 
-subjects=("CHN002_V6" "CHN003_V6" "CHN005_V6" "CHN006_V6" \
-"CHN007_V6" "CHN008_V6" "CHN009_V6" "CHN010_V6" "CHN012_V6" \
-"CHN013_V6" "CHN014_V6" "CHN015_V6" "CHN019_V6")
+subjects=("CHN001_V6_C" "CHN002_V6_C" "CHN003_V6_C" \
+"CHN005_v6_redo_C" "CHN006_V6_C" "CHN007_V6_C" \
+"CHN008_V6_DTI_C" "CHN009_V6_C" "CHN010_V6_2_DTI_C" \
+"CHN013_v6_classic" "CHN014_V6_DTI_C" "CHN015_V6_DTI_C" \
+"CHN019_V6_C")
 
 
 for subject in "${subjects[@]}"; do
@@ -33,7 +30,7 @@ for subject in "${subjects[@]}"; do
     echo "Processing subject: ${subject}"
 
     # Find files
-    DTI_FILE=$(find "${DATA_DIR}/${subject}/DTI/" -type f -iname "*_WIP_MB3_sDTI_SPMICopt_*.nii*" | head -n 1)
+    DTI_FILE=$(find "${DATA_DIR}/${subject}/DTI/" -type f -iname "*_WIP_MB3_sDTI_SPMICopt_*.nii*" ! -iname "*_ph.nii" | head -n 1)
     BLIP_FILE=$(find "${DATA_DIR}/${subject}/DTI/" -type f -iname "*_WIP_blipMB3_sDTI_SPMICopt_*.nii*" ! -iname "*_ph.nii" | head -n 1)
 
     # Validate presence of files
