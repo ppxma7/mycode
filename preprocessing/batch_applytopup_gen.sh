@@ -6,31 +6,6 @@ SECONDS=0  # Start timing
 mypath="/Volumes/kratos/SOFYA/"
 mysub="12185_004/"
 mydata="topup/"
-# myscans="parrec_FAST_rsfMRI_20221117112738_6_nordic.nii
-#     parrec_FAST_rsfMRI_20221117112738_7_nordic.nii
-#     parrec_FAST_rsfMRI_20221117112738_22_nordic.nii
-#     parrec_PTSarm_20221117112738_13_nordic.nii
-#     parrec_PTSarm_20221117112738_27_nordic.nii
-#     parrec_PTShand_20221117112738_17_nordic.nii
-#     parrec_thermode_armblock1_20221117112738_15_nordic.nii
-#     parrec_thermode_armblock1_20221117112738_24_nordic.nii
-#     parrec_thermode_armblock2_20221117112738_16_nordic.nii
-#     parrec_thermode_armblock2_20221117112738_25_nordic.nii
-#     parrec_thermode_block1_20221117112738_9_nordic.nii
-#     parrec_thermode_block2_20221117112738_10_nordic.nii
-#     parrec_FAST_rsfMRI_TOPUP_20221117112738_8.nii
-#     parrec_FAST_rsfMRI_TOPUP_20221117112738_23.nii
-#     parrec_thermode_TOPUP_20221117112738_11.nii
-#     parrec_thermode_TOPUP_20221117112738_26.nii"
-# myscans=("digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_11_nordic_clv" \
-# 	"digitmap_14359_020525_WIPMB2_SENSE3_1p25mmiso_20250502152646_12_nordic_clv")
-
-# myscans=("fMRI_somato_pilot3_WIPMB0_S3_1p5_FWD_20250529142302_5_nordic_clv" \
-# 	"fMRI_somato_pilot3_WIPMB0_S3_1p5_REV_20250529142302_6_nordic_clv" \
-# 	"fMRI_somato_pilot3_WIPMB0_S3_1p5_ONOFF_20250529142302_7_nordic_clv" \
-# 	"fMRI_somato_pilot3_WIPMB0_S3_1p5_ONOFF_PWM_20250529142302_8_nordic_clv" \
-# 	"fMRI_somato_pilot3_WIPMB0_S3_1p5_ONOFF_20250529142302_9_nordic_clv" \
-# 	"fMRI_somato_pilot3_WIPMB0_S3_1p5_ONOFF_PWM_20250529142302_10_nordic_clv")
 
 myscans=("12185_004_WIP_fMRI_RS_20220804125939_1001")
 

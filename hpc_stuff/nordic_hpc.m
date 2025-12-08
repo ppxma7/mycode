@@ -36,19 +36,12 @@ if ARG.noise_volume_last == 0
     ARG.factor_error=1.5;
 end
 
-%% Filename/Folder based on arguments
-% if ~exist([data_path,'NORDIC/'],'dir')
-%     mkdir([data_path,'NORDIC/'])
-%     disp('Creating new folder for Nordic correction')
-% end
-% data_path = [data_path,'NORDIC/'];
 
 nordic_dir = fullfile(data_path,'NORDIC');
 if ~exist(nordic_dir,'dir')
     mkdir(nordic_dir)
 end
 data_path = nordic_dir;
-
 
 
 if isfield(ARG,'magnitude_only') && ARG.magnitude_only == 1
@@ -81,6 +74,11 @@ else
 end
 
 fprintf('NORDIC output dir: %s\n', ARG.DIROUT);
+disp(fn_magn_in)
+disp(fn_phase_in)
+disp(fn_out)
+disp(ARG)
+
 %% RUNNING the correction
 NIFTI_NORDIC(fn_magn_in,fn_phase_in,fn_out,ARG)
 

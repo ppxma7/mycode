@@ -22,3 +22,9 @@ rsync -azv /Volumes/nemosine/SAN/SASHB/inputs/156862_005/DTI/ ppzma@hpclogin01.a
 rsync -azv Documents/MATLAB/mycode/hpc_stuff/sofya_nordic_batch_hpc.sh ppzma@hpclogin01.ada.nottingham.ac.uk:/gpfs01/home/ppzma/code/
 rsync -azv Documents/MATLAB/mycode/hpc_stuff/sofya_inputs.txt ppzma@hpclogin01.ada.nottingham.ac.uk:/gpfs01/home/ppzma/sofya_nexpo_data/
 rsync -azv Documents/MATLAB/mycode/hpc_stuff/nordic_hpc.m ppzma@hpclogin01.ada.nottingham.ac.uk:/gpfs01/home/ppzma/code/
+
+rsync -azv Documents/MATLAB/mycode/hpc_stuff/nordic_hpc.m ppzma@hpclogin01.ada.nottingham.ac.uk:/gpfs01/home/ppzma/code/
+
+rsync -azv Documents/MATLAB/nottingham/retroicor/resp_phase_fun.m ppzma@hpclogin01.ada.nottingham.ac.uk:/gpfs01/home/ppzma/code/
+rsync -azv Documents/MATLAB/nottingham/retroicor/manualcard_phase_fun.m ppzma@hpclogin01.ada.nottingham.ac.uk:/gpfs01/home/ppzma/code/
+rsync -azv Documents/MATLAB/nottingham/retroicor/card_phase_fun.m ppzma@hpclogin01.ada.nottingham.ac.uk:/gpfs01/home/ppzma/code/
