@@ -1,6 +1,6 @@
 %% CHAIN 14 or so subjects
 
-groupSizes = [14, 22, 3];
+groupSizes = [14, 22, 2];
 nGroups = length(groupSizes);
 totalSubs = sum(groupSizes);
 
@@ -17,7 +17,7 @@ end
 ages = [
     58 63 56 57 65 62 61 63 63 57 63 63 56 65 ...
     75 55 47 39 41 65 69 31 64 70 61 70 72 37 55 41 60 67 49 57 73 49 ...
-    57 56 57 ...
+    57 56 ...
     ]';
 
 
@@ -54,7 +54,7 @@ title('Design Matrix (Groups)')
 
 
 % 
-%% NEXPO G2
+%% NEXPO G2 T1 mapping
 groupSizes = [45, 22, 3];
 nGroups = length(groupSizes);
 totalSubs = sum(groupSizes);
@@ -107,7 +107,7 @@ imagesc(designMat(:,1:end-1)) % only show group columns
 xlabel('EV (groups only)'); ylabel('Subjects')
 title('Design Matrix (Groups)')
 
-%% for DTI missing some subs
+%% for DTI missing some subs - do not use
 
 groupSizes = [43, 22, 2];
 nGroups = length(groupSizes);
@@ -157,7 +157,7 @@ imagesc(designMat(:,1:end-1)) % only show group columns
 xlabel('EV (groups only)'); ylabel('Subjects')
 title('Design Matrix (Groups)')
 
-%% %% TRY nexpo 1 2 3 4 again
+%% %% TRY nexpo 1 2 3 4 again - T1 mapping
 
 groupSizes = [46, 45, 45, 44];
 nGroups = length(groupSizes);
@@ -212,9 +212,9 @@ imagesc(designMat(:,1:end-1)) % only show group columns
 xlabel('EV (groups only)'); ylabel('Subjects')
 title('Design Matrix (Groups)')
 
-%% NEXPO DTI 189 subj
+%% NEXPO DTI 187 subj
 
-groupSizes = [49, 43, 48, 49];
+groupSizes = [48, 43, 48, 48];
 nGroups = length(groupSizes);
 totalSubs = sum(groupSizes);
 
@@ -228,14 +228,24 @@ end
 
 % ---- 2. Add covariate: age ----
 
-ages = [19 18 19 19 19 18 18 18 19 19 19 19 19 18 19 18 18 18 18 19 18 19 ...
-        19 19 19 18 18 19 19 18 19 18 19 19 19 19 19 18 18 18 19 18 18 18 18 19 18 18 18 ...
-        34 31 43 38 35 33 49 46 36 45 30 44 46 31 37 39 38 45 34 30 31 35 40 43 33 41 45 ...
-        33 49 45 37 44 42 40 50 50 37 49 47 49 50 46 40 ...
-        39 46 41 32 40 33 35 31 31 37 43 44 33 31 32 33 45 43 47 45 49 45 42 39 38 32 30 ...
-        38 46 38 46 38 43 50 43 47 31 47 41 36 41 38 47 35 43 49 48 46 ...
-        35 47 45 31 46 48 48 47 49 37 49 37 44 45 45 31 50 50 34 36 32 34 39 39 49 40 49 ...
-        45 30 41 49 35 34 32 40 43 42 40 36 43 38 33 33 31 38 30 38 41 35]';
+% ages = [19 18 19 19 19 18 18 18 19 19 19 19 19 18 19 18 18 18 18 19 18 19 ...
+%         19 19 19 18 18 19 19 18 19 18 19 19 19 19 19 18 18 18 19 18 18 18 18 19 18 18 18 ...
+%         34 31 43 38 35 33 49 46 36 45 30 44 46 31 37 39 38 45 34 30 31 35 40 43 33 41 45 ...
+%         33 49 45 37 44 42 40 50 50 37 49 47 49 50 46 40 ...
+%         39 46 41 32 40 33 35 31 31 37 43 44 33 31 32 33 45 43 47 45 49 45 42 39 38 32 30 ...
+%         38 46 38 46 38 43 50 43 47 31 47 41 36 41 38 47 35 43 49 48 46 ...
+%         35 47 45 31 46 48 48 47 49 37 49 37 44 45 45 31 50 50 34 36 32 34 39 39 49 40 49 ...
+%         45 30 41 49 35 34 32 40 43 42 40 36 43 38 33 33 31 38 30 38 41 35]';
+
+ages = [19	18	19	19	19	18	18	18	19	19	19	19	19	18	19	18	18	18	19	18	19	...
+        19	19	19	18	18	19	19	18	19	18	19	19	19	19	19	18	18	18	19	18	18	...
+        18	18	19	18	18	18	34	31	43	38	35	33	49	46	36	45	30	44	46	31	37	... 
+        39	38	45	34	30	31	35	40	43	33	41	45	33	49	45	37	44	42	40	50	50	...
+        37	49	47	49	50	46	40	39	46	41	32	40	33	35	31	31	37	43	44	33	31	...
+        32	33	45	43	47	45	49	45	42	39	38	32	30	38	46	38	46	38	43	50	43	...
+        47	31	47	41	36	41	38	47	35	43	49	48	46	47	45	31	46	48	48	47	49	...
+        37	49	37	44	45	45	31	50	50	34	36	32	34	39	39	49	40	49	45	30	41	...
+        49	35	34	32	40	43	42	40	36	43	38	33	33	31	38	30	38	41	35]';
 
 
 length(ages)
