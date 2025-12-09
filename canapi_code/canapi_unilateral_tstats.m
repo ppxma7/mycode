@@ -24,7 +24,7 @@ for iSub = 1:length(dataset)
 
     for ii = 1:length(myfiles)
 
-        mypath=['/Volumes/kratos/' dataset{iSub} '/spm_analysis/first_level/'];
+        mypath=['/Volumes/kratos/CANAPI/' dataset{iSub} '/spm_analysis/first_level/'];
         
         thisFile = fullfile(mypath,myfiles{ii});
 
@@ -189,6 +189,7 @@ writetable(tbldom,[savedir 'clust_mult_d23_canapi' ],'FileType','spreadsheet')
 %
 
 %[p,tbl,stats] = anovan(T.Y, {RLgroup,ContraIpsigroup},'model','interaction');
+
 
 
 

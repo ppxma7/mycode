@@ -1,7 +1,8 @@
 #!/bin/bash
 
-TBSSDIR="/Volumes/kratos/dti_data/tbss_analysis"
-MAPFILE="/Volumes/kratos/dti_data/tbss_analysis/mapfile.txt"
+TBSSDIR="/Volumes/kratos/dti_data/MD/nexpo"
+#MAPFILE="/Volumes/kratos/dti_data/tbss_analysis_wchain/mapfile.txt"
+MAPFILE=$TBSSDIR/mapfile.txt
 
 # group_map.txt contains two columns: subjectID   groupNumber
 # Example lines:
@@ -11,33 +12,44 @@ MAPFILE="/Volumes/kratos/dti_data/tbss_analysis/mapfile.txt"
 
 # Group name mapping
 # Call with bash so avoids error wtih zsh not liking declare
-declare -A groupnames=(
-    [2]="NEXPO"
-    [5]="AFIRM"
-    [6]="SASHB"
-)
+# declare -A groupnames=(
+#     [1]="CHAIN"
+#     [5]="AFIRM"
+#     [6]="SASHB"
+# )
+sed -n '1,20p' "$TBSSDIR/mapfile.txt" | cat -v
+sed -i '' 's/\r$//' "$TBSSDIR/mapfile.txt"
 
 # Loop through each line of mapping
 while read -r subj group; do
     # Skip empty lines or comments
     [[ -z "$subj" || "$subj" == \#* ]] && continue
 
-    groupname=${groupnames[$group]}
-    if [ -z "$groupname" ]; then
-        echo "⚠️  Unknown group number $group for $subj, skipping."
-        continue
-    fi
+    # Map group number → group name
+    case "$group" in
+        1) groupname="NEXPO_G1" ;;
+        2) groupname="NEXPO_G2" ;;
+        3) groupname="NEXPO_G3" ;;
+        4) groupname="NEXPO_G4" ;;
+        *)
+            echo "⚠️  Unknown group number $group for $subj, skipping."
+            continue
+            ;;
+    esac
 
-    src="${TBSSDIR}/${subj}_dti_FA.nii.gz"
-    dest="${TBSSDIR}/${groupname}_${subj}_dti_FA.nii.gz"
+    src="${TBSSDIR}/${subj}_dti_MD.nii.gz"
+    dest="${TBSSDIR}/${groupname}_${subj}_dti_MD.nii.gz"
 
     if [ -f "$src" ]; then
+        echo "TEST"
         echo "📦 Renaming $src → $(basename "$dest")"
         mv -n "$src" "$dest"
-        #echo "Would move $src to $dest"
+        echo "Would move $src to $dest"
     else
-        echo "⚠️  Missing FA file for $subj"
+        echo "⚠️  Missing MD file for $subj"
     fi
+
 done < "$MAPFILE"
 
 echo "✅ Renaming complete."
+
