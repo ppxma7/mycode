@@ -17,17 +17,32 @@ mapfile -t PARAMS < "$FILELIST"
 index=${SLURM_ARRAY_TASK_ID}
 sindex=$index
 param=${PARAMS[$sindex]}
+subdir="$param"
 
+echo "Subject dir: $subdir"
 echo "Job array ID: $SLURM_ARRAY_TASK_ID"
-echo "Input file: $param"
+#echo "Input file: $param"
 
-dir=$(dirname "$param")
-base=$(basename "$param")
+magdir="${subdir}/magnitude"
+magfile=$(ls "$magdir"/*.nii* 2>/dev/null)
+if [ -z "$magfile" ]; then
+    echo "ERROR: No magnitude NIfTI found in $magdir"
+    exit 1
+fi
+# In case there is exactly one file
+magfile=$(echo "$magfile" | head -n 1)
+echo "Found magnitude file: $magfile"
+
+
+# dir=$(dirname "$param")
+# base=$(basename "$param")
+dir=$(dirname "$magfile")
+base=$(basename "$magfile")
 newfilename=${base%.nii}
 newfilename=${newfilename%.nii.gz}
 
 # subject directory (e.g. sub01)
-subdir=$(dirname "$(dirname "$param")")
+# subdir=$(dirname "$(dirname "$param")")
 
 nordicdir="${dir}/NORDIC/Noise_input"
 nordicfile="${nordicdir}/${newfilename}_nordic.nii"
@@ -49,6 +64,9 @@ echo "RETROICOR dir : $retrodir"
 echo "SPL dir    : $spldir"
 echo "TOPUP dir    : $topupdir"
 
+# echo "DEBUG - just get paths !"
+# exit 0
+
 # ----
 # Run NORDIC
 # ----
@@ -57,7 +75,7 @@ if [ -f "$nordicfile" ]; then
 else
     echo "Running NORDIC processing for $param"
     matlab -nodisplay -nosplash -nodesktop -r \
-    "try, addpath(genpath('/gpfs01/home/ppzma/code')); nordic_hpc('${param}'); catch ME, disp(getReport(ME,'extended')); exit(1); end; exit(0)"
+    "try, addpath(genpath('/gpfs01/home/ppzma/code')); nordic_hpc('${magfile}'); catch ME, disp(getReport(ME,'extended')); exit(1); end; exit(0)"
     echo "NORDIC processing completed for $param"
 fi
 
