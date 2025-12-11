@@ -1,0 +1,21 @@
+# For the DTI data, you can run 
+# Bear in mind, you will need to check files etc. and designs above
+randomise -i all_FA_skeletonised.nii.gz -o tbss -m mean_FA_skeleton_mask -d design.mat -t design.con -n 10 --T2 -V
+randomise -i all_FA_skeletonised -o tbss -m mean_FA_skeleton_mask -d design.mat -t design.con -n 500 --T2
+
+# Note, for a pre post design, e.g. a repeated measures / paired test, the simplest thing to do is this:
+# You take the differences and then run a one sample tttest between these. 
+
+# make diffs
+fslmaths A_subj1 -sub B_subj1 sub01_diff
+fslmaths A_subj2 -sub B_subj2 sub02_diff
+fslmaths A_subj3 -sub B_subj3 sub03_diff
+
+# merge
+fslmerge -t diffs_all sub01_diff sub02_diff sub03_diff
+
+# run one-sample test with randomise using -1 (single-group)
+randomise -i diffs_all -o paired_diff_oneSample -1 -T -m mask -n 5000
+
+for filling the tracts for visualistiaon
+tbss_fill tbss_tfce_corrp_tstat1 0.95 mean_FA tbss_fill
