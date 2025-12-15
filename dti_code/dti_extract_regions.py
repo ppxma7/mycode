@@ -9,15 +9,19 @@ import xml.etree.ElementTree as ET
 # -----------------------------------------------------------
 
 TBSS_DIR = "/Volumes/kratos/dti_data/tbss_analysis_justnexpo/"             # point to the main TBSS directory
-STATS_DIR = os.path.join(TBSS_DIR, "stats")
+#TBSS_DIR = "/Volumes/kratos/dti_data/tbss_analysis_wchain/"
+STATS_DIR = os.path.join(TBSS_DIR, "stats/MD")
+OUTPUT_DIR = os.path.join(TBSS_DIR, "roi_output_tstat9")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-SIGNIFICANT_MASK = os.path.join(STATS_DIR, "tbss_tfce_corrp_tstat10.nii.gz")
+SIGNIFICANT_MASK = os.path.join(STATS_DIR, "tbss_tfce_corrp_tstat9.nii.gz")
 
 # Where your per-subject skeletonised data live
 # Typically TBSS creates all_FA_skeletonised.nii.gz etc.
 # If you have MD, RD, AD available, add paths later.
-METRIC = "FA"
-SKEL_4D = os.path.join(STATS_DIR, "all_FA_skeletonised.nii.gz")
+METRIC = "MD"
+#SKEL_4D = os.path.join(STATS_DIR, "all_FA_skeletonised.nii.gz")
+SKEL_4D = os.path.join(STATS_DIR, "all_MD_skeletonised.nii.gz")
 
 # SUBJECTS = [
 #     "AFIRM_1688-002C", "AFIRM_15234-003B", "AFIRM_16469-002A", "AFIRM_16498-002A",
@@ -83,8 +87,6 @@ SUBJECTS = [
 ]
 
 
-OUTPUT_DIR = os.path.join(TBSS_DIR, "roi_output_tstat10")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # JHU atlas provided with FSL
 FSLDIR = os.getenv("FSLDIR")

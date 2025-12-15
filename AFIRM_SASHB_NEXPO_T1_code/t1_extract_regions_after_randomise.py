@@ -9,10 +9,10 @@ import sys
 # User settings
 # -----------------------------------------------------------
 STATS_DIR = "/Volumes/nemosine/SAN/t1mnispace/nocsfver_justnexpo/"             # point to the main TBSS directory
-OUTPUT_DIR = os.path.join(STATS_DIR,"atlasextract/")
+OUTPUT_DIR = os.path.join(STATS_DIR,"atlasextract12/")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-SIGNIFICANT_MASK = os.path.join(STATS_DIR, "t1_rand_results_tfce_corrp_tstat11.nii.gz")
+SIGNIFICANT_MASK = os.path.join(STATS_DIR, "t1_rand_results_tfce_corrp_tstat12.nii.gz")
 
 # Where your per-subject skeletonised data live
 # Typically TBSS creates all_FA_skeletonised.nii.gz etc.
@@ -96,7 +96,7 @@ def load_labels(xml_path):
 print("Loading atlas...")
 harv_img = nib.load(HARV_ATLAS)
 harv_data = harv_img.get_fdata().astype(int)
-
+harv_data = np.clip(harv_data, 0, 47).astype(int)
 labels = load_labels(HARV_XML)
 
 # -----------------------------------------------------------
