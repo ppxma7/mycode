@@ -3,7 +3,7 @@ clc
 close all
 clear variables
 %csvdir = "/Volumes/kratos/dti_data/tbss_analysis_justnexpo/roi_output_tstat10/";
-csvdir = "/Volumes/kratos/dti_data/tbss_analysis_justnexpo/MD_rois/roi_output_tstat3/";
+csvdir = "/Volumes/kratos/dti_data/tbss_analysis_justnexpo/MD_rois/roi_output_tstat9/";
 %csvdir = "/Volumes/nemosine/SAN/t1mnispace/nocsfver_justnexpo/atlasextract12/";
 
 files = dir(csvdir);
@@ -33,9 +33,9 @@ toc
 
 %% Extract group from first 5 digits of Subject
 % NEXPO
-allData.Group = extractBefore(allData.Subject, 6);  % first 5 digits for
+%allData.Group = extractBefore(allData.Subject, 6);  % first 5 digits for
 % CHAIN
-%allData.Group = extractBefore(allData.Subject, 8);
+allData.Group = extractBefore(allData.Subject, 8);
 
 % For t1mapping NEXPO just get numbers
 % tmp = [repmat({'Group1'},46,1); repmat({'Group2'},45,1); repmat({'Group3'},45,1); repmat({'Group4'},44,1)];
