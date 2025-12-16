@@ -38,7 +38,7 @@ elseif strcmpi(thisRUN,'NEXPO')
 
     if strcmpi(thisTYPE,'T1')
         groupNames = {'group1', 'group2', 'group3', 'group4'};
-        pathin = '/Volumes/nemosine/SAN/t1mnispace/nocsfver_justnexpo/';
+        pathin = '/Volumes/nemosine/SAN/t1mnispace/nexpo_gmwm/';
     else
         error('No other metric here')
     end
@@ -66,14 +66,13 @@ length(ages)
 
 userName = char(java.lang.System.getProperty('user.name'));
 savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/t1mapping/' savedgroup '/'];
-%type = 'FA';
 
-dti_getmean('pathin',pathin,'ages',ages,'groupNames',groupNames,'savedir',savedir,'type',thisTYPE);
+t1_getmean('pathin',pathin,'ages',ages,'groupNames',groupNames,'savedir',savedir,'type',thisTYPE);
 
 
 
 %%
-function[]=dti_getmean(varargin)
+function[]=t1_getmean(varargin)
 
 clc
 
@@ -104,7 +103,7 @@ vm = [];   % initialise once
 thisFileList = {};
 % this is complicated because there are 4 group folders
 for ii = 1:length(groupNames)
-    pathin_tmp = fullfile(pathin, groupNames{ii});
+    pathin_tmp = fullfile(pathin, groupNames{ii},'GM/');
     
     files = dir(fullfile(pathin_tmp, '*.nii.gz'));
     fprintf('Group %s: Found %d files\n', groupNames{ii}, numel(files))
