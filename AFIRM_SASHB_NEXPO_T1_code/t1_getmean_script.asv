@@ -1,17 +1,24 @@
+%
+%
+% This is the same as the dti_get_mean_script. We want to plot the age vs
+% T1 values, correcting for age.
+
 
 thisRUN = 'NEXPO';
-thisTYPE = 'MD';
+thisTYPE = 'T1';
 % options are either NEXPO or CHAIN 
-% MD or FA
 
 
 if strcmpi(thisRUN,'CHAIN')
+    % THIS ISNT FIXED YET ON ACCOUNT OF BAD T1 SUBJECTS
     % chain afirm sashb
     ages = [
         58 63 56 57 65 62 61 63 63 57 63 63 56 65 ...
         75 55 47 39 41 65 69 31 64 70 61 70 72 37 55 41 60 67 49 57 73 49 ...
         57 56 ...
         ]';
+
+
     groupNames = {'AFIRM','CHAIN','SASHB'};
     savedgroup = 'afirm_chain_sashb';
     if strcmpi(thisTYPE,'FA')
@@ -21,23 +28,21 @@ if strcmpi(thisRUN,'CHAIN')
     end
 
 elseif strcmpi(thisRUN,'NEXPO')
-    ages = [19	18	19	19	19	18	18	18	19	19	19	19	19	18	19	18	18	18	19	18	19 ...
-        19	19	19	18	18	19	19	18	19	18	19	19	19	19	19	18	18	18	19	18	18 ...
-        18	18	19	18	18	18	34	35	30	31	43	38	35	33	49	46	36	45	30	44	46 ...
-        31	37	39	38	45	34	30	31	35	40	43	33	32	41	45	33	49	45	37	44	42 ...
-        40	50	50	37	49	47	49	50	46	40	39	46	41	32	40	33	35	31	31	37	43 ...
-        44	33	31	32	33	45	43	47	45	49	45	42	39	38	32	30	38	46	38	46	38 ...
-        43	50	43	47	31	47	41	36	41	38	47	35	43	49	48	46	47	45	31	46	48 ...
-        48	47	49	37	49	37	44	45	45	31	50	50	34	36	32	34	39	39	49	40	49 ...
-        45	30	41	49	35	34	32	40	43	42	40	36	43	38	33	33	31	38	30	38	41	44	35]';
-    if strcmpi(thisTYPE,'FA')
-        groupNames = {'NEXPOG1', 'NEXPOG2', 'NEXPOG3', 'NEXPOG4'};
-        pathin = '/Volumes/kratos/dti_data/tbss_analysis_justnexpo/origdata/';
+    % fewer subs here than DTI, recall
+    ages = [19 18 19 19 18 18 18 19 19 19 19 19 18 19 18 19 18 18 18 19 18 19 19 19 19 18 18 19 19 18 ...
+            19 19 19 19 19 18 18 18 19 18 18 18 18 18 18 18 34 35 30 39 31 40 43 38 35 33 49 44 46 31 ...
+            36 45 30 44 46 31 37 39 38 45 34 30 40 43 33 32 41 45 33 49 45 44 42 40 50 50 37 49 49 46 ...
+            40 39 46 41 32 40 33 35 31 31 37 44 31 33 45 43 47 45 49 45 39 38 32 30 38 46 38 46 38 43 ...
+            50 43 47 31 37 47 41 36 41 38 47 35 43 49 48 46 35 47 45 31 46 48 48 47 49 37 49 37 44 45 ...
+            31 50 50 34 36 32 34 39 39 49 40 49 30 49 35 34 32 40 43 42 40 36 43 38 33 31 38 30 38 35]';
+
+    if strcmpi(thisTYPE,'T1')
+        groupNames = {'group1', 'group2', 'group3', 'group4'};
+        pathin = '/Volumes/nemosine/SAN/t1mnispace/nocsfver_justnexpo/';
     else
-        groupNames = {'NEXPO_G1', 'NEXPO_G2', 'NEXPO_G3', 'NEXPO_G4'};
-        pathin = '/Volumes/kratos/dti_data/tbss_analysis_justnexpo/MD/origMD/';
+        error('No other metric here')
     end
-    savedgroup = 'dtijustnexpo';
+    savedgroup = 'updates_nexpog1234_wageascov';
 
 else
     error('error, incorrect RUN')
@@ -60,7 +65,7 @@ length(ages)
 %pathin = '/Volumes/kratos/dti_data/tbss_analysis_justnexpo/MD/origMD/';
 
 userName = char(java.lang.System.getProperty('user.name'));
-savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/dti_data/' savedgroup '/'];
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/t1mapping/' savedgroup '/'];
 %type = 'FA';
 
 dti_getmean('pathin',pathin,'ages',ages,'groupNames',groupNames,'savedir',savedir,'type',thisTYPE);
@@ -94,38 +99,46 @@ if sum(strcmp('type',varargin))
     type = varargin{find(strcmp('type',varargin))+1};
 end
 
+% LOADING
+vm = [];   % initialise once
+thisFileList = {};
+% this is complicated because there are 4 group folders
+for ii = 1:length(groupNames)
+    pathin_tmp = fullfile(pathin, groupNames{ii});
+    
+    files = dir(fullfile(pathin_tmp, '*.nii.gz'));
+    fprintf('Group %s: Found %d files\n', groupNames{ii}, numel(files))
 
+    for jj = 1:numel(files)
+        thisFile = fullfile(pathin_tmp, files(jj).name);
+        thisFileContents = niftiread(thisFile);
 
-files = dir(pathin);
-fileTable = struct2table(files);
-fileNames = fileTable.name;
-niftiFileNames = fileNames(contains(fileNames,'.nii.gz'));
+        fprintf('Getting nonzero mean of %s\n', files(jj).name)
+        v = thisFileContents(:);
 
-fprintf('Found %d files\n',length(niftiFileNames))
-
-vm = zeros(length(niftiFileNames),1);
-for ii = 1:length(niftiFileNames)
-
-    thisFile = fullfile(pathin, niftiFileNames{ii});
-    thisFileContents = niftiread(thisFile);
-    %thisFileInfo = niftiinfo(thisFile);
-    fprintf('Getting nonzero mean of %s\n',niftiFileNames{ii})
-    v = thisFileContents(:);
-    vm(ii) = mean(nonzeros(v));
+        vm(end+1,1) = mean(nonzeros(v)); 
+        % save filename
+        thisFileList{end+1,1} = thisFile;
+    end
 end
+
 
 % if exist('group','var')
 %     groupMean = mean(vm(contains(niftiFileNames,group,'IgnoreCase',true)));
 % end
 
-if exist('groupNames','var')
-    for ii = 1:length(groupNames)
-        thisCount = sum(contains(niftiFileNames,groupNames{ii}));
-        groupList{ii} = repmat(groupNames(ii),thisCount,1);
-    end
-    plotGroup = vertcat(groupList{:});
+groupList = strings(numel(thisFileList),1);
 
+for gg = 1:numel(groupNames)
+    idx = contains(thisFileList, groupNames{gg});
+    groupList(idx) = groupNames{gg};
 end
+
+groupList = cellstr(groupList);
+
+
+
+
 
 
 
@@ -136,11 +149,10 @@ if exist('ages','var')
     y = vm(:);
 
     % Convert to categorical once
-    grp = categorical(plotGroup(:));   % <— DO NOT use the name plotGroup
+    grp = categorical(groupList(:));   % <— DO NOT use the name plotGroup
     %     inside the model formula
 
-    % Preallocate
-    directions = strings(3,1)';
+
 
     % --- Fit the interaction model ---
     tbl = table(x, y, grp);
@@ -151,6 +163,8 @@ if exist('ages','var')
     coefTable = mdl.Coefficients;
 
     if sum(contains(groupNames,'CHAIN'))
+        % Preallocate
+        directions = strings(3,1)';
 
         % Compare CHAIN vs AFIRM
         C = [0 0 1 0];
@@ -281,7 +295,7 @@ if exist('ages','var')
 
         end
 
-    elseif contains(groupNames,'NEXPO')
+    elseif sum(contains(groupNames,'group1')) % NEXPO
         comparisons = {'G2 vs G1','G3 vs G1','G4 vs G1','G2 vs G3','G2 vs G4','G3 vs G4'};
         
         Cmat = [ 0 0  1  0  0;   % G2 vs G1
@@ -366,8 +380,8 @@ if exist('ages','var')
 
 
         xlabel('Age');
-        if strcmpi(type,'MD')
-            ylabel('Mean Diffusivity');
+        if strcmpi(type,'T1')
+            ylabel('T1');
             leftleg = 0.3;
             rightleg = 0.7;
         elseif strcmpi(type,'FA')
@@ -383,10 +397,10 @@ if exist('ages','var')
 
         if exist('savedir','var')
             h = gcf;
-            if strcmpi(type,'MD')
-                thisFilename = fullfile(savedir,'MD_plot');
-                lmcoefs = fullfile(savedir,'MD_fitlm_coefficients.csv');
-                pvalssave = fullfile(savedir,'MD_pairwise_pvalues.csv');
+            if strcmpi(type,'T1')
+                thisFilename = fullfile(savedir,'T1_plot');
+                lmcoefs = fullfile(savedir,'T1_fitlm_coefficients.csv');
+                pvalssave = fullfile(savedir,'T1_pairwise_pvalues.csv');
             elseif strcmpi(type,'FA')
                 thisFilename = fullfile(savedir,'FA_plot');
                 lmcoefs = fullfile(savedir,'FA_fitlm_coefficients.csv');

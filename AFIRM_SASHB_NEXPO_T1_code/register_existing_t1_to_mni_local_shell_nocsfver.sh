@@ -39,7 +39,7 @@ T1_DIR="/Volumes/DRS-GBPerm/other/t1mapping_out/"
 #     "16905_004" "16905_005" "17880001" "17880002"
 # )
 SUBJECTS=(
-	"17207_003"
+	"12608_004"
 )
 
 total=${#SUBJECTS[@]}
@@ -50,8 +50,10 @@ for subject in "${SUBJECTS[@]}"; do
 	count=$((count + 1))
     echo "🔹 Processing subject $count of $total: $subject"
 	#bash //to/remove_csf_t1.sh "$subject" "$MPRAGE_DIR/$subject/MPRAGE" "$T1_DIR/$subject"
-	bash "${codePath}remove_csf_t1.sh" "$MPRAGE_DIR/$subject/MPRAGE" "$T1_DIR/$subject" "$subject"
-    python3 "${codePath}register_existing_t1_to_mni_standalone_nocsfver.py" "$MPRAGE_DIR" "$T1_DIR" "$subject"
+	#bash "${codePath}remove_csf_t1.sh" "$MPRAGE_DIR/$subject/MPRAGE" "$T1_DIR/$subject" "$subject"
+	bash "${codePath}mask_t1_gm_wm.sh" "$MPRAGE_DIR/$subject/MPRAGE" "$T1_DIR/$subject" "$subject"
+    #python3 "${codePath}register_existing_t1_to_mni_standalone_nocsfver.py" "$MPRAGE_DIR" "$T1_DIR" "$subject"
+    python3 "${codePath}register_existing_t1_to_mni_gmwm.py" "$MPRAGE_DIR" "$T1_DIR" "$subject"
 done
 echo "Processing complete!"
 
