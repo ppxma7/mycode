@@ -43,13 +43,13 @@ import glob
 #     "17171_002", "17180_002", "17239_002", "17342_002", "17364_002"
 # ]
 
-# subjects = [
-#     "15234-003B", "16469-002A", "16498-002A", "16500-002B", "16501-002b",
-#     "16521-001b", "16523_002b", "16602-002B", "16707-002A", "16708-03A",
-#     "16797-002C", "16798-002A", "16821-002A", "16835-002A", "1688-002C",
-#     "16885-002A", "16994-002A", "16999-002B", "17057-002C", "17058-002A",
-#     "17059-002a", "17311-002b"
-# ]
+subjects = [
+    "15234-003B", "16469-002A", "16498-002A", "16500-002B", "16501-002b",
+    "16521-001b", "16523_002b", "16602-002B", "16707-002A", "16708-03A",
+    "16797-002C", "16798-002A", "16821-002A", "16835-002A", "1688-002C",
+    "16885-002A", "16994-002A", "16999-002B", "17057-002C", "17058-002A",
+    "17059-002a", "17311-002b"
+]
 
 
 # subjects = [
@@ -59,7 +59,7 @@ import glob
 
 
 source_base = "/Volumes/DRS-GBPerm/other/t1mapping_out"
-dest_base = "/Volumes/nemosine/SAN/t1mnispace"
+dest_base = "/Volumes/nemosine/SAN/t1mnispace/g2_afirm_sashb_gmwm/"
 group_folder = os.path.join(dest_base, "group6")
 
 # Make destination folder if it doesn't exist
@@ -67,7 +67,8 @@ os.makedirs(group_folder, exist_ok=True)
 
 for subj in subjects:
     # Find the T1 file using a glob pattern
-    search_pattern = os.path.join(source_base, subj, "*_T1_to_MPRAGE_noCSF_MNI.nii.gz")
+    # search_pattern = os.path.join(source_base, subj, "*_T1_to_MPRAGE_noCSF_MNI.nii.gz")
+    search_pattern = os.path.join(source_base, subj, "*_T1_to_MPRAGE_WM_MNI.nii.gz")
     matches = glob.glob(search_pattern)
     
     if not matches:
@@ -75,7 +76,8 @@ for subj in subjects:
         continue
 
     src_file = matches[0]  # Use the first match
-    dest_file = os.path.join(group_folder, f"{subj}_T1_to_MPRAGE_noCSF_MNI.nii.gz")
+    # dest_file = os.path.join(group_folder, f"{subj}_T1_to_MPRAGE_noCSF_MNI.nii.gz")
+    dest_file = os.path.join(group_folder, f"{subj}_T1_to_MPRAGE_WM_MNI.nii.gz")
 
      # ✅ Skip if destination file already exists
     if os.path.exists(dest_file):
