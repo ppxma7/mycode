@@ -24,12 +24,12 @@ for _, row in df.iterrows():
 
     # Define source and destination paths
     #src_file = os.path.join(source_base, subj, f"{subj}_T1_to_MPRAGE_noCSF_MNI.nii.gz")
-    src_file = os.path.join(source_base, subj, f"{subj}_T1_to_MPRAGE_GM_MNI.nii.gz")
+    src_file = os.path.join(source_base, subj, f"{subj}_T1_to_MPRAGE_WM_MNI.nii.gz")
     print(src_file)
 
     group_folder = os.path.join(dest_base, f"group{group}")
     #dest_file = os.path.join(group_folder, f"{subj}_T1_to_MPRAGE_noCSF_MNI.nii.gz")
-    dest_file = os.path.join(group_folder, f"{subj}_T1_to_MPRAGE_GM_MNI.nii.gz")
+    dest_file = os.path.join(group_folder, f"{subj}_T1_to_MPRAGE_WM_MNI.nii.gz")
 
 
     # Make sure group folder exists
