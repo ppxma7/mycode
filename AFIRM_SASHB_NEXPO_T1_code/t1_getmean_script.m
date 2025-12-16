@@ -114,6 +114,7 @@ for ii = 1:length(groupNames)
 
         fprintf('Getting nonzero mean of %s\n', files(jj).name)
         v = thisFileContents(:);
+        v = v(v>100); % fudge threshold for T1 values, otherwise means are unrealistically low
 
         vm(end+1,1) = mean(nonzeros(v)); 
         % save filename
