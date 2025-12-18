@@ -43,18 +43,18 @@ import glob
 #     "17171_002", "17180_002", "17239_002", "17342_002", "17364_002"
 # ]
 
-subjects = [
-    "15234-003B", "16469-002A", "16498-002A", "16500-002B", "16501-002b",
-    "16521-001b", "16523_002b", "16602-002B", "16707-002A", "16708-03A",
-    "16797-002C", "16798-002A", "16821-002A", "16835-002A", "1688-002C",
-    "16885-002A", "16994-002A", "16999-002B", "17057-002C", "17058-002A",
-    "17059-002a", "17311-002b"
-]
-
-
 # subjects = [
-#     "16905_004", "16905_005", "17880001", "17880002",
+#     "15234-003B", "16469-002A", "16498-002A", "16500-002B", "16501-002b",
+#     "16521-001b", "16523_002b", "16602-002B", "16707-002A", "16708-03A",
+#     "16797-002C", "16798-002A", "16821-002A", "16835-002A", "1688-002C",
+#     "16885-002A", "16994-002A", "16999-002B", "17057-002C", "17058-002A",
+#     "17059-002a", "17311-002b"
 # ]
+
+
+subjects = [
+    "16905_004", "16905_005", "17880001", "17880002", "156862_004"
+]
 
 
 
@@ -78,6 +78,31 @@ for subj in subjects:
     src_file = matches[0]  # Use the first match
     # dest_file = os.path.join(group_folder, f"{subj}_T1_to_MPRAGE_noCSF_MNI.nii.gz")
     dest_file = os.path.join(group_folder, f"{subj}_T1_to_MPRAGE_WM_MNI.nii.gz")
+
+     # ✅ Skip if destination file already exists
+    if os.path.exists(dest_file):
+        print(f"⏭️ Skipping {subj} (already exists)")
+        continue
+
+    try:
+        shutil.copyfile(src_file, dest_file)
+        print(f"✅ Copied: {subj}")
+    except Exception as e:
+        print(f"⚠️ Error copying {subj}: {e}")
+
+for subj in subjects:
+    # Find the T1 file using a glob pattern
+    # search_pattern = os.path.join(source_base, subj, "*_T1_to_MPRAGE_noCSF_MNI.nii.gz")
+    search_pattern = os.path.join(source_base, subj, "*_T1_to_MPRAGE_GM_MNI.nii.gz")
+    matches = glob.glob(search_pattern)
+    
+    if not matches:
+        print(f"❌ T1 file not found for subject {subj}")
+        continue
+
+    src_file = matches[0]  # Use the first match
+    # dest_file = os.path.join(group_folder, f"{subj}_T1_to_MPRAGE_noCSF_MNI.nii.gz")
+    dest_file = os.path.join(group_folder, f"{subj}_T1_to_MPRAGE_GM_MNI.nii.gz")
 
      # ✅ Skip if destination file already exists
     if os.path.exists(dest_file):

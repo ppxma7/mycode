@@ -29,11 +29,11 @@ if strcmpi(thisRUN,'AFIRM')
 elseif strcmpi(thisRUN,'NEXPO')
     % fewer subs here than DTI, recall
     ages = [19 18 19 19 18 18 18 19 19 19 19 19 18 19 18 19 18 18 18 19 18 19 19 19 19 18 18 19 19 18 ...
-        19 19 19 19 19 18 18 18 19 18 18 18 18 18 18 18 34 35 30 39 31 40 43 38 35 33 49 44 46 31 ...
-        36 45 30 44 46 31 37 39 38 45 34 30 40 43 33 32 41 45 33 49 45 44 42 40 50 50 37 49 49 46 ...
-        40 39 46 41 32 40 33 35 31 31 37 44 31 33 45 43 47 45 49 45 39 38 32 30 38 46 38 46 38 43 ...
-        50 43 47 31 37 47 41 36 41 38 47 35 43 49 48 46 35 47 45 31 46 48 48 47 49 37 49 37 44 45 ...
-        31 50 50 34 36 32 34 39 39 49 40 49 30 49 35 34 32 40 43 42 40 36 43 38 33 31 38 30 38 35]';
+            19 19 19 19 19 18 18 18 19 18 18 18 18 18 18 18 34 35 30 39 31 40 43 38 35 33 49 44 46 31 ...
+            36 45 30 44 46 31 37 39 38 45 34 30 40 43 33 32 41 45 33 49 45 44 42 40 50 50 37 49 49 46 ...
+            40 39 46 41 32 40 33 35 31 31 37 44 31 33 45 43 47 45 49 45 39 38 32 30 38 46 38 46 38 43 ...
+            50 43 47 31 37 47 41 36 41 38 47 35 43 49 48 46 35 47 45 31 46 48 48 47 49 37 49 37 44 45 ...
+            31 50 50 34 36 32 34 39 39 49 40 49 30 49 35 34 32 40 43 42 40 36 43 38 33 31 38 30 38 35]';
 
     if strcmpi(thisTYPE,'T1')
         groupNames = {'group1', 'group2', 'group3', 'group4'};
@@ -107,7 +107,7 @@ thisFileList = {};
 % this is complicated because there are 4 group folders
 for ii = 1:length(groupNames)
     pathin_tmp = fullfile(pathin, groupNames{ii},gmorwm,'/');
-
+    
     files = dir(fullfile(pathin_tmp, '*.nii.gz'));
     fprintf('Group %s: Found %d files\n', groupNames{ii}, numel(files))
 
@@ -119,7 +119,7 @@ for ii = 1:length(groupNames)
         v = thisFileContents(:);
         v = v(v>100); % fudge threshold for T1 values, otherwise means are unrealistically low
 
-        vm(end+1,1) = mean(nonzeros(v));
+        vm(end+1,1) = mean(nonzeros(v)); 
         % save filename
         thisFileList{end+1,1} = thisFile;
     end
@@ -173,7 +173,8 @@ if exist('ages','var')
 
         % --- Fit the interaction model ---
         tbl = table(x, y, grp);
-        mdl = fitlm(tbl, 'y ~ x * grp');
+        %mdl = fitlm(tbl, 'y ~ x + grp'); % this will force same slopes
+        mdl = fitlm(tbl, 'y ~ x * grp'); % here add interaction effect (does age differ between groups)
         % We are using fitlm here instead of simple ANOVA because we need to
         % take age into account as a covariate!
         disp(mdl)
@@ -181,35 +182,33 @@ if exist('ages','var')
         disp(mdl.CoefficientNames')
         coefTable = mdl.Coefficients;
 
-        % Preallocate
-        directions = strings(3,1)';
 
-        % AFIRM vs G2 (slope difference)
+        % AFIRM vs CHAIN (slope difference)
         C = [0 0 0 0 1 0];
         [pF(1),~,~] = coefTest(mdl, C);
         d = C * mdl.Coefficients.Estimate;
-        directions(1) = ternary(d>0,'AFIRM','G2');
-        fprintf('Slope: AFIRM vs G2 p = %.4f\n', pF(1));
-
-        % SASHB vs G2 (slope difference)
+        directions(1) = ternary(d>0,'AFIRM','CHAIN');
+        fprintf('Slope: AFIRM vs CHAIN p = %.4f\n', pF(1));
+        
+        % SASHB vs CHAIN (slope difference)
         C = [0 0 0 0 0 1];
         [pF(2),~,~] = coefTest(mdl, C);
         d = C * mdl.Coefficients.Estimate;
-        directions(2) = ternary(d>0,'SASHB','G2');
-        fprintf('Slope: SASHB vs G2 p = %.4f\n', pF(2));
-
+        directions(2) = ternary(d>0,'SASHB','CHAIN');
+        fprintf('Slope: SASHB vs CHAIN p = %.4f\n', pF(2));
+        
         % AFIRM vs SASHB (slope difference)
         C = [0 0 0 0 1 -1];
         [pF(3),~,~] = coefTest(mdl, C);
         d = C * mdl.Coefficients.Estimate;
         directions(3) = ternary(d>0,'AFIRM','SASHB');
         fprintf('Slope: AFIRM vs SASHB p = %.4f\n', pF(3));
-
+        
         p_adj = min(pF * numel(pF), 1);
         disp(p_adj)
 
 
-        minN = 5;   % minimum points required for a fit
+        minN = 3;   % minimum points required for a fit
 
         bloop  = figure('Position',[100 100 700 500]); hold on
         set(bloop, 'PaperOrientation', 'landscape');
@@ -249,38 +248,38 @@ if exist('ages','var')
 
             plot(xx, yy, 'LineStyle', lineStyles{i}, ...
                 'Color', colors(i,:), ...
-                'LineWidth', 2,...
-                'DisplayName', sprintf('Fit%s', char(groups{i})));
+                'LineWidth', 2);
 
         end
 
 
         xlabel('Age');
-        if strcmpi(gmorwm,'GM')
-            ylabel('GM');
-            leftleg = 0.7;
-            rightleg = 0.65;
-        elseif strcmpi(gmorwm,'WM')
-            ylabel('WM');
-            leftleg = 0.8;
-            rightleg = 0.65;
+        if strcmpi(type,'MD')
+            ylabel('Mean Diffusivity');
+            leftleg = 0.4;
+            rightleg = 0.7;
+        elseif strcmpi(type,'FA')
+            ylabel('Fractional Anisotropy');
+            leftleg = 0.2;
+            rightleg = 0.7;
         end
 
         %legend('Location','best');
-        legend('NEXPOG2','AFIRM','SASHB','FitNEXPOG2','FitAFIRM','Location','best')
+        legend('AFIRM','CHAIN','SASHB','FitAFIRM','FitCHAIN','Location','best');
         box on;
         grid on;
 
         if exist('savedir','var')
             h = gcf;
-            if strcmpi(gmorwm,'GM')
-                thisFilename = fullfile(savedir,'GM_plot');
-                lmcoefs = fullfile(savedir,'GM_fitlm_coefficients.csv');
-                pvalssave = fullfile(savedir,'GM_pairwise_pvalues.csv');
-            elseif strcmpi(gmorwm,'WM')
-                thisFilename = fullfile(savedir,'WM_plot');
-                lmcoefs = fullfile(savedir,'WM_fitlm_coefficients.csv');
-                pvalssave = fullfile(savedir,'WM_pairwise_pvalues.csv');
+            if strcmpi(type,'MD')
+                thisFilename = fullfile(savedir,'MD_plot');
+                lmcoefs = fullfile(savedir,'MD_fitlm_coefficients.csv');
+                pvalssave = fullfile(savedir,'MD_pairwise_pvalues.csv');
+            elseif strcmpi(type,'FA')
+                thisFilename = fullfile(savedir,'FA_plot');
+                lmcoefs = fullfile(savedir,'FA_fitlm_coefficients.csv');
+                pvalssave = fullfile(savedir,'FA_pairwise_pvalues.csv');
+
             end
 
             print(h, '-dpdf', thisFilename, '-r300');
@@ -302,11 +301,8 @@ if exist('ages','var')
 
             %% --- Save pairwise p-values ---
             % Your previously computed contrasts
-            comparisons = {'NEXPOG2 vs AFIRM','AFIRM vs SASHB','NEXPOG2 vs SASHB'};
-
-            %pairCSVTable = table(comparisons', p_adj', 'VariableNames', {'Comparison','pValue'});
-            pairCSVTable = table(comparisons', p_adj', directions', 'VariableNames', {'Comparison','pValue','HigherGroup'});
-
+            comparisons_slope = {'AFIRM vs CHAIN','SASHB vs CHAIN','AFIRM vs SASHB'};
+            pairCSVTable = table(comparisons_slope', p_adj', directions', 'VariableNames', {'Comparison','pValue','HigherGroup'});
             writetable(pairCSVTable, pvalssave);
 
             disp('CSV files saved: fitlm_coefficients.csv and pairwise_pvalues.csv');
@@ -335,7 +331,7 @@ if exist('ages','var')
         disp(mdl.CoefficientNames')
 
         comparisons = {'G2 vs G1','G3 vs G1','G4 vs G1','G2 vs G3','G2 vs G4','G3 vs G4'};
-
+        
         Cmat = [
             0 0 0 0 0 1 0 0;  % G2 vs G1
             0 0 0 0 0 0 1 0;  % G3 vs G1
@@ -344,7 +340,7 @@ if exist('ages','var')
             0 0 0 0 0 1 0 -1; % G2 vs G4
             0 0 0 0 0 0 1 -1; % G3 vs G4
             ];
-
+        
         pF = zeros(size(Cmat,1),1);
         directions = strings(size(Cmat,1),1);  % store direction strings
 
@@ -365,7 +361,7 @@ if exist('ages','var')
             parts = split(comparisons{i}, ' vs ');
             directions(i) = ternary(d>0, parts{1}, parts{2});
         end
-
+        
         % Bonferroni correction
         p_adj = min(pF * numel(pF), 1);
         disp('Bonferroni-corrected p-values:');
@@ -379,7 +375,7 @@ if exist('ages','var')
         set(bloop, 'PaperOrientation', 'landscape');
         groups  = categories(grp);
         markers = {'o','o','s','^'};         % last group = triangle
-        faces   = {'none','k','none','k'};
+        faces   = {'none','k','none','k'};  
         lineStyles = {'--','-','-.','-'};    % 4 line styles
         colors = [0.5 0.5 0.5; 0 0 0; 0 0 0; 0.7 0.7 0.7];  % RGB for 4 lines
 
@@ -420,14 +416,14 @@ if exist('ages','var')
 
 
         xlabel('Age');
-        if strcmpi(gmorwm,'GM')
-            ylabel('GM');
-            leftleg = 0.7;
-            rightleg = 0.65;
-        elseif strcmpi(gmorwm,'WM')
-            ylabel('WM');
-            leftleg = 0.8;
-            rightleg = 0.65;
+        if strcmpi(type,'T1')
+            ylabel('T1');
+            leftleg = 0.3;
+            rightleg = 0.7;
+        elseif strcmpi(type,'FA')
+            ylabel('Fractional Anisotropy');
+            leftleg = 0.3;
+            rightleg = 0.7;
         end
 
         %legend('Location','best');
@@ -437,14 +433,15 @@ if exist('ages','var')
 
         if exist('savedir','var')
             h = gcf;
-            if strcmpi(gmorwm,'GM')
-                thisFilename = fullfile(savedir,'GM_plot');
-                lmcoefs = fullfile(savedir,'GM_fitlm_coefficients.csv');
-                pvalssave = fullfile(savedir,'GM_pairwise_pvalues.csv');
-            elseif strcmpi(gmorwm,'WM')
-                thisFilename = fullfile(savedir,'WM_plot');
-                lmcoefs = fullfile(savedir,'WM_fitlm_coefficients.csv');
-                pvalssave = fullfile(savedir,'WM_pairwise_pvalues.csv');
+            if strcmpi(type,'T1')
+                thisFilename = fullfile(savedir,'T1_plot');
+                lmcoefs = fullfile(savedir,'T1_fitlm_coefficients.csv');
+                pvalssave = fullfile(savedir,'T1_pairwise_pvalues.csv');
+            elseif strcmpi(type,'FA')
+                thisFilename = fullfile(savedir,'FA_plot');
+                lmcoefs = fullfile(savedir,'FA_fitlm_coefficients.csv');
+                pvalssave = fullfile(savedir,'FA_pairwise_pvalues.csv');
+
             end
 
             print(h, '-dpdf', thisFilename, '-r300');
@@ -493,9 +490,9 @@ end
 end
 
 function out = ternary(cond,trueVal,falseVal)
-if cond
-    out = trueVal;
-else
-    out = falseVal;
-end
+    if cond
+        out = trueVal;
+    else
+        out = falseVal;
+    end
 end
