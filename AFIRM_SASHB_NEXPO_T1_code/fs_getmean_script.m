@@ -46,8 +46,8 @@ disp(D(:,{'ID','AGE','GROUP','GMfrac','WMfrac','CSFfrac'}));
 
 %% settings
 
-groupNames = '3group'; % or '4group'
-tissueType = 'GM';
+groupNames = '4group'; % or '4group'
+tissueType = 'CSF';
 userName = char(java.lang.System.getProperty('user.name'));
 savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/freesurfer_plots/' groupNames '/'];
 
@@ -94,41 +94,43 @@ if sum(contains(groupNames,'3group'))
 
     % --- Fit the interaction model ---
     tbl = table(x, y, grp);
-    mdl = fitlm(tbl, 'y ~ x + grp');
+    mdl = fitlm(tbl, 'y ~ x * grp');
     % We are using fitlm here instead of simple ANOVA because we need to
     % take age into account as a covariate!
     disp(mdl)
+    disp(categories(grp))
+    disp(mdl.CoefficientNames')
     coefTable = mdl.Coefficients;
 
     % Preallocate
     directions = strings(3,1)';
 
-    % Compare CHAIN vs AFIRM
-    C = [0 0 1 0];
-    [pF(1), F, DF] = coefTest(mdl, C);
-    fprintf('p-value NEXPOG2 vs AFIRM: %.4f\n', pF(1));
+    % AFIRM vs G2 (slope difference)
+    C = [0 0 0 0 1 0];
+    [pF(1),~,~] = coefTest(mdl, C);
     d = C * mdl.Coefficients.Estimate;
-    directions(1) = ternary(d>0,'NEXPOG2','AFIRM');
+    directions(1) = ternary(d>0,'AFIRM','G2');
+    fprintf('Slope: AFIRM vs G2 p = %.4f\n', pF(1));
 
-    % Compare AFIRM vs SASHB
-    C = [0 0 0 1];
-    [pF(2), F, DF] = coefTest(mdl, C);
-    fprintf('p-value SASHB vs AFIRM: %.4f\n', pF(2));
+    % SASHB vs G2 (slope difference)
+    C = [0 0 0 0 0 1];
+    [pF(2),~,~] = coefTest(mdl, C);
     d = C * mdl.Coefficients.Estimate;
-    directions(2) = ternary(d>0,'SASHB','AFIRM');
+    directions(2) = ternary(d>0,'SASHB','G2');
+    fprintf('Slope: SASHB vs G2 p = %.4f\n', pF(2));
 
-    % Compare CHAIN vs SASHB
-    C = [0 0 -1 1];
-    [pF(3), F, DF] = coefTest(mdl, C);
-    fprintf('p-value NEXPOG2 vs SASHB: %.4f\n', pF(3));
+    % AFIRM vs SASHB (slope difference)
+    C = [0 0 0 0 1 -1];
+    [pF(3),~,~] = coefTest(mdl, C);
     d = C * mdl.Coefficients.Estimate;
-    directions(3) = ternary(d>0,'SASHB','NEXPOG2');
+    directions(3) = ternary(d>0,'AFIRM','SASHB');
+    fprintf('Slope: AFIRM vs SASHB p = %.4f\n', pF(3));
 
-    p_adj = min(pF * numel(pF), 1);   % Bonferroni correction
+    p_adj = min(pF * numel(pF), 1);
     disp(p_adj)
 
 
-    minN = 3;   % minimum points required for a fit
+    minN = 5;   % minimum points required for a fit
 
     bloop  = figure('Position',[100 100 700 500]); hold on
     set(bloop, 'PaperOrientation', 'landscape');
@@ -168,7 +170,8 @@ if sum(contains(groupNames,'3group'))
 
         plot(xx, yy, 'LineStyle', lineStyles{i}, ...
             'Color', colors(i,:), ...
-            'LineWidth', 2);
+            'LineWidth', 2,...
+            'DisplayName', sprintf('Fit%s', char(groups{i})));
 
     end
 
@@ -180,16 +183,16 @@ if sum(contains(groupNames,'3group'))
         rightleg = 0.65;
     elseif strcmpi(tissueType,'WM')
         ylabel('WMV / TIV');
-        leftleg = 0.2;
-        rightleg = 0.7;
+        leftleg = 0.8;
+        rightleg = 0.65;
     elseif strcmpi(tissueType,'CSF')
         ylabel('CSF / TIV');
         leftleg = 0.2;
-        rightleg = 0.7;
+        rightleg = 0.65;
     end
 
     %legend('Location','best');
-    legend('AFIRM','NEXPOG2','SASHB','FitAFIRM','FitNEXPOG2','FitSASHB','Position',[leftleg rightleg 0.1 0.2]);
+    legend('NEXPOG2','AFIRM','SASHB','FitNEXPOG2','FitAFIRM','Location','best')
     box on;
     grid on;
 
@@ -259,20 +262,24 @@ elseif contains(groupNames,'4group')
 
     % --- Fit the interaction model ---
     tbl = table(x, y, grp);
-    mdl = fitlm(tbl, 'y ~ x + grp');
+    mdl = fitlm(tbl, 'y ~ x * grp');
     % We are using fitlm here instead of simple ANOVA because we need to
     % take age into account as a covariate!
     disp(mdl)
+    disp(categories(grp))
+    disp(mdl.CoefficientNames')
     coefTable = mdl.Coefficients;
 
     comparisons = {'G2 vs G1','G3 vs G1','G4 vs G1','G2 vs G3','G2 vs G4','G3 vs G4'};
 
-    Cmat = [ 0 0  1  0  0;   % G2 vs G1
-        0 0  0  1  0;   % G3 vs G1
-        0 0  0  0  1;   % G4 vs G1
-        0 0  1 -1  0;   % G2 vs G3
-        0 0  1  0 -1;   % G2 vs G4
-        0 0  0  1 -1];  % G3 vs G4
+    Cmat = [
+        0 0 0 0 0 1 0 0;  % G2 vs G1
+        0 0 0 0 0 0 1 0;  % G3 vs G1
+        0 0 0 0 0 0 0 1;  % G4 vs G1
+        0 0 0 0 0 1 -1 0; % G2 vs G3
+        0 0 0 0 0 1 0 -1; % G2 vs G4
+        0 0 0 0 0 0 1 -1; % G3 vs G4
+        ];
 
     pF = zeros(size(Cmat,1),1);
     directions = strings(size(Cmat,1),1);  % store direction strings
@@ -302,7 +309,7 @@ elseif contains(groupNames,'4group')
 
 
 
-    minN = 3;   % minimum points required for a fit
+    minN = 5;   % minimum points required for a fit
 
     bloop  = figure('Position',[100 100 700 500]); hold on
     set(bloop, 'PaperOrientation', 'landscape');
@@ -351,16 +358,16 @@ elseif contains(groupNames,'4group')
     xlabel('Age');
     if strcmpi(tissueType,'GM')
         ylabel('GMV / TIV');
-        leftleg = 0.4;
-        rightleg = 0.7;
+        leftleg = 0.3;
+        rightleg = 0.65;
     elseif strcmpi(tissueType,'WM')
         ylabel('WMV / TIV');
-        leftleg = 0.2;
-        rightleg = 0.7;
+        leftleg = 0.3;
+        rightleg = 0.65;
     elseif strcmpi(tissueType,'CSF')
         ylabel('CSF / TIV');
-        leftleg = 0.2;
-        rightleg = 0.7;
+        leftleg = 0.3;
+        rightleg = 0.65;
     end
 
     %legend('Location','best');

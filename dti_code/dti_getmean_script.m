@@ -12,7 +12,7 @@ if strcmpi(thisRUN,'CHAIN')
         75 55 47 39 41 65 69 31 64 70 61 70 72 37 55 41 60 67 49 57 73 49 ...
         57 56 ...
         ]';
-    groupNames = {'AFIRM','CHAIN','SASHB'};
+    groupNames = {'CHAIN','AFIRM','SASHB'};
     savedgroup = 'afirm_chain_sashb';
     if strcmpi(thisTYPE,'FA')
         pathin = '/Volumes/kratos/dti_data/tbss_analysis_wchain/origdata/';
@@ -95,13 +95,24 @@ if sum(strcmp('type',varargin))
 end
 
 
-
 files = dir(pathin);
 fileTable = struct2table(files);
 fileNames = fileTable.name;
 niftiFileNames = fileNames(contains(fileNames,'.nii.gz'));
 
 fprintf('Found %d files\n',length(niftiFileNames))
+
+% fix order
+orderedFiles = cell(0,1);
+
+for g = 1:numel(groupNames)
+    thisGroupFiles = niftiFileNames(contains(niftiFileNames, groupNames{g}));
+    orderedFiles = [orderedFiles; thisGroupFiles(:)];
+end
+
+niftiFileNames = orderedFiles;
+
+
 
 vm = zeros(length(niftiFileNames),1);
 for ii = 1:length(niftiFileNames)
@@ -131,50 +142,83 @@ end
 
 %%
 if exist('ages','var')
-    close all
-    x = ages(:);
-    y = vm(:);
-
-    % Convert to categorical once
-    grp = categorical(plotGroup(:));   % <— DO NOT use the name plotGroup
-    %     inside the model formula
-
-    % Preallocate
-    directions = strings(3,1)';
-
-    % --- Fit the interaction model ---
-    tbl = table(x, y, grp);
-    mdl = fitlm(tbl, 'y ~ x + grp');
-    % We are using fitlm here instead of simple ANOVA because we need to
-    % take age into account as a covariate! 
-    disp(mdl)
-    coefTable = mdl.Coefficients;
 
     if sum(contains(groupNames,'CHAIN'))
 
-        % Compare CHAIN vs AFIRM
-        C = [0 0 1 0];
-        [pF(1), F, DF] = coefTest(mdl, C);
-        fprintf('p-value CHAIN vs AFIRM: %.4f\n', pF(1));
-        d = C * mdl.Coefficients.Estimate;
-        directions(1) = ternary(d>0,'CHAIN','AFIRM');
+        x = ages(:);
+        %x = x - mean(x);   % centre age this is so you can compare intercepts at mean age
+        y = vm(:);
+        % Convert to categorical once
+        %grp = categorical(plotGroup(:));   % <— DO NOT use the name plotGroup
+        %     inside the model formula
+        grp = categorical(plotGroup(:), {'CHAIN','AFIRM','SASHB'}, ...
+            'Ordinal', false);
+        % Preallocate
+        directions = strings(3,1)';
 
-        % Compare AFIRM vs SASHB
-        C = [0 0 0 1];
-        [pF(2), F, DF] = coefTest(mdl, C);
-        fprintf('p-value SASHB vs AFIRM: %.4f\n', pF(2));
-        d = C * mdl.Coefficients.Estimate;
-        directions(2) = ternary(d>0,'SASHB','AFIRM');
+        % --- Fit the interaction model ---
+        tbl = table(x, y, grp);
+        %mdl = fitlm(tbl, 'y ~ x + grp'); % this will force same slopes
+        mdl = fitlm(tbl, 'y ~ x * grp'); % here add interaction effect (does age differ between groups)
+        % We are using fitlm here instead of simple ANOVA because we need to
+        % take age into account as a covariate!
+        disp(mdl)
+        disp(categories(grp))
+        disp(mdl.CoefficientNames')
+        coefTable = mdl.Coefficients;
 
-        % Compare CHAIN vs SASHB
-        C = [0 0 -1 1];
-        [pF(3), F, DF] = coefTest(mdl, C);
-        fprintf('p-value CHAIN vs SASHB: %.4f\n', pF(3));
+        % AFIRM vs CHAIN (slope difference)
+        C = [0 0 0 0 1 0];
+        [pF(1),~,~] = coefTest(mdl, C);
         d = C * mdl.Coefficients.Estimate;
-        directions(3) = ternary(d>0,'SASHB','CHAIN');
-
-        p_adj = min(pF * numel(pF), 1);   % Bonferroni correction
+        directions(1) = ternary(d>0,'AFIRM','CHAIN');
+        fprintf('Slope: AFIRM vs CHAIN p = %.4f\n', pF(1));
+        
+        % SASHB vs CHAIN (slope difference)
+        C = [0 0 0 0 0 1];
+        [pF(2),~,~] = coefTest(mdl, C);
+        d = C * mdl.Coefficients.Estimate;
+        directions(2) = ternary(d>0,'SASHB','CHAIN');
+        fprintf('Slope: SASHB vs CHAIN p = %.4f\n', pF(2));
+        
+        % AFIRM vs SASHB (slope difference)
+        C = [0 0 0 0 1 -1];
+        [pF(3),~,~] = coefTest(mdl, C);
+        d = C * mdl.Coefficients.Estimate;
+        directions(3) = ternary(d>0,'AFIRM','SASHB');
+        fprintf('Slope: AFIRM vs SASHB p = %.4f\n', pF(3));
+        
+        p_adj = min(pF * numel(pF), 1);
         disp(p_adj)
+
+        % now intercept differences
+        % pI = zeros(3,1);
+        % directionsI = strings(3,1)';
+        % 
+        % % AFIRM vs CHAIN
+        % C = [0 0 1 0 0 0];
+        % [pI(1),~,~] = coefTest(mdl, C);
+        % d = C * mdl.Coefficients.Estimate;
+        % directionsI(1) = ternary(d>0,'AFIRM','CHAIN');
+        % fprintf('Intercept (mean age): AFIRM vs CHAIN p = %.4f\n', pI(1));
+        % 
+        % % SASHB vs CHAIN
+        % C = [0 0 0 1 0 0];
+        % [pI(2),~,~] = coefTest(mdl, C);
+        % d = C * mdl.Coefficients.Estimate;
+        % directionsI(2) = ternary(d>0,'SASHB','CHAIN');
+        % fprintf('Intercept (mean age): SASHB vs CHAIN p = %.4f\n', pI(2));
+        % 
+        % % AFIRM vs SASHB
+        % C = [0 0 1 -1 0 0];
+        % [pI(3),~,~] = coefTest(mdl, C);
+        % d = C * mdl.Coefficients.Estimate;
+        % directionsI(3) = ternary(d>0,'AFIRM','SASHB');
+        % fprintf('Intercept (mean age): AFIRM vs SASHB p = %.4f\n', pI(3));
+        % 
+        % % Bonferroni correction
+        % pI_adj = min(pI * numel(pI), 1);
+        % disp(pI_adj)
 
 
         minN = 3;   % minimum points required for a fit
@@ -230,11 +274,12 @@ if exist('ages','var')
         elseif strcmpi(type,'FA')
             ylabel('Fractional Anisotropy');
             leftleg = 0.2;
-            rightleg = 0.7;
+            rightleg = 0.2;
         end
 
         %legend('Location','best');
-        legend('AFIRM','CHAIN','SASHB','FitAFIRM','FitCHAIN','Position',[leftleg rightleg 0.1 0.2]);
+        %legend('AFIRM','CHAIN','SASHB','FitAFIRM','FitCHAIN','Position', [leftleg rightleg 0.1 0.2]);
+        legend('AFIRM','CHAIN','SASHB','FitAFIRM','FitCHAIN','Location','best');
         box on;
         grid on;
 
@@ -270,26 +315,52 @@ if exist('ages','var')
 
             %% --- Save pairwise p-values ---
             % Your previously computed contrasts
-            comparisons = {'CHAIN vs AFIRM','AFIRM vs SASHB','CHAIN vs SASHB'};
-
-            %pairCSVTable = table(comparisons', p_adj', 'VariableNames', {'Comparison','pValue'});
-            pairCSVTable = table(comparisons', p_adj', directions', 'VariableNames', {'Comparison','pValue','HigherGroup'});
-            
+            comparisons_slope = {'AFIRM vs CHAIN','SASHB vs CHAIN','AFIRM vs SASHB'};
+            pairCSVTable = table(comparisons_slope', p_adj', directions', 'VariableNames', {'Comparison','pValue','HigherGroup'});
             writetable(pairCSVTable, pvalssave);
+
+            % comparisons_intercept = {'AFIRM vs CHAIN','SASHB vs CHAIN','AFIRM vs SASHB'};
+            % interceptCSVFile = fullfile(savedir, 'intercept_pairwise_pvalues.csv');
+            % pairInterceptTable = table(comparisons_intercept', pI_adj, directionsI', ...
+            %                            'VariableNames', {'Comparison','pValue','HigherGroup'});
+            % writetable(pairInterceptTable, interceptCSVFile);
 
             disp('CSV files saved: fitlm_coefficients.csv and pairwise_pvalues.csv');
 
         end
 
     elseif contains(groupNames,'NEXPO')
+
+
+        x = ages(:);
+        %x = x - mean(x);   % centre age this is so you can compare intercepts at mean age
+        y = vm(:);
+        % Convert to categorical once
+        %grp = categorical(plotGroup(:));   % <— DO NOT use the name plotGroup
+        %     inside the model formula
+        grp = categorical(plotGroup(:), groupNames, ...
+            'Ordinal', false);
+
+        % --- Fit the interaction model ---
+        tbl = table(x, y, grp);
+        %mdl = fitlm(tbl, 'y ~ x + grp'); % this will force same slopes
+        mdl = fitlm(tbl, 'y ~ x * grp'); % here add interaction effect (does age differ between groups)
+        % We are using fitlm here instead of simple ANOVA because we need to
+        % take age into account as a covariate!
+        disp(mdl)
+        disp(categories(grp))
+        disp(mdl.CoefficientNames')
+
         comparisons = {'G2 vs G1','G3 vs G1','G4 vs G1','G2 vs G3','G2 vs G4','G3 vs G4'};
         
-        Cmat = [ 0 0  1  0  0;   % G2 vs G1
-                 0 0  0  1  0;   % G3 vs G1
-                 0 0  0  0  1;   % G4 vs G1
-                 0 0  1 -1  0;   % G2 vs G3
-                 0 0  1  0 -1;   % G2 vs G4
-                 0 0  0  1 -1];  % G3 vs G4
+        Cmat = [
+            0 0 0 0 0 1 0 0;  % G2 vs G1
+            0 0 0 0 0 0 1 0;  % G3 vs G1
+            0 0 0 0 0 0 0 1;  % G4 vs G1
+            0 0 0 0 0 1 -1 0; % G2 vs G3
+            0 0 0 0 0 1 0 -1; % G2 vs G4
+            0 0 0 0 0 0 1 -1; % G3 vs G4
+            ];
         
         pF = zeros(size(Cmat,1),1);
         directions = strings(size(Cmat,1),1);  % store direction strings
@@ -377,7 +448,8 @@ if exist('ages','var')
         end
 
         %legend('Location','best');
-        legend('NEXPO1','NEXPO2','NEXPO3','NEXPO4','FitG1','FitG2','FitG3','FitG4','Position',[leftleg rightleg 0.1 0.2]);
+        %legend('NEXPO1','NEXPO2','NEXPO3','NEXPO4','FitG1','FitG2','FitG3','FitG4','Position',[leftleg rightleg 0.1 0.2]);
+        legend('NEXPO1','NEXPO2','NEXPO3','NEXPO4','FitG1','FitG2','FitG3','FitG4','Location','best');
         box on;
         grid on;
 
