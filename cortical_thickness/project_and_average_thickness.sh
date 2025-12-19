@@ -81,13 +81,16 @@ export SUBJECTS_DIR="/Volumes/DRS-GBPerm/other/outputs"
 # )
 
 subjects=(
-16905_005 17880002 156862_005 \
+  CHN019_V6_C CHN002_V6_C CHN009_V6_C CHN013_v6_classic \
+  CHN015_V6_DTI_C CHN010_V6_2_DTI_C CHN012 CHN014_V6_DTI_C \
+  CHN001_V6_C CHN003_V6_C CHN006_V6_C CHN005_v6_redo_C CHN007_V6_C \
+  CHN008_V6_DTI_C \
 )
 
 
 
 
-OUTDIR="${SUBJECTS_DIR}/group_thickness_sashb_postdialy"
+OUTDIR="${SUBJECTS_DIR}/group_thickness_chain"
 mkdir -p "$OUTDIR"
 
 echo "--------------------------------------"

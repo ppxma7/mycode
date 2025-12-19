@@ -33,8 +33,8 @@ threshold = 0.1
 cmap = "viridis"
 
 # --- Loop over groups ---
-for g in [1, 2, 3, 4]:
-
+#for g in [1, 2, 3, 4]:
+for g in [7]:
     print(f"Plotting group {g}")
 
     lh_file = os.path.join(outdir, f"lh.thickness.group{g}.mean.mgh")
