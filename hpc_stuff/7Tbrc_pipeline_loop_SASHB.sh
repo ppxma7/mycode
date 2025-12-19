@@ -24,7 +24,7 @@ export OUTPUT_DIR="/spmstore/project/SASHB/SASHB/outputs/"
 #"16994-002A" "16999-002B" "17057-002C" "17058-002A" "17059-002a")
 
 #subjects=("16905_004" "16905_005" "17880001" "17880002")
-subjects=("156862_004" "156862_005")
+subjects=("SASHB_5_1" "SASHB_5_2" "SASHB_6_1" "SASHB_6_2" "SASHB_7_2")
 
 # Loop through each subject
 for subject in "${subjects[@]}"; do
