@@ -150,6 +150,13 @@ groupList = cellstr(groupList);
 
 
 
+mu = mean(vm, 'omitnan');
+sd = std(vm,  'omitnan');
+
+z = (vm - mu) ./ sd;
+outIdx = abs(z) > 3;
+table(thisFileList(outIdx), groupList(outIdx), vm(outIdx), z(outIdx), ...
+    'VariableNames', {'File','Group','MeanT1','Z'})
 
 
 
