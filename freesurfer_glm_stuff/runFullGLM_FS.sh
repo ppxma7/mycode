@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #study=$1
-study=SASHBStudy_prevpost
+study=participants_wg2_wafirm_wsashb_wchain
 export SUBJECTS_DIR=$(pwd)
 
 echo $study

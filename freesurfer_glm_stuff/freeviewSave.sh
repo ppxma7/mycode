@@ -2,24 +2,24 @@
 
 # === CONFIGURATION ===
 SUBJECTS_DIR=/Volumes/DRS-GBPerm/other/outputs
-ROOT_DIR=/Volumes/DRS-GBPerm/other/outputs/etiv_doss_predialy
-OUTPUT_ROOT="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/etiv_doss_predialy"
+ROOT_DIR=/Volumes/DRS-GBPerm/other/outputs/etiv_doss_wage_wg2_wafirm_wsashb_wchain
+OUTPUT_ROOT="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/etiv_doss_wage_wg2_wafirm_wsashb_wchain"
 
 hemi_list=("lh" "rh")
-# measure_list=("thickness" "volume")
-# contrast_dirs=(
-#   Age_overall g2_vs_g5 g2_vs_g6 g5_vs_g6
-# )
-
-measure_list=("thickness")
+measure_list=("thickness" "volume")
 contrast_dirs=(
-  Age_overall
+  Age_overall g2_vs_g5 g2_vs_g6 g5_vs_g6 g2_vs_g7 g5_vs_g7 g6_vs_g7
 )
+
+# measure_list=("thickness")
+# contrast_dirs=(
+#   Age_overall
+# )
 
 # === MAIN LOOP ===
 for hemi in "${hemi_list[@]}"; do
   for meas in "${measure_list[@]}"; do
-    glm_dir="${ROOT_DIR}/${hemi}.${meas}.NexpoStudy_predialy.10.glmdir"
+    glm_dir="${ROOT_DIR}/${hemi}.${meas}.participants_wg2_wafirm_wsashb_wchain.10.glmdir"
     surf_file="${SUBJECTS_DIR}/fsaverage/surf/${hemi}.inflated"
 
     for contrast in "${contrast_dirs[@]}"; do
@@ -46,7 +46,7 @@ for hemi in "${hemi_list[@]}"; do
         # --- Generate screenshots only if overlay exists ---
         # --- Generate screenshots only if overlay exists ---
         if [[ -f "$overlay_file" ]]; then
-          outdir="${OUTPUT_ROOT}/${hemi}.${meas}.NexpoStudy_predialy.10.glmdir/${contrast}"
+          outdir="${OUTPUT_ROOT}/${hemi}.${meas}.participants_wg2_wafirm_wsashb_wchain.10.glmdir/${contrast}"
           mkdir -p "$outdir"
 
           for view in lateral medial; do
