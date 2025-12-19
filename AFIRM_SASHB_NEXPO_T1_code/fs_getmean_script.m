@@ -4,7 +4,7 @@ clc
 
 
 basedir = '/Volumes/DRS-GBPerm/other/outputs/FS_aseg_stats';
-xlsxfile = fullfile(basedir,'nexpo_afirm_sashb.xlsx');
+xlsxfile = fullfile(basedir,'nexpo_afirm_sashb_chain.xlsx');
 
 % --- read Excel metadata ---
 meta = readtable(xlsxfile);
@@ -46,8 +46,8 @@ disp(D(:,{'ID','AGE','GROUP','GMfrac','WMfrac','CSFfrac'}));
 
 %% settings
 
-groupNames = '4group'; % or '4group'
-tissueType = 'CSF';
+groupNames = '3group_wchain'; % or '4group'
+tissueType = 'WM';
 userName = char(java.lang.System.getProperty('user.name'));
 savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/freesurfer_plots/' groupNames '/'];
 
@@ -70,14 +70,14 @@ savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-Th
 
 
 
-if sum(contains(groupNames,'3group'))
+if sum(contains(groupNames,'3group_wchain'))
 
-    useIdx = ismember(D.GROUP, [2 5 6]);
+    useIdx = ismember(D.GROUP, [2 5 6 7]);
     Dsub   = D(useIdx, :);
 
     % OPTIONAL: relabel for clarity
     Dsub.GROUP = categorical(Dsub.GROUP, ...
-        [2 5 6], {'G2','G5','G6'});
+        [2 5 6 7], {'G2','G5','G6','G7'});
 
     x   = Dsub.AGE;
     grp = Dsub.GROUP;
@@ -102,29 +102,51 @@ if sum(contains(groupNames,'3group'))
     disp(mdl.CoefficientNames')
     coefTable = mdl.Coefficients;
 
-    % Preallocate
-    directions = strings(3,1)';
+    % Now 6 pairwise slope comparisons
+    directions = strings(6,1)';
+    pF = zeros(6,1);
 
-    % AFIRM vs G2 (slope difference)
-    C = [0 0 0 0 1 0];
+    % AFIRM vs G2
+    C = [0 0 0 0 0 1 0 0];
     [pF(1),~,~] = coefTest(mdl, C);
     d = C * mdl.Coefficients.Estimate;
     directions(1) = ternary(d>0,'AFIRM','G2');
     fprintf('Slope: AFIRM vs G2 p = %.4f\n', pF(1));
 
-    % SASHB vs G2 (slope difference)
-    C = [0 0 0 0 0 1];
+    % SASHB vs G2
+    C = [0 0 0 0 0 0 1 0];
     [pF(2),~,~] = coefTest(mdl, C);
     d = C * mdl.Coefficients.Estimate;
     directions(2) = ternary(d>0,'SASHB','G2');
     fprintf('Slope: SASHB vs G2 p = %.4f\n', pF(2));
 
-    % AFIRM vs SASHB (slope difference)
-    C = [0 0 0 0 1 -1];
+    % CHAIN vs G2
+    C = [0 0 0 0 0 0 0 1];
     [pF(3),~,~] = coefTest(mdl, C);
     d = C * mdl.Coefficients.Estimate;
-    directions(3) = ternary(d>0,'AFIRM','SASHB');
-    fprintf('Slope: AFIRM vs SASHB p = %.4f\n', pF(3));
+    directions(3) = ternary(d>0,'CHAIN','G2');
+    fprintf('Slope: CHAIN vs G2 p = %.4f\n', pF(3));
+
+    % AFIRM vs SASHB
+    C = [0 0 0 0 0 1 -1 0];
+    [pF(4),~,~] = coefTest(mdl, C);
+    d = C * mdl.Coefficients.Estimate;
+    directions(4) = ternary(d>0,'AFIRM','SASHB');
+    fprintf('Slope: AFIRM vs SASHB p = %.4f\n', pF(4));
+
+    % AFIRM vs CHAIN
+    C = [0 0 0 0 0 1 0 -1];
+    [pF(5),~,~] = coefTest(mdl, C);
+    d = C * mdl.Coefficients.Estimate;
+    directions(5) = ternary(d>0,'AFIRM','CHAIN');
+    fprintf('Slope: AFIRM vs CHAIN p = %.4f\n', pF(5));
+
+    % SASHB vs CHAIN
+    C = [0 0 0 0 0 0 1 -1];
+    [pF(6),~,~] = coefTest(mdl, C);
+    d = C * mdl.Coefficients.Estimate;
+    directions(6) = ternary(d>0,'SASHB','CHAIN');
+    fprintf('Slope: SASHB vs CHAIN p = %.4f\n', pF(6));
 
     p_adj = min(pF * numel(pF), 1);
     disp(p_adj)
@@ -135,14 +157,31 @@ if sum(contains(groupNames,'3group'))
     bloop  = figure('Position',[100 100 700 500]); hold on
     set(bloop, 'PaperOrientation', 'landscape');
     groups  = categories(grp);
-    markers = {'o','o','s'};
-    faces   = {'none','k','none'};
+    markers = {'o','o','x','d'};
+    faces   = {'none','k','none','none'};
 
     % ---- Scatter ----
+    % for i = 1:numel(groups)
+    %     idx = grp == groups{i};
+    % 
+    %     scatter(x(idx), y(idx), 60, ...
+    %         'Marker', markers{i}, ...
+    %         'MarkerEdgeColor','k', ...
+    %         'MarkerFaceColor', faces{i}, ...
+    %         'LineWidth',1.2, ...
+    %         'DisplayName', char(groups{i}));
+    % end
+
+    % ---- Scatter with small horizontal jitter ----
+    jitterAmount = 0.5;  % adjust as needed (in same units as x)
+
     for i = 1:numel(groups)
         idx = grp == groups{i};
 
-        scatter(x(idx), y(idx), 60, ...
+        % Generate random jitter
+        xJittered = x(idx) + (rand(sum(idx),1)-0.5)*2*jitterAmount;
+
+        scatter(xJittered, y(idx), 60, ...
             'Marker', markers{i}, ...
             'MarkerEdgeColor','k', ...
             'MarkerFaceColor', faces{i}, ...
@@ -152,9 +191,14 @@ if sum(contains(groupNames,'3group'))
 
 
     xx = linspace(min(x), max(x), 200)';
-    lineStyles = {'--','-','-.'};   % solid, dashed, dash-dot
-    colors     = [0.5 0.5 0.5; 0 0 0; 0 0 0];  % RGB, black/gray/black
-
+    lineStyles = {'--','-','-.','-.'};   % solid, dashed, dash-dot
+    % Define 4 colors (RGB) for 4 groups
+    colors = [
+        0.5 0.5 0.5;   % G2
+        0   0   0;     % G5
+        0   0   0;     % G6
+        0.3 0.3 0.3    % G7
+        ];
     for i = 1:numel(groups)
         idx = grp == groups{i};
 
@@ -179,20 +223,23 @@ if sum(contains(groupNames,'3group'))
     xlabel('Age');
     if strcmpi(tissueType,'GM')
         ylabel('GMV / TIV');
-        leftleg = 0.7;
-        rightleg = 0.65;
+        leftleg = 0.8;
+        rightleg = 0.7;
     elseif strcmpi(tissueType,'WM')
         ylabel('WMV / TIV');
         leftleg = 0.8;
         rightleg = 0.65;
     elseif strcmpi(tissueType,'CSF')
         ylabel('CSF / TIV');
-        leftleg = 0.2;
+        leftleg = 0.15;
         rightleg = 0.65;
     end
 
     %legend('Location','best');
-    legend('NEXPOG2','AFIRM','SASHB','FitNEXPOG2','FitAFIRM','Location','best')
+    legend( ...
+        'NEXPOG2','AFIRM','SASHB','CHAIN', ...
+        'FitNEXPOG2','FitAFIRM','FitCHAIN', ...
+        'Position',[leftleg rightleg 0.1 0.2]);
     box on;
     grid on;
 
@@ -232,10 +279,17 @@ if sum(contains(groupNames,'3group'))
 
         %% --- Save pairwise p-values ---
         % Your previously computed contrasts
-        comparisons = {'NEXPOG2 vs AFIRM','AFIRM vs SASHB','NEXPOG2 vs SASHB'};
-
+        %comparisons = {'NEXPOG2 vs AFIRM','AFIRM vs SASHB','NEXPOG2 vs SASHB'};
+        comparisons = {
+            'NEXPOG2 vs AFIRM'
+            'NEXPOG2 vs SASHB'
+            'NEXPOG2 vs CHAIN'
+            'AFIRM vs SASHB'
+            'AFIRM vs CHAIN'
+            'SASHB vs CHAIN'
+            };
         %pairCSVTable = table(comparisons', p_adj', 'VariableNames', {'Comparison','pValue'});
-        pairCSVTable = table(comparisons', p_adj', directions', 'VariableNames', {'Comparison','pValue','HigherGroup'});
+        pairCSVTable = table(comparisons, p_adj, directions', 'VariableNames', {'Comparison','pValue','HigherGroup'});
 
         writetable(pairCSVTable, pvalssave);
 
@@ -468,11 +522,11 @@ WM  = sum(vol(ismember(seg,[2 41])));
 CSF = sum(vol(ismember(seg,[4 5 14 15])));
 end
 
-%% 
+%%
 function out = ternary(cond,trueVal,falseVal)
-    if cond
-        out = trueVal;
-    else
-        out = falseVal;
-    end
+if cond
+    out = trueVal;
+else
+    out = falseVal;
+end
 end
