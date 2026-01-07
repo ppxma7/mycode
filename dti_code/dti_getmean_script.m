@@ -138,7 +138,10 @@ if exist('groupNames','var')
 
 end
 
-
+% save vm_chainafirmsash_fa vm
+% save vm_nexpo_fa vm
+% save vm_nexpo_md vm
+% save vm_chainafirmsash_md vm
 
 %%
 if exist('ages','var')

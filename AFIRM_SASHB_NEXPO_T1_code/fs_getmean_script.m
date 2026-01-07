@@ -5,6 +5,7 @@ clc
 
 basedir = '/Volumes/DRS-GBPerm/other/outputs/FS_aseg_stats';
 xlsxfile = fullfile(basedir,'nexpo_afirm_sashb_chain.xlsx');
+%xlsxfile = fullfile(basedir,'nexpo_afirm_sashb_chain_combinehealthies.xlsx');
 
 % --- read Excel metadata ---
 meta = readtable(xlsxfile);
@@ -47,7 +48,7 @@ disp(D(:,{'ID','AGE','GROUP','GMfrac','WMfrac','CSFfrac'}));
 %% settings
 
 groupNames = '3group_wchain'; % or '4group'
-tissueType = 'WM';
+tissueType = 'GM';
 userName = char(java.lang.System.getProperty('user.name'));
 savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/freesurfer_plots/' groupNames '/'];
 
@@ -72,15 +73,40 @@ savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-Th
 
 if sum(contains(groupNames,'3group_wchain'))
 
+    % quick outlier check for AFIRM
+    afirmgroup = D(ismember(D.GROUP, 5),:);
+    vm = afirmgroup.GMfrac;
+    mu = mean(vm, 'omitnan');
+    sd = std(vm,  'omitnan');
+    z = (vm - mu) ./ sd;
+    outIdx = abs(z) > 3;
+
+
     useIdx = ismember(D.GROUP, [2 5 6 7]);
+    %useIdx = ismember(D.GROUP, [2 5]);
     Dsub   = D(useIdx, :);
 
     % OPTIONAL: relabel for clarity
     Dsub.GROUP = categorical(Dsub.GROUP, ...
         [2 5 6 7], {'G2','G5','G6','G7'});
+    % Dsub.GROUP = categorical(Dsub.GROUP, ...
+    %     [2 5], {'NEXPOCHAIN','SASHBAFIRM'});
 
+    % lets collapse groups for the fitting
+    Dsub.grp_model = nan(height(Dsub),1);
+
+    % Healthy = 2,7
+    Dsub.grp_model(ismember(Dsub.GROUP, {'G2','G7'})) = 0;
+
+    % Patient = 5,6
+    Dsub.grp_model(ismember(Dsub.GROUP, {'G5','G6'})) = 1;
+
+    Dsub.grp_model = categorical(Dsub.grp_model, ...
+        [0 1], {'Healthy','Patient'});
+
+    grp = Dsub.grp_model;
     x   = Dsub.AGE;
-    grp = Dsub.GROUP;
+    %grp = Dsub.GROUP;
 
 
     switch tissueType   % e.g. 'GM','WM','CSF'
@@ -92,6 +118,9 @@ if sum(contains(groupNames,'3group_wchain'))
             y = Dsub.CSFfrac;
     end
 
+
+
+
     % --- Fit the interaction model ---
     tbl = table(x, y, grp);
     mdl = fitlm(tbl, 'y ~ x * grp');
@@ -102,68 +131,77 @@ if sum(contains(groupNames,'3group_wchain'))
     disp(mdl.CoefficientNames')
     coefTable = mdl.Coefficients;
 
-    % Now 6 pairwise slope comparisons
-    directions = strings(6,1)';
-    pF = zeros(6,1);
+    if length(unique(grp)) > 2
+        % Now 6 pairwise slope comparisons
+        directions = strings(6,1)';
+        pF = zeros(6,1);
 
-    % AFIRM vs G2
-    C = [0 0 0 0 0 1 0 0];
-    [pF(1),~,~] = coefTest(mdl, C);
-    d = C * mdl.Coefficients.Estimate;
-    directions(1) = ternary(d>0,'AFIRM','G2');
-    fprintf('Slope: AFIRM vs G2 p = %.4f\n', pF(1));
+        % AFIRM vs G2
+        C = [0 0 0 0 0 1 0 0];
+        [pF(1),~,~] = coefTest(mdl, C);
+        d = C * mdl.Coefficients.Estimate;
+        directions(1) = ternary(d>0,'AFIRM','G2');
+        fprintf('Slope: AFIRM vs G2 p = %.4f\n', pF(1));
 
-    % SASHB vs G2
-    C = [0 0 0 0 0 0 1 0];
-    [pF(2),~,~] = coefTest(mdl, C);
-    d = C * mdl.Coefficients.Estimate;
-    directions(2) = ternary(d>0,'SASHB','G2');
-    fprintf('Slope: SASHB vs G2 p = %.4f\n', pF(2));
+        % SASHB vs G2
+        C = [0 0 0 0 0 0 1 0];
+        [pF(2),~,~] = coefTest(mdl, C);
+        d = C * mdl.Coefficients.Estimate;
+        directions(2) = ternary(d>0,'SASHB','G2');
+        fprintf('Slope: SASHB vs G2 p = %.4f\n', pF(2));
 
-    % CHAIN vs G2
-    C = [0 0 0 0 0 0 0 1];
-    [pF(3),~,~] = coefTest(mdl, C);
-    d = C * mdl.Coefficients.Estimate;
-    directions(3) = ternary(d>0,'CHAIN','G2');
-    fprintf('Slope: CHAIN vs G2 p = %.4f\n', pF(3));
+        % CHAIN vs G2
+        C = [0 0 0 0 0 0 0 1];
+        [pF(3),~,~] = coefTest(mdl, C);
+        d = C * mdl.Coefficients.Estimate;
+        directions(3) = ternary(d>0,'CHAIN','G2');
+        fprintf('Slope: CHAIN vs G2 p = %.4f\n', pF(3));
 
-    % AFIRM vs SASHB
-    C = [0 0 0 0 0 1 -1 0];
-    [pF(4),~,~] = coefTest(mdl, C);
-    d = C * mdl.Coefficients.Estimate;
-    directions(4) = ternary(d>0,'AFIRM','SASHB');
-    fprintf('Slope: AFIRM vs SASHB p = %.4f\n', pF(4));
+        % AFIRM vs SASHB
+        C = [0 0 0 0 0 1 -1 0];
+        [pF(4),~,~] = coefTest(mdl, C);
+        d = C * mdl.Coefficients.Estimate;
+        directions(4) = ternary(d>0,'AFIRM','SASHB');
+        fprintf('Slope: AFIRM vs SASHB p = %.4f\n', pF(4));
 
-    % AFIRM vs CHAIN
-    C = [0 0 0 0 0 1 0 -1];
-    [pF(5),~,~] = coefTest(mdl, C);
-    d = C * mdl.Coefficients.Estimate;
-    directions(5) = ternary(d>0,'AFIRM','CHAIN');
-    fprintf('Slope: AFIRM vs CHAIN p = %.4f\n', pF(5));
+        % AFIRM vs CHAIN
+        C = [0 0 0 0 0 1 0 -1];
+        [pF(5),~,~] = coefTest(mdl, C);
+        d = C * mdl.Coefficients.Estimate;
+        directions(5) = ternary(d>0,'AFIRM','CHAIN');
+        fprintf('Slope: AFIRM vs CHAIN p = %.4f\n', pF(5));
 
-    % SASHB vs CHAIN
-    C = [0 0 0 0 0 0 1 -1];
-    [pF(6),~,~] = coefTest(mdl, C);
-    d = C * mdl.Coefficients.Estimate;
-    directions(6) = ternary(d>0,'SASHB','CHAIN');
-    fprintf('Slope: SASHB vs CHAIN p = %.4f\n', pF(6));
+        % SASHB vs CHAIN
+        C = [0 0 0 0 0 0 1 -1];
+        [pF(6),~,~] = coefTest(mdl, C);
+        d = C * mdl.Coefficients.Estimate;
+        directions(6) = ternary(d>0,'SASHB','CHAIN');
+        fprintf('Slope: SASHB vs CHAIN p = %.4f\n', pF(6));
 
-    p_adj = min(pF * numel(pF), 1);
-    disp(p_adj)
+        p_adj = min(pF * numel(pF), 1);
+        disp(p_adj)
 
+    else
+
+        pF = coefTable.pValue(strcmp(coefTable.Properties.RowNames, ...
+            'AGE:grp_Patient'));
+        fprintf('Slope difference (Patient vs Healthy): p = %.4f\n', pF);
+
+    end
 
     minN = 5;   % minimum points required for a fit
 
     bloop  = figure('Position',[100 100 700 500]); hold on
     set(bloop, 'PaperOrientation', 'landscape');
-    groups  = categories(grp);
-    markers = {'o','o','x','d'};
-    faces   = {'none','k','none','none'};
+    origGroups = categories(Dsub.GROUP);
+    %groups  = origGroups;
+    markers = {'o','o','d','d'};
+    faces   = {'none','k','k','none'};
 
     % ---- Scatter ----
     % for i = 1:numel(groups)
     %     idx = grp == groups{i};
-    % 
+    %
     %     scatter(x(idx), y(idx), 60, ...
     %         'Marker', markers{i}, ...
     %         'MarkerEdgeColor','k', ...
@@ -175,9 +213,9 @@ if sum(contains(groupNames,'3group_wchain'))
     % ---- Scatter with small horizontal jitter ----
     jitterAmount = 0.5;  % adjust as needed (in same units as x)
 
-    for i = 1:numel(groups)
-        idx = grp == groups{i};
-
+    for i = 1:numel(origGroups)
+        %idx = grp == groups{i};
+        idx = Dsub.GROUP == origGroups{i};
         % Generate random jitter
         xJittered = x(idx) + (rand(sum(idx),1)-0.5)*2*jitterAmount;
 
@@ -186,9 +224,11 @@ if sum(contains(groupNames,'3group_wchain'))
             'MarkerEdgeColor','k', ...
             'MarkerFaceColor', faces{i}, ...
             'LineWidth',1.2, ...
-            'DisplayName', char(groups{i}));
+            'DisplayName', char(origGroups{i}));
     end
 
+    
+    modelGroups = categories(grp);
 
     xx = linspace(min(x), max(x), 200)';
     lineStyles = {'--','-','-.','-.'};   % solid, dashed, dash-dot
@@ -199,23 +239,23 @@ if sum(contains(groupNames,'3group_wchain'))
         0   0   0;     % G6
         0.3 0.3 0.3    % G7
         ];
-    for i = 1:numel(groups)
-        idx = grp == groups{i};
+    for i = 1:numel(modelGroups)
+        idx = grp == modelGroups{i};
 
         if sum(idx) < minN
             fprintf('Skipping fit for %s (n = %d)\n', ...
-                groups{i}, sum(idx));
+                modelGroups{i}, sum(idx));
             continue
         end
 
-        g = repmat(groups(i), numel(xx), 1);
+        g = repmat(modelGroups(i), numel(xx), 1);
         Tpred = table(xx, g, 'VariableNames', {'x','grp'});
         yy = predict(mdl, Tpred);
 
         plot(xx, yy, 'LineStyle', lineStyles{i}, ...
             'Color', colors(i,:), ...
             'LineWidth', 2,...
-            'DisplayName', sprintf('Fit%s', char(groups{i})));
+            'DisplayName', sprintf('Fit%s', char(modelGroups{i})));
 
     end
 
@@ -238,27 +278,49 @@ if sum(contains(groupNames,'3group_wchain'))
     %legend('Location','best');
     legend( ...
         'NEXPOG2','AFIRM','SASHB','CHAIN', ...
-        'FitNEXPOG2','FitAFIRM','FitCHAIN', ...
+        'FitNEXPOCHAIN','FitSASHAFIRM', ...
         'Position',[leftleg rightleg 0.1 0.2]);
+
+    % legend( ...
+    %     'NEXPOCHAIN','SASHBAFIRM', ...
+    %     'FitNEXPOCHAIN','FitSASHBAFIRM', ...
+    %     'Position',[leftleg rightleg 0.1 0.2]);
     box on;
     grid on;
 
     if exist('savedir','var')
         h = gcf;
-        if strcmpi(tissueType,'GM')
-            thisFilename = fullfile(savedir,'GM_plot');
-            lmcoefs = fullfile(savedir,'GM_fitlm_coefficients.csv');
-            pvalssave = fullfile(savedir,'GM_pairwise_pvalues.csv');
-        elseif strcmpi(tissueType,'WM')
-            thisFilename = fullfile(savedir,'WM_plot');
-            lmcoefs = fullfile(savedir,'WM_fitlm_coefficients.csv');
-            pvalssave = fullfile(savedir,'WM_pairwise_pvalues.csv');
-        elseif strcmpi(tissueType,'CSF')
-            thisFilename = fullfile(savedir,'CSF_plot');
-            lmcoefs = fullfile(savedir,'CSF_fitlm_coefficients.csv');
-            pvalssave = fullfile(savedir,'CSF_pairwise_pvalues.csv');
 
+        if length(unique(grp)) > 2
+            if strcmpi(tissueType,'GM')
+                thisFilename = fullfile(savedir,'GM_plot');
+                lmcoefs = fullfile(savedir,'GM_fitlm_coefficients.csv');
+                pvalssave = fullfile(savedir,'GM_pairwise_pvalues.csv');
+            elseif strcmpi(tissueType,'WM')
+                thisFilename = fullfile(savedir,'WM_plot');
+                lmcoefs = fullfile(savedir,'WM_fitlm_coefficients.csv');
+                pvalssave = fullfile(savedir,'WM_pairwise_pvalues.csv');
+            elseif strcmpi(tissueType,'CSF')
+                thisFilename = fullfile(savedir,'CSF_plot');
+                lmcoefs = fullfile(savedir,'CSF_fitlm_coefficients.csv');
+                pvalssave = fullfile(savedir,'CSF_pairwise_pvalues.csv');
+            end
+        else
+            if strcmpi(tissueType,'GM')
+                thisFilename = fullfile(savedir,'GM_plot_combinedhealthies');
+                lmcoefs = fullfile(savedir,'GM_fitlm_coefficients_combinedhealthies.csv');
+                pvalssave = fullfile(savedir,'GM_pairwise_pvalues_combinedhealthies.csv');
+            elseif strcmpi(tissueType,'WM')
+                thisFilename = fullfile(savedir,'WM_plot_combinedhealthies');
+                lmcoefs = fullfile(savedir,'WM_fitlm_coefficients_combinedhealthies.csv');
+                pvalssave = fullfile(savedir,'WM_pairwise_pvalues_combinedhealthies.csv');
+            elseif strcmpi(tissueType,'CSF')
+                thisFilename = fullfile(savedir,'CSF_plot_combinedhealthies');
+                lmcoefs = fullfile(savedir,'CSF_fitlm_coefficients_combinedhealthies.csv');
+                pvalssave = fullfile(savedir,'CSF_pairwise_pvalues_combinedhealthies.csv');
+            end
         end
+
 
         print(h, '-dpdf', thisFilename, '-r300');
 
@@ -280,20 +342,25 @@ if sum(contains(groupNames,'3group_wchain'))
         %% --- Save pairwise p-values ---
         % Your previously computed contrasts
         %comparisons = {'NEXPOG2 vs AFIRM','AFIRM vs SASHB','NEXPOG2 vs SASHB'};
-        comparisons = {
-            'NEXPOG2 vs AFIRM'
-            'NEXPOG2 vs SASHB'
-            'NEXPOG2 vs CHAIN'
-            'AFIRM vs SASHB'
-            'AFIRM vs CHAIN'
-            'SASHB vs CHAIN'
-            };
-        %pairCSVTable = table(comparisons', p_adj', 'VariableNames', {'Comparison','pValue'});
-        pairCSVTable = table(comparisons, p_adj, directions', 'VariableNames', {'Comparison','pValue','HigherGroup'});
 
-        writetable(pairCSVTable, pvalssave);
+        if length(unique(grp)) > 2
+            comparisons = {
+                'NEXPOG2 vs AFIRM'
+                'NEXPOG2 vs SASHB'
+                'NEXPOG2 vs CHAIN'
+                'AFIRM vs SASHB'
+                'AFIRM vs CHAIN'
+                'SASHB vs CHAIN'
+                };
+            %pairCSVTable = table(comparisons', p_adj', 'VariableNames', {'Comparison','pValue'});
+            pairCSVTable = table(comparisons, p_adj, directions', 'VariableNames', {'Comparison','pValue','HigherGroup'});
 
-        disp('CSV files saved: fitlm_coefficients.csv and pairwise_pvalues.csv');
+            writetable(pairCSVTable, pvalssave);
+
+            disp('CSV files saved: fitlm_coefficients.csv and pairwise_pvalues.csv');
+        else
+            disp('skip')
+        end
 
     end
 
