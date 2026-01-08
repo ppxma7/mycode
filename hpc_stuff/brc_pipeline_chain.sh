@@ -23,22 +23,22 @@ subjects=("CHN001_V6_C" "CHN002_V6_C" "CHN003_V6_C" \
 for subject in "${subjects[@]}"; do
     # Define expected file paths
     T1_FILE=$(find "${DATA_DIR}/${subject}/MPRAGE/" -type f -iname "*MPRAGE*.nii" | head -n 1)
-    #T2_FILE=$(find "${DATA_DIR}/${subject}/FLAIR/" -type f -iname "*FLAIR*.nii" | head -n 1)
+    T2_FILE=$(find "${DATA_DIR}/${subject}/T2/" -type f -iname "*FLAIR*.nii" | head -n 1)
     
     # Check if both T1 and T2 files exist
     if [[ -f $T1_FILE ]]; then
         echo "Processing subject: $subject"
         echo "T1: $T1_FILE"
-        #echo "T2: $T2_FILE"
+        echo "T2: $T2_FILE"
 
         # Run structural pipeline
         struc_preproc.sh --subject "$subject" --path "$OUTPUT_DIR" \
-                         --input "$T1_FILE" \
-                         --subseg --nodefacing --regtype 3 --freesurfer --fastsurfer
+                         --input "$T1_FILE" --t2 "$T2_FILE" \
+                         --subseg --nodefacing --regtype 3
     else
         echo "Skipping $subject: Missing required files."
         [[ ! -f $T1_FILE ]] && echo "  - Missing MPRAGE (T1) file."
-        #[[ ! -f $T2_FILE ]] && echo "  - Missing FLAIR (T2) file."
+        [[ ! -f $T2_FILE ]] && echo "  - Missing FLAIR (T2) file."
     fi
 done
 
