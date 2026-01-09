@@ -1,7 +1,7 @@
 #!/bin/sh
 
-TBSSDIR="/Volumes/kratos/dti_data/tbss_analysis_sashbprepost"
-MAPFILE="/Volumes/kratos/dti_data/tbss_analysis_sashbprepost/mapfile.txt"
+TBSSDIR="/Volumes/kratos/dti_data/tbss_analysis_wchain"
+MAPFILE="/Volumes/kratos/dti_data/tbss_analysis_wchain/mapfile.txt"
 OUTFILE="${TBSSDIR}/renamed_files.txt"
 > "$OUTFILE"       # empty/overwrite the file before starting
 
@@ -33,9 +33,16 @@ while IFS='' read -r line || [ -n "$line" ]; do
     #         continue
     #         ;;
     # esac
+    # case "$group" in
+    #     1) groupname="SASHB1" ;;
+    #     2) groupname="SASHB2" ;;
+    #     *)
+    #         echo "⚠️ Unknown group '$group' for $subj — skipping."
+    #         continue
+    #         ;;
+    # esac
     case "$group" in
-        1) groupname="SASHB1" ;;
-        2) groupname="SASHB2" ;;
+        5) groupname="SASHB" ;;
         *)
             echo "⚠️ Unknown group '$group' for $subj — skipping."
             continue
@@ -46,8 +53,8 @@ while IFS='' read -r line || [ -n "$line" ]; do
     dest="${TBSSDIR}/${groupname}_${subj}_dti_FA.nii.gz"
 
     if [ -f "$src" ]; then
-        #echo "📦 Would rename $(basename "$src") → $(basename "$dest")"
-        mv -n "$src" "$dest"
+        echo "📦 Would rename $(basename "$src") → $(basename "$dest")"
+        #mv -n "$src" "$dest"
         echo "$(basename "$dest")" >> "$OUTFILE"
 
     else

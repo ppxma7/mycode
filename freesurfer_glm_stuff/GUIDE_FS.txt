@@ -27,10 +27,10 @@
 - slurm2text.sh moves slurm files to new folder and convert to text
 - moveBuriedToTop.sh moves the FreeSurfer directories to the top subject level.
 
-- For the FreeSurfer data, you need to run runMrisPreproc.sh, runGLMs.sh, runClustSims.sh and clustSimToTable.sh
+- For the FreeSurfer data, you need to run runMrisPreproc.sh, runGLMs.sh, runClustSims.sh
 - You need to check your FSGD and Contrast files - https://andysbrainbook.readthedocs.io/en/latest/FreeSurfer/FS_ShortCourse/FS_07_FSGD.html
 - These codes are in `mycode/freesurfer_glm_stuff/`
-
+ 
 
 - Then run clustSimToTable and clustTableCopy
 - Finally run freeviewSave.sh to save images

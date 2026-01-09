@@ -6,8 +6,8 @@
 # destination folder, renaming them "SUBJ_dti_FA"
 
 # Source and destination directories
-SRC="/Volumes/kratos/dti_data/nexpodatasets"
-DST="/Volumes/kratos/dti_data/MD/nexpo"
+SRC="/Volumes/kratos/dti_data/sashbdatasets"
+DST="/Volumes/kratos/dti_data/tbss_analysis_wchain"
 
 #DST="/Volumes/kratos/dti_data/tbss_analysis_wchain"
 
@@ -21,10 +21,10 @@ for d in "$SRC"/*/analysis/dMRI/processed/data/data.dti; do
 
     
 
-    # src_file="${d}/dti_FA.nii.gz"
-    # dest_file="${DST}/${subj}_dti_FA.nii.gz"
     src_file="${d}/dti_MD.nii.gz"
     dest_file="${DST}/${subj}_dti_MD.nii.gz"
+    #src_file="${d}/dti_MD.nii.gz"
+    #dest_file="${DST}/${subj}_dti_MD.nii.gz"
 
     echo $src_file
     echo $dest_file
@@ -34,7 +34,7 @@ for d in "$SRC"/*/analysis/dMRI/processed/data/data.dti; do
     if [ -f "$src_file" ]; then
         echo "📦 Copying $subj → $dest_file"
         cp -n "$src_file" "$dest_file"
-        #echo "Would copy $src_file → $dest_file"
+        echo "Would copy $src_file → $dest_file"
     else
         echo "⚠️ Missing MD file for $subj"
     fi

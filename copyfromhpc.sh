@@ -17,6 +17,11 @@ subjects=(
   "CHN019_V6_C"
 )
 
+subjects=(
+  "CHN012"
+  "CHN013_v6_classic"
+)
+
 
 remote_root="ppzma@hpclogin01.ada.nottingham.ac.uk:/gpfs01/home/ppzma/chain_dti/outputs"
 local_root="/Volumes/DRS-GBPerm/other/outputs"

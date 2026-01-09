@@ -1,3 +1,12 @@
+
+# Before you do this, you need to prep and move things. The FA and MD maps are in dMRI/processed/data/data.dti/
+# So you can run dti_prep_moving which moves things to a tbss dir with better names. Then you can run your TBSS analysis. Bear in mind, the MDs should be done separately, and renamed to FA as well.
+
+
+
+
+
+
 # For the DTI data, you can run 
 # Bear in mind, you will need to check files etc. and designs above
 randomise -i all_FA_skeletonised.nii.gz -o tbss -m mean_FA_skeleton_mask -d design.mat -t design.con -n 10 --T2 -V
