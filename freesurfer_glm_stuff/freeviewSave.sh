@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # === CONFIGURATION ===
-thisRun="etiv_doss_wg2_wafirm_wsashb_wchain"
-foldName="participants_wg2_wafirm_wsashb_wchain"
+thisRun="etiv_doss_patients_afirm_sashb"
+foldName="participants_patients_afirm_sashb"
 export SUBJECTS_DIR="/Volumes/DRS-GBPerm/other/outputs"
 ROOT_DIR="/Volumes/DRS-GBPerm/other/outputs/${thisRun}"
 OUTPUT_ROOT="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/${thisRun}"
@@ -13,11 +13,11 @@ measure_list=("thickness" "volume")
 #   Age_overall g2_vs_g5 g2_vs_g6 g5_vs_g6 g2_vs_g7 g5_vs_g7 g6_vs_g7
 # )
 
-# contrast_dirs=(
-#   Age_overall
-# )
+contrast_dirs=(
+  Age_overall
+)
 
-contrast_dirs=(Age_overall g2_vs_g5 g2_vs_g6 g2_vs_g7 g5_vs_g6 g5_vs_g7 g6_vs_g7)
+#contrast_dirs=(Age_overall g2_vs_g5 g2_vs_g6 g2_vs_g7 g5_vs_g6 g5_vs_g7 g6_vs_g7)
 
 # measure_list=("thickness")
 # contrast_dirs=(
