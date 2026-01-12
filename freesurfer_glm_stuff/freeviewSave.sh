@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # === CONFIGURATION ===
-thisRun="etiv_doss_wage_wg2_wafirm_wsashb_wchain_update"
+thisRun="etiv_doss_wg2_wafirm_wsashb_wchain"
 foldName="participants_wg2_wafirm_wsashb_wchain"
 export SUBJECTS_DIR="/Volumes/DRS-GBPerm/other/outputs"
 ROOT_DIR="/Volumes/DRS-GBPerm/other/outputs/${thisRun}"

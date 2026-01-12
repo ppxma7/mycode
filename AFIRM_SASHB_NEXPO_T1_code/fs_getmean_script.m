@@ -48,7 +48,7 @@ disp(D(:,{'ID','AGE','GROUP','GMfrac','WMfrac','CSFfrac'}));
 %% settings
 
 groupNames = '3group_wchain'; % or '4group'
-tissueType = 'GM';
+tissueType = 'CSF';
 userName = char(java.lang.System.getProperty('user.name'));
 savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/freesurfer_plots/' groupNames '/'];
 

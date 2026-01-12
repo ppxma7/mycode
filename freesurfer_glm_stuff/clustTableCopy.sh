@@ -2,10 +2,10 @@
 
 # Set base directory containing the glmdir folders
 #base_dir="/Volumes/DRS-GBPerm/other/outputs/etiv_doss_predialy/"  # Change this to the actual path
-base_dir="/Volumes/DRS-GBPerm/other/outputs/etiv_doss_wage_wg2_wafirm_wsashb_wchain_update/"  # Change this to the actual path
+base_dir="/Volumes/DRS-GBPerm/other/outputs/etiv_doss_wg2_wafirm_wsashb_wchain/"  # Change this to the actual path
  
 # Set export directory
-export_dir="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/etiv_doss_wage_wg2_wafirm_wsashb_wchain_update"
+export_dir="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/etiv_doss_wg2_wafirm_wsashb_wchain"
 
 # List of GLM folders
 glmdir_list=(
