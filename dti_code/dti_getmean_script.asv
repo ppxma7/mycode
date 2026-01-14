@@ -3,14 +3,14 @@ thisRUN = 'CHAIN';
 thisTYPE = 'FA';
 % options are either NEXPO or CHAIN 
 % MD or FA
-root = '/Volumes/DRS-GBPerm/other/';
+root = '/Volumes/r15/DRS-GBPerm/other/';
 %root = '/Volumes/kratos/';
 if strcmpi(thisRUN,'CHAIN')
     % chain afirm sashb
     ages = [
         58 63 56 57 65 62 61 63 63 57 63 63 56 65 ...
-        75 55 47 39 41 65 69 31 64 70 61 70 72 37 55 41 60 67 49 57 73 49 56 ...
-        57 57 83 68 77 ...
+        75 55 47 39 41 65 69 31 64 70 61 70 72 37 55 41 60 67 49 57 73 49 ...
+        57 56 ...
         ]';
     groupNames = {'CHAIN','AFIRM','SASHB'};
     savedgroup = 'afirm_chain_sashb';
@@ -303,8 +303,7 @@ if exist('ages','var')
         end
 
         %legend('Location','best');
-        %legend('CHAIN','AFIRM','SASHB','FitCHAIN','FitPATIENT','Position', [leftleg rightleg 0.1 0.2]);
-        legend('CHAIN','AFIRM','SASHB','FitCHAIN','FitPATIENT','Location', 'best');
+        legend('CHAIN','AFIRM','SASHB','FitCHAIN','FitPATIENT','Position', [leftleg rightleg 0.1 0.2]);
         %legend('AFIRM','CHAIN','SASHB','FitAFIRM','FitCHAIN','Location','best');
         box on;
         grid on;
@@ -354,21 +353,17 @@ if exist('ages','var')
 
             %% --- Save pairwise p-values ---
             % Your previously computed contrasts
-            if numel(categories(grp)) > 2
-                comparisons_slope = {'AFIRM vs CHAIN','SASHB vs CHAIN','AFIRM vs SASHB'};
-                pairCSVTable = table(comparisons_slope', p_adj', directions', 'VariableNames', {'Comparison','pValue','HigherGroup'});
-                writetable(pairCSVTable, pvalssave);
+            comparisons_slope = {'AFIRM vs CHAIN','SASHB vs CHAIN','AFIRM vs SASHB'};
+            pairCSVTable = table(comparisons_slope', p_adj', directions', 'VariableNames', {'Comparison','pValue','HigherGroup'});
+            writetable(pairCSVTable, pvalssave);
 
-                % comparisons_intercept = {'AFIRM vs CHAIN','SASHB vs CHAIN','AFIRM vs SASHB'};
-                % interceptCSVFile = fullfile(savedir, 'intercept_pairwise_pvalues.csv');
-                % pairInterceptTable = table(comparisons_intercept', pI_adj, directionsI', ...
-                %                            'VariableNames', {'Comparison','pValue','HigherGroup'});
-                % writetable(pairInterceptTable, interceptCSVFile);
+            % comparisons_intercept = {'AFIRM vs CHAIN','SASHB vs CHAIN','AFIRM vs SASHB'};
+            % interceptCSVFile = fullfile(savedir, 'intercept_pairwise_pvalues.csv');
+            % pairInterceptTable = table(comparisons_intercept', pI_adj, directionsI', ...
+            %                            'VariableNames', {'Comparison','pValue','HigherGroup'});
+            % writetable(pairInterceptTable, interceptCSVFile);
 
-                disp('CSV files saved: fitlm_coefficients.csv and pairwise_pvalues.csv');
-            else
-                disp('skip')
-            end
+            disp('CSV files saved: fitlm_coefficients.csv and pairwise_pvalues.csv');
 
         end
 
