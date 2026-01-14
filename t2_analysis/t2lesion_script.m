@@ -17,7 +17,7 @@ mypath='/Volumes/DRS-GBPerm/other/outputs/';
 
 %,'16998-002'};
 
-subjects={'SASHB_1_1','SASHB_1_2','SASHB_2_1','SASHB_2_1','SASHB_3_1', 'SASHB_3_2',...
+subjects={'SASHB_1_1','SASHB_1_2','SASHB_2_1','SASHB_2_2','SASHB_3_1', 'SASHB_3_2',...
     'SASHB_5_1', 'SASHB_5_2', 'SASHB_6_1', 'SASHB_6_2', 'SASHB_7_1','SASHB_7_2'};
 
 %,'SASHB_7_2'};
