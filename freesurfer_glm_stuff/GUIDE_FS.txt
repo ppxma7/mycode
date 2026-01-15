@@ -34,3 +34,6 @@
 
 - Then run clustSimToTable and clustTableCopy
 - Finally run freeviewSave.sh to save images
+
+- To plot the Freesurfer data, you will need to run catasegstats.sh which looks for a text file in the outputs folder called aseg_stats_list_mopup.txt. Then move the stat file into here FS_aseg_stats/ and then edit the excel file. Then Matlab code to run is fs_getmean_script.m
+- you also need to getTIV.sh

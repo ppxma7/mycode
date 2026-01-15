@@ -28,7 +28,7 @@ g.set_order_options('x',0)
 g.draw()
 
 g.update('y',T.wmhvol)
-g.geom_jitter()
+g.geom_jitter2()
 
 g.draw();
 filename = 't2plot_wmhvol';
@@ -53,30 +53,6 @@ g.set_order_options('x',0)
 g.draw()
 
 g.update('y',T.numclusters)
-g.geom_jitter()
-
-g.draw();
-filename = 't2plot_numclusters';
-g.export('file_name', ...
-    fullfile(savepath,filename), ...
-    'file_type','pdf');
-
-clear g
-close all
-
-figure('Position',[100 100 800 500])
-
-g = gramm('x',T.GROUP,'y',T.numclusters);
-g.stat_boxplot2('drawoutlier',0);
-g.set_names('x','Group','y','numclusters');
-%g.set_names('x','ROI','y','Mean T1','color','Group');
-%g.set_point_options('base_size',1)
-%g.axe_property('XTickLabelRotation',45,'YLim',[0 1],'YGrid','on','XGrid','on');
-g.axe_property('YGrid','on','XGrid','on');
-g.set_order_options('x',0)
-g.draw()
-
-g.update('y',T.numclusters)
 g.geom_jitter2()
 
 g.draw();
@@ -84,3 +60,27 @@ filename = 't2plot_numclusters';
 g.export('file_name', ...
     fullfile(savepath,filename), ...
     'file_type','pdf');
+
+% clear g
+% close all
+% 
+% figure('Position',[100 100 800 500])
+% 
+% g = gramm('x',T.GROUP,'y',T.numclusters);
+% g.stat_boxplot2('drawoutlier',0);
+% g.set_names('x','Group','y','numclusters');
+% %g.set_names('x','ROI','y','Mean T1','color','Group');
+% %g.set_point_options('base_size',1)
+% %g.axe_property('XTickLabelRotation',45,'YLim',[0 1],'YGrid','on','XGrid','on');
+% g.axe_property('YGrid','on','XGrid','on');
+% g.set_order_options('x',0)
+% g.draw()
+% 
+% g.update('y',T.numclusters)
+% g.geom_jitter2()
+% 
+% g.draw();
+% filename = 't2plot_numclusters';
+% g.export('file_name', ...
+%     fullfile(savepath,filename), ...
+%     'file_type','pdf');

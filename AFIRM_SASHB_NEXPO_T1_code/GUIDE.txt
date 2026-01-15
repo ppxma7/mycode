@@ -29,13 +29,15 @@
 
 
 - slurm2text.sh moves slurm files to new folder and convert to text
+
 - moveBuriedToTop.sh moves the FreeSurfer directories to the top subject level.
 
 - For the FreeSurfer data, you need to run runMrisPreproc.sh, runGLMs.sh, runClustSims.sh and clustSimToTable.sh
 - You need to check your FSGD and Contrast files - https://andysbrainbook.readthedocs.io/en/latest/FreeSurfer/FS_ShortCourse/FS_07_FSGD.html
 - These codes are in `mycode/freesurfer_glm_stuff/`
 
-
+- To plot the Freesurfer data, you will need to run catasegstats.sh which looks for a text file in the outputs folder called aseg_stats_list_mopup.txt. Then move the stat file into here FS_aseg_stats/ and then edit the excel file. Then Matlab code to run is fs_getmean_script.m
+- you also need to getTIV.sh
 
 - NEW for t1 analysis:
 - We need to remove CSF as well `register_t1_to_mni_local_shell_nocsfver.sh` calls a bash script and python script to do this
