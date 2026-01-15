@@ -8,7 +8,12 @@
 - For MPRAGE, `7Tbrc_pipeline_loop_2.sh` will call the BRC pipeline which runs fastsurfer/freesurfer, ignore T2 flag if that's not there
 - Run t1mapping using `t1_mapping_longform_hpc_shell_torun.sh`. This calls `t1_mapping_longform_hpc.py`
 - Bring everything back locally
+
+- You MAY NEED TO FLIP THE T1 MAPS using t1_flipx.sh!
+
 - Check registration locally using `register_t1_to_mni_local_shell.sh`. This calls `register_t1_to_mni_standalone_fixing.py`.
+
+%% THIS IS ALL OPTIONAL NOW
 - Now get read CSV / plot
 - Run `fs_stats.py` (twice for l and r)
 - Then you will need to run `mergecsv.py` to stick csvs together from different groups (AFIRM, SASHB etc)
@@ -16,12 +21,11 @@
 - Do the same for T1 mapping
 - `apply_extract_atlas_t1_short.py` for each group, then `merge_csv.py`
 - `t1_stats_allsubs.py` will plot
-
+%%%
 
 
 - example of copying from hpc to local:
 `rsync -azv ppzma@hpclogin01.ada.nottingham.ac.uk:/spmstore/project/AFIRMBRAIN/AFIRM/outputs /Volumes/nemosine/SAN/AFIRM/afirm_new_outs/`
-
 
 
 - slurm2text.sh moves slurm files to new folder and convert to text
@@ -31,10 +35,14 @@
 - You need to check your FSGD and Contrast files - https://andysbrainbook.readthedocs.io/en/latest/FreeSurfer/FS_ShortCourse/FS_07_FSGD.html
 - These codes are in `mycode/freesurfer_glm_stuff/`
 
-- For the t1 analysis, you should use fsl_randomise https://chatgpt.com/share/68b9ac1e-f01c-800c-8bf0-598a54ad6ac4
-- Look at `fslrandomise_notes.txt` for help
+
 
 - NEW for t1 analysis:
-	- We need to remove CSF as well `register_t1_to_mni_local_shell_nocsfver.sh` calls a bash script and python script to do this
-	- `fsl_smooth_and_merge.sh` will need to be edited, so you need to smooth your files before running fsl randomise
-	-
+- We need to remove CSF as well `register_t1_to_mni_local_shell_nocsfver.sh` calls a bash script and python script to do this
+- So for the above, it calls remove_csf_t1.sh and mask_t1_gm_wm.sh and then register_existing_t1_to_mni_gmwm.py. Some of these are just for plotting GM and WM later in Matlab. This one register_existing_t1_to_mni_standalone_nocsfver.py is used to make the noCSFMNI files for randomise.
+- These files, the GM masked and WM masked need to be moved to a folder t1mnispace/
+- `fsl_smooth_and_merge.sh` will need to be edited, so you need to smooth your files before running fsl randomise
+
+
+- For the t1 analysis, you should use fsl_randomise https://chatgpt.com/share/68b9ac1e-f01c-800c-8bf0-598a54ad6ac4
+- Look at `fslrandomise_notes.txt` for help

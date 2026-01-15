@@ -95,7 +95,8 @@ OUTPUT_DIR="/Volumes/nemosine/SAN/SASHB/t1mapping_out/"
 
 # SUBJECT=("17311-002b")
 #SUBJECT=("17880002" "16905_004" "16905_005" "17880001")
-SUBJECT=("156862_004")
+SUBJECT=("SASHB_6_1")
+#SUBJECT=("SASHB_5_2" "SASHB_6_1" "SASHB_7_1" "SASHB_7_2")
 
 # Loop through each subject
 for subject in "${SUBJECT[@]}"; do

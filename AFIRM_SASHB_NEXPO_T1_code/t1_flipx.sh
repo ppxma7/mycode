@@ -2,7 +2,7 @@
 
 #basedir="/Volumes/DRS-GBPerm/other/t1mapping_out/"
 #basedir="/Volumes/nemosine/SAN/AFIRM/t1mapping_out/"
-basedir="/Volumes/DRS-Touchmap/ma_ares_backup/SAN/AFIRM/t1mapping_out/"
+basedir="/Volumes/nemosine/SAN/SASHB/t1mapping_out/"
 # Option 1: If subject list is stored in a file
 # while read -r subj; do
 
@@ -35,7 +35,7 @@ basedir="/Volumes/DRS-Touchmap/ma_ares_backup/SAN/AFIRM/t1mapping_out/"
 # "16798-002A" "16821-002A" "16835-002A" "16885-002A" \
 # "16994-002A" "16999-002B" "17057-002C" "17058-002A" "17059-002a")
 
-subjects=("17311-002b")
+subjects=("SASHB_5_1" "SASHB_5_2" "SASHB_6_1" "SASHB_7_1" "SASHB_7_2")
 
 for subj in "${subjects[@]}"; do
     input="${basedir}/${subj}/${subj}_T1_brain.nii.gz"

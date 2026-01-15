@@ -30,8 +30,8 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
 
     # Step 0: Perform Brain Extraction (BET)
     t1_raw = os.path.join(sub_dir, f"{subject}_T1.nii.gz")
-    t1_brain = os.path.join(sub_dir, f"{subject}_T1_brain.nii.gz")
-    #t1_brain = os.path.join(sub_dir, f"{subject}_T1_brain_flipx.nii.gz")
+    #t1_brain = os.path.join(sub_dir, f"{subject}_T1_brain.nii.gz")
+    t1_brain = os.path.join(sub_dir, f"{subject}_T1_brain_flipx.nii.gz")
 
     print(f"{t1_raw}")
     
@@ -44,6 +44,8 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
         #bet_cmd = ["bet", t1_raw, t1_brain, "-R", "-f", "0","-g","-0.2","-S","-B"]
         bet_cmd = ["bet", t1_raw, t1_brain, "-R", "-f", "0","-g","-0.2"]
         subprocess.run(bet_cmd, check=True)
+
+    #sys.exit(0)
 
 
     # Locate MPRAGE
@@ -130,7 +132,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
             "-omat", affine_mprage_to_t1,
             "-out", mprage_to_t1,
             "-cost", "normmi",
-            "-dof", "12",
+            "-dof", "6",
             "-searchrx", "0", "0",
             "-searchry", "0", "0",
             "-searchrz", "0", "0",
@@ -139,7 +141,7 @@ def register_t1_to_mni_1mm(sub_dir, subject, data_dir):
         print(f"✅ {subject}: MPRAGE registered to T1 space.")
 
     
-
+    #sys.exit(0)
     # STEP 2: Apply same transform to MPRAGE mask
     if not os.path.exists(mprage_mask_to_t1):
         print("🔄 Applying transform to MPRAGE mask...")
