@@ -1,23 +1,23 @@
 
 thisRUN = 'CHAIN';
-thisTYPE = 'FA';
+thisTYPE = 'MD';
 % options are either NEXPO or CHAIN 
 % MD or FA
-root = '/Volumes/DRS-GBPerm/other/';
-%root = '/Volumes/kratos/';
+%root = '/Volumes/DRS-GBPerm/other/';
+root = '/Volumes/kratos/';
 if strcmpi(thisRUN,'CHAIN')
     % chain afirm sashb
     ages = [
         58 63 56 57 65 62 61 63 63 57 63 63 56 65 ...
         75 55 47 39 41 65 69 31 64 70 61 70 72 37 55 41 60 67 49 57 73 49 56 ...
-        57 57 83 68 77 ...
+        57 57 53 83 68 77 ...
         ]';
     groupNames = {'CHAIN','AFIRM','SASHB'};
     savedgroup = 'afirm_chain_sashb';
     if strcmpi(thisTYPE,'FA')
-        pathin = fullfile(root,'/dti_data/tbss_analysis_wchain/origdata/');
+        pathin = fullfile(root,'/dti_data/tbss_analysis_wchain/');
     else
-        pathin = fullfile(root,'dti_data/tbss_analysis_wchain/MD/origMD/');
+        pathin = fullfile(root,'/dti_data/tbss_analysis_wchain/MD/origMD/');
     end
 
 elseif strcmpi(thisRUN,'NEXPO')
@@ -303,8 +303,8 @@ if exist('ages','var')
         end
 
         %legend('Location','best');
-        %legend('CHAIN','AFIRM','SASHB','FitCHAIN','FitPATIENT','Position', [leftleg rightleg 0.1 0.2]);
-        legend('CHAIN','AFIRM','SASHB','FitCHAIN','FitPATIENT','Location', 'best');
+        legend('CHAIN','AFIRM','SASHB','FitCHAIN','FitPATIENT','Position', [leftleg rightleg 0.1 0.1]);
+        %legend('CHAIN','AFIRM','SASHB','FitCHAIN','FitPATIENT','Location', 'best');
         %legend('AFIRM','CHAIN','SASHB','FitAFIRM','FitCHAIN','Location','best');
         box on;
         grid on;

@@ -6,7 +6,7 @@
 
 thisRUN = 'AFIRM';
 thisTYPE = 'T1';
-GMorWM = 'GM';
+GMorWM = 'WM';
 
 if strcmpi(thisRUN,'AFIRM')
     % THIS ISNT FIXED YET ON ACCOUNT OF BAD T1 SUBJECTS
@@ -15,7 +15,7 @@ if strcmpi(thisRUN,'AFIRM')
         34 35 30 39 31 40 43 38 35 33 49 44 46 31 36 45 30 44 46 31 ...
         37 39 38 45 34 30 40 43 33 32 41 45 33 49 45 44 42 40 50 50 37 49 49 46 40 ...
         75 55 47 39 41 65 69 31 64 70 61 70 72 37 55 41 60 67 49 57 73 49 ...
-        57 56 57 ...
+        57 56 57 83 68 77 ...
         ]';
 
     if strcmpi(thisTYPE,'T1')
@@ -162,6 +162,9 @@ table(thisFileList(outIdx), groupList(outIdx), vm(outIdx), z(outIdx), ...
 
 
 %%
+collapsePatients = true;   % <-- SET THIS
+
+
 if exist('ages','var')
 
     if sum(contains(groupNames,'group5'))
@@ -175,12 +178,22 @@ if exist('ages','var')
         %     inside the model formula
         grp = categorical(groupList(:), {'group2','group5','group6'}, ...
             'Ordinal', false);
-        % Preallocate
-        directions = strings(3,1)';
 
+        origGroups = categories(grp); % for plotting later
+        grpPlot = grp;
+        if collapsePatients
+            grp_model = grp;
+            grp_model(grp == 'group5' | grp == 'group6') = 'Patient';
+            grp_model = categorical(grp_model, {'group2','Patient'});
+        else
+            grp_model = grp;
+        end
+        grp = grp_model;
+        % Preallocate
         % --- Fit the interaction model ---
         tbl = table(x, y, grp);
-        mdl = fitlm(tbl, 'y ~ x * grp');
+        %mdl = fitlm(tbl, 'y ~ x + grp'); % this will force same slopes
+        mdl = fitlm(tbl, 'y ~ x * grp'); % here add interaction effect (does age differ between groups)
         % We are using fitlm here instead of simple ANOVA because we need to
         % take age into account as a covariate!
         disp(mdl)
@@ -188,52 +201,61 @@ if exist('ages','var')
         disp(mdl.CoefficientNames')
         coefTable = mdl.Coefficients;
 
-        % Preallocate
-        directions = strings(3,1)';
-
-        % AFIRM vs G2 (slope difference)
-        C = [0 0 0 0 1 0];
-        [pF(1),~,~] = coefTest(mdl, C);
-        d = C * mdl.Coefficients.Estimate;
-        directions(1) = ternary(d>0,'AFIRM','G2');
-        fprintf('Slope: AFIRM vs G2 p = %.4f\n', pF(1));
-
-        % SASHB vs G2 (slope difference)
-        C = [0 0 0 0 0 1];
-        [pF(2),~,~] = coefTest(mdl, C);
-        d = C * mdl.Coefficients.Estimate;
-        directions(2) = ternary(d>0,'SASHB','G2');
-        fprintf('Slope: SASHB vs G2 p = %.4f\n', pF(2));
-
-        % AFIRM vs SASHB (slope difference)
-        C = [0 0 0 0 1 -1];
-        [pF(3),~,~] = coefTest(mdl, C);
-        d = C * mdl.Coefficients.Estimate;
-        directions(3) = ternary(d>0,'AFIRM','SASHB');
-        fprintf('Slope: AFIRM vs SASHB p = %.4f\n', pF(3));
-
-        p_adj = min(pF * numel(pF), 1);
-        disp(p_adj)
+        if numel(categories(grp)) == 2
+            % patient vs chain
+            rowName = 'x:grp_Patient';
+            pF = coefTable.pValue(strcmp(coefTable.Properties.RowNames, rowName));
+            fprintf('Slope difference (Patient vs CHAIN): p = %.4f\n', pF);
+        else
 
 
-        minN = 5;   % minimum points required for a fit
+            % Preallocate
+            directions = strings(3,1)';
+
+            % AFIRM vs G2 (slope difference)
+            C = [0 0 0 0 1 0];
+            [pF(1),~,~] = coefTest(mdl, C);
+            d = C * mdl.Coefficients.Estimate;
+            directions(1) = ternary(d>0,'AFIRM','G2');
+            fprintf('Slope: AFIRM vs G2 p = %.4f\n', pF(1));
+
+            % SASHB vs G2 (slope difference)
+            C = [0 0 0 0 0 1];
+            [pF(2),~,~] = coefTest(mdl, C);
+            d = C * mdl.Coefficients.Estimate;
+            directions(2) = ternary(d>0,'SASHB','G2');
+            fprintf('Slope: SASHB vs G2 p = %.4f\n', pF(2));
+
+            % AFIRM vs SASHB (slope difference)
+            C = [0 0 0 0 1 -1];
+            [pF(3),~,~] = coefTest(mdl, C);
+            d = C * mdl.Coefficients.Estimate;
+            directions(3) = ternary(d>0,'AFIRM','SASHB');
+            fprintf('Slope: AFIRM vs SASHB p = %.4f\n', pF(3));
+
+            p_adj = min(pF * numel(pF), 1);
+            disp(p_adj)
+        end
+
+
+        minN = 2;   % minimum points required for a fit
 
         bloop  = figure('Position',[100 100 700 500]); hold on
         set(bloop, 'PaperOrientation', 'landscape');
         groups  = categories(grp);
-        markers = {'o','o','s'};
-        faces   = {'none','k','none'};
+        markers = {'o','o','d'};
+        faces   = {'none','k','k'};
 
         % ---- Scatter ----
-        for i = 1:numel(groups)
-            idx = grp == groups{i};
+        for i = 1:numel(origGroups)
+            idx = grpPlot == origGroups{i};
 
             scatter(x(idx), y(idx), 60, ...
                 'Marker', markers{i}, ...
                 'MarkerEdgeColor','k', ...
                 'MarkerFaceColor', faces{i}, ...
                 'LineWidth',1.2, ...
-                'DisplayName', char(groups{i}));
+                'DisplayName', char(origGroups{i}));
         end
 
 
@@ -280,14 +302,26 @@ if exist('ages','var')
 
         if exist('savedir','var')
             h = gcf;
-            if strcmpi(gmorwm,'GM')
-                thisFilename = fullfile(savedir,'GM_plot');
-                lmcoefs = fullfile(savedir,'GM_fitlm_coefficients.csv');
-                pvalssave = fullfile(savedir,'GM_pairwise_pvalues.csv');
-            elseif strcmpi(gmorwm,'WM')
-                thisFilename = fullfile(savedir,'WM_plot');
-                lmcoefs = fullfile(savedir,'WM_fitlm_coefficients.csv');
-                pvalssave = fullfile(savedir,'WM_pairwise_pvalues.csv');
+            if numel(categories(grp)) > 2
+                if strcmpi(gmorwm,'GM')
+                    thisFilename = fullfile(savedir,'GM_plot');
+                    lmcoefs = fullfile(savedir,'GM_fitlm_coefficients.csv');
+                    pvalssave = fullfile(savedir,'GM_pairwise_pvalues.csv');
+                elseif strcmpi(gmorwm,'WM')
+                    thisFilename = fullfile(savedir,'WM_plot');
+                    lmcoefs = fullfile(savedir,'WM_fitlm_coefficients.csv');
+                    pvalssave = fullfile(savedir,'WM_pairwise_pvalues.csv');
+                end
+            else
+                if strcmpi(gmorwm,'GM')
+                    thisFilename = fullfile(savedir,'GM_plot_combined');
+                    lmcoefs = fullfile(savedir,'GM_fitlm_coefficients_combined.csv');
+                    pvalssave = fullfile(savedir,'GM_pairwise_pvalues_combined.csv');
+                elseif strcmpi(gmorwm,'WM')
+                    thisFilename = fullfile(savedir,'WM_plot_combined');
+                    lmcoefs = fullfile(savedir,'WM_fitlm_coefficients_combined.csv');
+                    pvalssave = fullfile(savedir,'WM_pairwise_pvalues_combined.csv');
+                end
             end
 
             print(h, '-dpdf', thisFilename, '-r300');
@@ -309,14 +343,18 @@ if exist('ages','var')
 
             %% --- Save pairwise p-values ---
             % Your previously computed contrasts
-            comparisons = {'NEXPOG2 vs AFIRM','AFIRM vs SASHB','NEXPOG2 vs SASHB'};
+            if numel(categories(grp)) > 2
+                comparisons = {'NEXPOG2 vs AFIRM','AFIRM vs SASHB','NEXPOG2 vs SASHB'};
 
-            %pairCSVTable = table(comparisons', p_adj', 'VariableNames', {'Comparison','pValue'});
-            pairCSVTable = table(comparisons', p_adj', directions', 'VariableNames', {'Comparison','pValue','HigherGroup'});
+                %pairCSVTable = table(comparisons', p_adj', 'VariableNames', {'Comparison','pValue'});
+                pairCSVTable = table(comparisons', p_adj', directions', 'VariableNames', {'Comparison','pValue','HigherGroup'});
 
-            writetable(pairCSVTable, pvalssave);
+                writetable(pairCSVTable, pvalssave);
 
-            disp('CSV files saved: fitlm_coefficients.csv and pairwise_pvalues.csv');
+                disp('CSV files saved: fitlm_coefficients.csv and pairwise_pvalues.csv');
+            else
+                disp('skip')
+            end
 
         end
 
