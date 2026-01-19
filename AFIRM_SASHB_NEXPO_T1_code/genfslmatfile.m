@@ -1,4 +1,4 @@
-%% CHAIN 14 or so subjects
+%% CHAIN 14 or so subjects - DTI
 
 groupSizes = [14, 22, 6];
 nGroups = length(groupSizes);
@@ -55,7 +55,7 @@ title('Design Matrix (Groups)')
 
 % 
 %% NEXPO G2 T1 mapping
-groupSizes = [45, 21, 3];
+groupSizes = [45, 21, 4];
 nGroups = length(groupSizes);
 totalSubs = sum(groupSizes);
 
@@ -80,10 +80,10 @@ ages = [
 34 35 30 39 31 40 43 38 35 33 49 44 46 31 36 45 30 44 46 31 ...
 37 39 38 45 34 30 40 43 33 32 41 45 33 49 45 44 42 40 50 50 37 49 49 46 40 ...
 75 55 47 39 41 65 69 31 64 70 61 72 37 55 41 60 67 49 57 73 49 ...
-57 56 57 ...
+57 83 68 77 ...
 ]';
 
-length(ages)-22-3
+%length(ages)-22-3
 
 %
 
@@ -116,54 +116,54 @@ xlabel('EV (groups only)'); ylabel('Subjects')
 title('Design Matrix (Groups)')
 
 %% for DTI missing some subs - do not use
-
-groupSizes = [43, 22, 2];
-nGroups = length(groupSizes);
-totalSubs = sum(groupSizes);
-
-% ---- 1. One-hot encoding for groups ----
-designMat = zeros(totalSubs, nGroups);
-startIdx = 1;
-for g = 1:nGroups
-    designMat(startIdx : startIdx + groupSizes(g) - 1, g) = 1;
-    startIdx = startIdx + groupSizes(g);
-end
-
-% ---- 2. Add covariate: age ----
-ages = [
-34;31;43;38;35;33;49;46;36;45;30;44;46;31;37;39;38;45;34;30;31;35;40;43;33;41;45;33;49;45;37;44;42;40;50;50;37;49;47;49;50;46;40;
-75;55;47;39;41;65;69;31;64;70;61;70;72;37;55;41;60;67;49;57;73;49;
-57;56
-];
-
-
-if length(ages) ~= totalSubs
-    error('Number of ages (%d) does not match number of subjects (%d)', length(ages), totalSubs);
-end
-
-% Append age column
-designMat = [designMat ages];
-
-% ---- 3. Write to design.mat ----
-nEVs = nGroups + 1; % group EVs + age covariate
-fid = fopen('design.mat','w');
-fprintf(fid, '/NumWaves %d\n', nEVs);
-fprintf(fid, '/NumPoints %d\n', totalSubs);
-fprintf(fid, '/PPheights');
-fprintf(fid, repmat(' 1', 1, nEVs));
-fprintf(fid, '\n');
-fprintf(fid, '/Matrix\n');
-
-for i = 1:totalSubs
-    fprintf(fid, [repmat('%d ', 1, nGroups) '%.2f\n'], designMat(i,1:nGroups), designMat(i,end));
-end
-
-fclose(fid);
-
-% ---- 4. Quick check ----
-imagesc(designMat(:,1:end-1)) % only show group columns
-xlabel('EV (groups only)'); ylabel('Subjects')
-title('Design Matrix (Groups)')
+% 
+% groupSizes = [43, 22, 2];
+% nGroups = length(groupSizes);
+% totalSubs = sum(groupSizes);
+% 
+% % ---- 1. One-hot encoding for groups ----
+% designMat = zeros(totalSubs, nGroups);
+% startIdx = 1;
+% for g = 1:nGroups
+%     designMat(startIdx : startIdx + groupSizes(g) - 1, g) = 1;
+%     startIdx = startIdx + groupSizes(g);
+% end
+% 
+% % ---- 2. Add covariate: age ----
+% ages = [
+% 34;31;43;38;35;33;49;46;36;45;30;44;46;31;37;39;38;45;34;30;31;35;40;43;33;41;45;33;49;45;37;44;42;40;50;50;37;49;47;49;50;46;40;
+% 75;55;47;39;41;65;69;31;64;70;61;70;72;37;55;41;60;67;49;57;73;49;
+% 57;56
+% ];
+% 
+% 
+% if length(ages) ~= totalSubs
+%     error('Number of ages (%d) does not match number of subjects (%d)', length(ages), totalSubs);
+% end
+% 
+% % Append age column
+% designMat = [designMat ages];
+% 
+% % ---- 3. Write to design.mat ----
+% nEVs = nGroups + 1; % group EVs + age covariate
+% fid = fopen('design.mat','w');
+% fprintf(fid, '/NumWaves %d\n', nEVs);
+% fprintf(fid, '/NumPoints %d\n', totalSubs);
+% fprintf(fid, '/PPheights');
+% fprintf(fid, repmat(' 1', 1, nEVs));
+% fprintf(fid, '\n');
+% fprintf(fid, '/Matrix\n');
+% 
+% for i = 1:totalSubs
+%     fprintf(fid, [repmat('%d ', 1, nGroups) '%.2f\n'], designMat(i,1:nGroups), designMat(i,end));
+% end
+% 
+% fclose(fid);
+% 
+% % ---- 4. Quick check ----
+% imagesc(designMat(:,1:end-1)) % only show group columns
+% xlabel('EV (groups only)'); ylabel('Subjects')
+% title('Design Matrix (Groups)')
 
 %% %% TRY nexpo 1 2 3 4 again - T1 mapping
 
