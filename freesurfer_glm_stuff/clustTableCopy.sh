@@ -2,17 +2,17 @@
 
 # Set base directory containing the glmdir folders
 #base_dir="/Volumes/DRS-GBPerm/other/outputs/etiv_doss_predialy/"  # Change this to the actual path
-base_dir="/Volumes/DRS-GBPerm/other/outputs/etiv_doss_patients_afirm_sashb/"  # Change this to the actual path
+base_dir="/Volumes/DRS-GBPerm/other/outputs/etiv_doss_sashb_prevspost/"  # Change this to the actual path
  
 # Set export directory
-export_dir="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/etiv_doss_patients_afirm_sashb"
+export_dir="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/etiv_doss_sashb_prevspost"
 
 # List of GLM folders
 glmdir_list=(
-  "lh.thickness.participants_patients_afirm_sashb.10.glmdir"
-  "lh.volume.participants_patients_afirm_sashb.10.glmdir"
-  "rh.thickness.participants_patients_afirm_sashb.10.glmdir"
-  "rh.volume.participants_patients_afirm_sashb.10.glmdir"
+  "lh.thickness.participants_sashb_prevpost.10.glmdir"
+  "lh.volume.participants_sashb_prevpost.10.glmdir"
+  "rh.thickness.participants_sashb_prevpost.10.glmdir"
+  "rh.volume.participants_sashb_prevpost.10.glmdir"
 )
 
 # Loop through each GLM dir

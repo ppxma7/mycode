@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # === CONFIGURATION ===
-thisRun="etiv_doss_patients_afirm_sashb"
-foldName="participants_patients_afirm_sashb"
+thisRun="etiv_doss_sashb_prevspost"
+foldName="participants_sashb_prevpost"
 export SUBJECTS_DIR="/Volumes/DRS-GBPerm/other/outputs"
 ROOT_DIR="/Volumes/DRS-GBPerm/other/outputs/${thisRun}"
 OUTPUT_ROOT="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/${thisRun}"
@@ -14,7 +14,7 @@ measure_list=("thickness" "volume")
 # )
 
 contrast_dirs=(
-  Age_overall
+  g1_vs_g2 g2_vs_g1
 )
 
 #contrast_dirs=(Age_overall g2_vs_g5 g2_vs_g6 g2_vs_g7 g5_vs_g6 g5_vs_g7 g6_vs_g7)

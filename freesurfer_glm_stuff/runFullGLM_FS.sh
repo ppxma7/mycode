@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #study=$1
-study=participants_patients_afirm_sashb
+study=participants_sashb_prevpost
 export SUBJECTS_DIR=$(pwd)
 
 echo $study
