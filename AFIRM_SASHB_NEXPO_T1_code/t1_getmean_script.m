@@ -6,7 +6,7 @@
 
 thisRUN = 'AFIRM';
 thisTYPE = 'T1';
-GMorWM = 'WM';
+GMorWM = 'GM';
 
 if strcmpi(thisRUN,'AFIRM')
     % THIS ISNT FIXED YET ON ACCOUNT OF BAD T1 SUBJECTS
@@ -15,7 +15,7 @@ if strcmpi(thisRUN,'AFIRM')
         34 35 30 39 31 40 43 38 35 33 49 44 46 31 36 45 30 44 46 31 ...
         37 39 38 45 34 30 40 43 33 32 41 45 33 49 45 44 42 40 50 50 37 49 49 46 40 ...
         75 55 47 39 41 65 69 31 64 70 61 70 72 37 55 41 60 67 49 57 73 49 ...
-        57 56 57 83 68 77 ...
+        57 83 68 77 ...
         ]';
 
     if strcmpi(thisTYPE,'T1')
@@ -296,7 +296,7 @@ if exist('ages','var')
         end
 
         %legend('Location','best');
-        legend('NEXPOG2','AFIRM','SASHB','FitNEXPOG2','FitAFIRM','Location','best')
+        legend('NEXPOG2','AFIRM','SASHB','FitNEXPOG2','FitAFIRM','Position',[ 0.25 0.7 0.1 0.2])
         box on;
         grid on;
 
