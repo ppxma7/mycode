@@ -1,8 +1,9 @@
 #!/bin/bash
 
-root="/Volumes/kratos/CHAIN_inputs/"
+root="/Volumes/kratos/CHAIN/"
 
-find "$root" -type f -path "*/DTI/*.nii" | while read -r nifti; do
+#find "$root" -type f -path "*/DTI/*.nii" | while read -r nifti; do
+find "$root" -type f -path "*.nii" | while read -r nifti; do
     dir=$(dirname "$nifti")
     base=$(basename "$nifti" .nii)
 

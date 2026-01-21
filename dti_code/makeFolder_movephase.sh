@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rootfolder="/Volumes/kratos/CHAINDTI"
+rootfolder="/Volumes/kratos/CHAIN/"
 
 for subjdir in "$rootfolder"/*/; do
     subj=$(basename "$subjdir")

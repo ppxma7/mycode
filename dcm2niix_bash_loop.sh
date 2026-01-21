@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Root folder containing subject directories
-rootfolder="/Volumes/kratos/CHAINMPRAGE/"
+rootfolder="/Volumes/kratos/CHAIN/"
 
 # Loop through all subject directories
 for subjdir in "$rootfolder"/*/; do
