@@ -1,6 +1,6 @@
 
 thisRUN = 'CHAIN';
-thisTYPE = 'FA';
+thisTYPE = 'MD';
 % options are either NEXPO or CHAIN 
 % MD or FA
 %root = '/Volumes/DRS-GBPerm/other/';
@@ -13,7 +13,7 @@ if strcmpi(thisRUN,'CHAIN')
         57 57 53 83 68 77 ...
         ]';
     groupNames = {'CHAIN','AFIRM','SASHB'};
-    savedgroup = 'afirm_chain_sashb';
+    savedgroup = 'afirm_chain_sashb_jan2026';
     if strcmpi(thisTYPE,'FA')
         pathin = fullfile(root,'/dti_data/tbss_analysis_wchain/origdata');
     else
@@ -264,7 +264,7 @@ if exist('ages','var')
                 'MarkerFaceColor', faces{i}, ...
                 'LineWidth',1.2, ...
                 'DisplayName', char(origGroups{i}));
-            % Add text labels
+            %Add text labels
             text(x(idx), y(idx), labels(idx), ...
                 'FontSize',8, ...
                 'VerticalAlignment','bottom', ...
