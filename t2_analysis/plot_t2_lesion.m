@@ -36,13 +36,13 @@ g.export('file_name', ...
     fullfile(savepath,filename), ...
     'file_type','pdf');
 
-
+%%
 clear g
 close all
 
 figure('Position',[100 100 800 500])
 
-g = gramm('x',T.GROUP,'y',T.numclusters);
+g = gramm('x',T.GROUP,'y',T.numclusters,'label',T.Var1);
 g.stat_boxplot2('drawoutlier',0);
 g.set_names('x','Group','y','numclusters');
 %g.set_names('x','ROI','y','Mean T1','color','Group');
@@ -56,7 +56,15 @@ g.update('y',T.numclusters)
 g.geom_jitter2()
 
 g.draw();
-filename = 't2plot_numclusters';
+
+g.update('y',T.numclusters)
+g.geom_label('dodge',10,'Color','k')
+
+g.draw();
+
+
+%
+filename = 't2plot_numclusters_labels';
 g.export('file_name', ...
     fullfile(savepath,filename), ...
     'file_type','pdf');
