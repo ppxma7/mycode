@@ -6,6 +6,11 @@ clc
 basedir = '/Volumes/DRS-GBPerm/other/outputs/FS_aseg_stats_prepost_SASHB';
 xlsxfile = fullfile(basedir,'aseg_sashb.xlsx');
 
+groupNames = 'sashbprepost';
+
+userName = char(java.lang.System.getProperty('user.name'));
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/freesurfer_plots/' groupNames '/'];
+
 % --- read Excel metadata ---
 meta = readtable(xlsxfile);
 
@@ -45,14 +50,118 @@ D.CSFfrac = D.CSF ./ D.TIV;
 %disp(D(:,{'ID','AGE','GROUP','GMfrac','WMfrac','CSFfrac'}));
 disp(D)
 
-%% need to plot things now
+% need to plot things now
+G = cellstr(num2str(D.GROUP));
+G(G=="1") = {'pre-dialysis'};
+G(G=="2") = {'post-dialysis'};
 
-
+gid = cellstr(D.ID);
+gid_names = extractAfter(gid,'_');
 
 %%
+clear g
+close all
+
+%cmap = {'#e31a1c','#fd8d3c','#0570b0','#74a9cf'};
+cmap = {'#2b8cbe','#a6bddb','#ece7f2','#74a9cf'};
+
+cmapped = validatecolor(cmap,'multiple');
+comesInBlack = ones(4,3).*0.6;
+
+figure('Position',[100 100 600 600])
+g = gramm('x',G,'y',D.GMfrac);
+g.stat_boxplot2() %'drawoutlier',0);
+g.axe_property('YGrid','on','XGrid','on');
+g.set_names('y','GMV/TIV','x',[])
+g.set_order_options('x',0)
+g.set_color_options('map',cmapped)
+g.draw()
+
+g.update('y',D.GMfrac)
+g.geom_jitter2()
+g.set_color_options('map',comesInBlack)
+g.draw()
+
+g.update('label',gid_names)
+g.geom_label('dodge',10,'Color','k')
+g.draw()
+
+filename = 'sashb_gmv';
+g.export('file_name', ...
+    fullfile(savedir,filename), ...
+    'file_type','pdf');
+
+
+figure('Position',[100 100 600 600])
+g = gramm('x',G,'y',D.WMfrac);
+g.stat_boxplot2() %'drawoutlier',0);
+g.axe_property('YGrid','on','XGrid','on');
+g.set_names('y','WMV/TIV','x',[])
+g.set_order_options('x',0)
+g.set_color_options('map',cmapped)
+g.draw()
+
+g.update('y',D.WMfrac)
+g.geom_jitter2()
+g.set_color_options('map',comesInBlack)
+g.draw()
+
+g.update('label',gid_names)
+g.geom_label('dodge',10,'Color','k')
+g.draw()
+
+filename = 'sashb_wmv';
+g.export('file_name', ...
+    fullfile(savedir,filename), ...
+    'file_type','pdf');
+
+figure('Position',[100 100 600 600])
+g = gramm('x',G,'y',D.CSFfrac);
+g.stat_boxplot2() %'drawoutlier',0);
+g.axe_property('YGrid','on','XGrid','on');
+g.set_names('y','CSF/TIV','x',[])
+g.set_order_options('x',0)
+g.set_color_options('map',cmapped)
+g.draw()
+
+g.update('y',D.CSFfrac)
+g.geom_jitter2()
+g.set_color_options('map',comesInBlack)
+g.draw()
+
+g.update('label',gid_names)
+g.geom_label('dodge',10,'Color','k')
+g.draw()
+
+filename = 'sashb_CSF';
+g.export('file_name', ...
+    fullfile(savedir,filename), ...
+    'file_type','pdf');
 
 
 
+figure('Position',[100 100 600 600])
+g = gramm('x',G,'y',D.TIV);
+g.stat_boxplot2() %'drawoutlier',0);
+g.axe_property('YGrid','on','XGrid','on');
+g.set_names('y','TIV','x',[])
+g.set_order_options('x',0)
+g.set_color_options('map',cmapped)
+g.draw()
+
+g.update('y',D.TIV)
+g.geom_jitter2()
+g.set_color_options('map',comesInBlack)
+g.draw()
+
+g.update('label',gid_names)
+g.geom_label('dodge',10,'Color','k')
+g.draw()
+
+filename = 'sashb_TIV';
+g.export('file_name', ...
+    fullfile(savedir,filename), ...
+    'file_type','pdf');
 
 
 
