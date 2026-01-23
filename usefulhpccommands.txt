@@ -28,3 +28,9 @@ rsync -azv Documents/MATLAB/mycode/hpc_stuff/nordic_hpc.m ppzma@hpclogin01.ada.n
 rsync -azv Documents/MATLAB/nottingham/retroicor/resp_phase_fun.m ppzma@hpclogin01.ada.nottingham.ac.uk:/gpfs01/home/ppzma/code/
 rsync -azv Documents/MATLAB/nottingham/retroicor/manualcard_phase_fun.m ppzma@hpclogin01.ada.nottingham.ac.uk:/gpfs01/home/ppzma/code/
 rsync -azv Documents/MATLAB/nottingham/retroicor/card_phase_fun.m ppzma@hpclogin01.ada.nottingham.ac.uk:/gpfs01/home/ppzma/code/
+
+
+
+mkdir -p /Volumes/DRS-GBPerm/other/dti_data/sashbdatasets/SASHB_7_2/analysis/dMRI
+
+rsync -azv ppzma@hpclogin01.ada.nottingham.ac.uk:/spmstore/project/SASHB/SASHB/outputs/SASHB_7_2/analysis/dMRI/ /Volumes/DRS-GBPerm/other/dti_data/sashbdatasets/SASHB_7_2/analysis/dMRI/

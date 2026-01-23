@@ -1,6 +1,6 @@
 #!/bin/bash
 
-root="/Volumes/kratos/CHAIN/"
+root="/Users/spmic/data/chain/"
 
 #find "$root" -type f -path "*/DTI/*.nii" | while read -r nifti; do
 find "$root" -type f -path "*.nii" | while read -r nifti; do

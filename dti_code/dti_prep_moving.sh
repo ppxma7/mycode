@@ -6,8 +6,10 @@
 # destination folder, renaming them "SUBJ_dti_FA"
 
 # Source and destination directories
-SRC="/Volumes/kratos/dti_data/sashbdatasets"
-DST="/Volumes/kratos/dti_data/tbss_analysis_wchain"
+#SRC="/Volumes/kratos/dti_data/sashbdatasets"
+SRC="/Volumes/DRS-CHAIN-Study/dti_data/outputs/"
+#DST="/Volumes/kratos/dti_data/tbss_analysis_wchain"
+DST="/Volumes/DRS-CHAIN-Study/dti_data/dti_md/"
 
 #DST="/Volumes/kratos/dti_data/tbss_analysis_wchain"
 

@@ -1,3 +1,12 @@
+# Hi
+- You need to prep by copying bvals: copybvalsbvecs.sh 
+- You need to prep by hiding phase files (makeFolder_movephase.sh)
+- then copy to hpc
+- First run the dti data on the HPC using the brc pipeline: dti_run_chain.sh. This calls the BRC code dMRI_preproc.sh on the HPC.
+- after can run dti_prep_moving.sh before TBSS 
+
+
+https://web.mit.edu/fsl_v5.0.10/fsl/doc/wiki/TBSS(2f)UserGuide.html
 
 # Before you do this, you need to prep and move things. The FA and MD maps are in dMRI/processed/data/data.dti/
 # So you can run dti_prep_moving which moves things to a tbss dir with better names. Then you can run your TBSS analysis. Bear in mind, the MDs should be done separately, and renamed to FA as well.
