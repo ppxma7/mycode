@@ -1,6 +1,6 @@
 %% Load in chain dti data and plot means
-thisType = 'FA';
-root = ['/Volumes/DRS-CHAIN-Study/dti_data/dti_' thisType '/'];
+thisType = 'MD';
+root = ['/Volumes/DRS-CHAIN-Study/MRI/ANALYSIS/dti_data/dti_' thisType '/'];
 
 savedgroup = 'chain_dti';
 
@@ -40,10 +40,18 @@ for ii = 1:length(fullList)
     fprintf('Getting nonzero mean of %s\n',fullList{ii})
     v = thisFileContents(:);
     vm(ii) = mean(nonzeros(v));
+    vm_std(ii) = std(nonzeros(v));
 end
 
 % get labels
 idList = cellfun(@(x) x(1:6), fullList, 'UniformOutput', false);
+
+% Build table
+T = table(fullList(:), vm, vm_std(:), ...
+          'VariableNames', {'Filename','MeanNonZero','StdNonZero'});
+
+% Write CSV
+writetable(T, fullfile(root,'voxel_stats.csv'));
 
 %% just plot these out for now
 clear g
