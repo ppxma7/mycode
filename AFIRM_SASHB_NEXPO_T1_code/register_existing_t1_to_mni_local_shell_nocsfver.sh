@@ -39,8 +39,11 @@ T1_DIR="/Volumes/nemosine/SAN/SASHB/t1mapping_out/"
 #     "16905_004" "16905_005" "17880001" "17880002" "156862_004"
 # )
 SUBJECTS=(
-	"SASHB_6_1"
+	"SASHB_4_2" "SASHB_6_2"
 )
+# SUBJECTS=(
+# 	"SASHB_4_1"
+# )
 # SUBJECTS=(
 # 	"17207_003"
 # )
@@ -52,11 +55,11 @@ codePath="/Users/ppzma/Documents/MATLAB/mycode/AFIRM_SASHB_NEXPO_T1_code/"
 for subject in "${SUBJECTS[@]}"; do
 	count=$((count + 1))
     echo "🔹 Processing subject $count of $total: $subject"
-	#bash //to/remove_csf_t1.sh "$subject" "$MPRAGE_DIR/$subject/MPRAGE" "$T1_DIR/$subject"
-	bash "${codePath}remove_csf_t1.sh" "$MPRAGE_DIR/$subject/MPRAGE" "$T1_DIR/$subject" "$subject"
-	bash "${codePath}mask_t1_gm_wm.sh" "$MPRAGE_DIR/$subject/MPRAGE" "$T1_DIR/$subject" "$subject"
-    python3 "${codePath}register_existing_t1_to_mni_standalone_nocsfver.py" "$MPRAGE_DIR" "$T1_DIR" "$subject"
-    python3 "${codePath}register_existing_t1_to_mni_gmwm.py" "$MPRAGE_DIR" "$T1_DIR" "$subject"
+	bash "${codePath}bet_and_fast.sh" "$MPRAGE_DIR/$subject/MPRAGE" "$subject"
+	# bash "${codePath}remove_csf_t1.sh" "$MPRAGE_DIR/$subject/MPRAGE" "$T1_DIR/$subject" "$subject"
+	# bash "${codePath}mask_t1_gm_wm.sh" "$MPRAGE_DIR/$subject/MPRAGE" "$T1_DIR/$subject" "$subject"
+    # python3 "${codePath}register_existing_t1_to_mni_standalone_nocsfver.py" "$MPRAGE_DIR" "$T1_DIR" "$subject"
+    # python3 "${codePath}register_existing_t1_to_mni_gmwm.py" "$MPRAGE_DIR" "$T1_DIR" "$subject"
 done
 echo "Processing complete!"
 
