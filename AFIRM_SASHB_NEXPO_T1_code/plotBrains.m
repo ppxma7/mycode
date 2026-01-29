@@ -13,7 +13,7 @@ mypath='/Volumes/nemosine/SAN/SASHB/inputs/';
 
 %subjects = {'SASHB_1_1', 'SASHB_1_2', 'SASHB_2_1', 'SASHB_2_2', 'SASHB_3_1' ...
     %'SASHB_3_2'};
-subjects = {'SASHB_7_2'};
+subjects = {'SASHB_5_2'};
 
 for ii = 1:length(subjects)
     MPRAGEdir = fullfile(mypath,subjects{ii},'/MPRAGE/');
@@ -42,7 +42,7 @@ for ii = 1:length(subjects)
     %% -------- Slice indices (mid-slices) --------
     sx = round(size(brain,1)/2); % sagittal
     sy = round(size(brain,2)/2); % coronal
-    sz = round(size(brain,3)/2)-12; % axial
+    sz = round(size(brain,3)/2)+10; % axial
 
     
 

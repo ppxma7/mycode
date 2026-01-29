@@ -58,6 +58,29 @@ G(G=="2") = {'post-dialysis'};
 gid = cellstr(D.ID);
 gid_names = extractAfter(gid,'_');
 
+%% check stats
+% Run the t-test
+[h1,p1,ci1,stats1] = ttest(D.GMfrac(D.GROUP==1), D.GMfrac(D.GROUP==2));
+[h2,p2,ci2,stats2] = ttest(D.WMfrac(D.GROUP==1), D.WMfrac(D.GROUP==2));
+[h3,p3,ci3,stats3] = ttest(D.CSFfrac(D.GROUP==1), D.CSFfrac(D.GROUP==2));
+
+% Create a table
+T = table(h1, p1, ci1(1), ci1(2), stats1.tstat, stats1.df, ...
+    'VariableNames', {'RejectH0', 'pValue', 'CI_Lower', 'CI_Upper', 'tStat', 'DF'});
+TT = table(h2, p2, ci2(1), ci2(2), stats2.tstat, stats2.df, ...
+    'VariableNames', {'RejectH0', 'pValue', 'CI_Lower', 'CI_Upper', 'tStat', 'DF'});
+TTT = table(h3, p3, ci1(1), ci3(2), stats3.tstat, stats3.df, ...
+    'VariableNames', {'RejectH0', 'pValue', 'CI_Lower', 'CI_Upper', 'tStat', 'DF'});
+
+% Optional: display the table
+% disp(T);
+tablesave1 = fullfile(savedir,'ttest_results_gmfrac.csv');
+writetable(T, tablesave1);
+tablesave2 = fullfile(savedir,'ttest_results_wmfrac.csv');
+writetable(TT, tablesave2);
+tablesave3 = fullfile(savedir,'ttest_results_csffrac.csv');
+writetable(TTT, tablesave3);
+
 %%
 clear g
 close all
