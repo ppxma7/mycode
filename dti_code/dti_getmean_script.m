@@ -3,8 +3,8 @@ thisRUN = 'CHAIN';
 thisTYPE = 'MD';
 % options are either NEXPO or CHAIN 
 % MD or FA
-%root = '/Volumes/DRS-GBPerm/other/';
-root = '/Volumes/kratos/';
+root = '/Volumes/DRS-GBPerm/other/';
+%root = '/Volumes/kratos/';
 if strcmpi(thisRUN,'CHAIN')
     % chain afirm sashb
     ages = [
@@ -264,11 +264,11 @@ if exist('ages','var')
                 'MarkerFaceColor', faces{i}, ...
                 'LineWidth',1.2, ...
                 'DisplayName', char(origGroups{i}));
-            %Add text labels
-            text(x(idx), y(idx), labels(idx), ...
-                'FontSize',8, ...
-                'VerticalAlignment','bottom', ...
-                'HorizontalAlignment','left');
+            % %Add text labels
+            % text(x(idx), y(idx), labels(idx), ...
+            %     'FontSize',8, ...
+            %     'VerticalAlignment','bottom', ...
+            %     'HorizontalAlignment','left');
         end
 
 
