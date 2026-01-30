@@ -1,26 +1,27 @@
 #!/bin/bash
 
 #study=$1
-study=participants_sashb_prevpost
+#study=participants_wg2_wafirm_wsashb_wchain_demeanfordods
+study=participants_nexpo_only
 export SUBJECTS_DIR=$(pwd)
 
 echo $study
 #exit 0
 
-for hemi in lh rh; do
-  for smoothing in 10; do
-    for meas in volume thickness; do
-      mris_preproc --fsgd FSGD/${study}.fsgd \
-        --cache-in ${meas}.fwhm${smoothing}.fsaverage \
-        --target fsaverage \
-        --hemi ${hemi} \
-        --out ${hemi}.${meas}.${study}.${smoothing}.mgh
-    done
-  done
-done
+# for hemi in lh rh; do
+#   for smoothing in 10; do
+#     for meas in volume thickness; do
+#       mris_preproc --fsgd FSGD/${study}.fsgd \
+#         --cache-in ${meas}.fwhm${smoothing}.fsaverage \
+#         --target fsaverage \
+#         --hemi ${hemi} \
+#         --out ${hemi}.${meas}.${study}.${smoothing}.mgh
+#     done
+#   done
+# done
 
-echo "MRI preproc complete"
-sleep 5
+# echo "MRI preproc complete"
+# sleep 5
 
 for hemi in lh rh; do
   for smoothness in 10; do
@@ -28,7 +29,7 @@ for hemi in lh rh; do
       # Start building the command
       cmd="mri_glmfit \
         --y ${hemi}.${meas}.${study}.${smoothness}.mgh \
-        --fsgd FSGD/${study}.fsgd doss \
+        --fsgd FSGD/${study}.fsgd dods \
         --surf fsaverage ${hemi} \
         --cortex"
 

@@ -2,17 +2,19 @@
 
 # Set base directory containing the glmdir folders
 #base_dir="/Volumes/DRS-GBPerm/other/outputs/etiv_doss_predialy/"  # Change this to the actual path
-base_dir="/Volumes/DRS-GBPerm/other/outputs/etiv_doss_sashb_prevspost/"  # Change this to the actual path
- 
+#base_dir="/Volumes/DRS-GBPerm/other/outputs/etiv_dods_wg2_wafirm_wsashb_wchain/"  # Change this to the actual path
+#base_dir="/Volumes/DRS-CHAIN-Study/CHAIN_MPRAGE/outputs/etiv_doss_chain/"  # Change this to the actual path
+base_dir="/Volumes/DRS-GBPerm/other/outputs/etiv_dods_nexpoonly/"  # Change this to the actual path
+
 # Set export directory
-export_dir="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/etiv_doss_sashb_prevspost"
+export_dir="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/etiv_dods_nexpoonly/"
 
 # List of GLM folders
 glmdir_list=(
-  "lh.thickness.participants_sashb_prevpost.10.glmdir"
-  "lh.volume.participants_sashb_prevpost.10.glmdir"
-  "rh.thickness.participants_sashb_prevpost.10.glmdir"
-  "rh.volume.participants_sashb_prevpost.10.glmdir"
+  "lh.thickness.participants_nexpo_only.10.glmdir"
+  "lh.volume.participants_nexpo_only.10.glmdir"
+  "rh.thickness.participants_nexpo_only.10.glmdir"
+  "rh.volume.participants_nexpo_only.10.glmdir"
 )
 
 # Loop through each GLM dir

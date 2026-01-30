@@ -1,11 +1,15 @@
 #!/bin/bash
 
 # === CONFIGURATION ===
-thisRun="etiv_doss_sashb_prevspost"
-foldName="participants_sashb_prevpost"
-export SUBJECTS_DIR="/Volumes/DRS-GBPerm/other/outputs"
+thisRun="etiv_dods_nexpoonly"
+foldName="participants_nexpo_only"
+#export SUBJECTS_DIR="/Volumes/DRS-CHAIN-Study/CHAIN_MPRAGE/outputs/"
+export SUBJECTS_DIR="/Volumes/DRS-GBPerm/other/outputs/"
+
 ROOT_DIR="/Volumes/DRS-GBPerm/other/outputs/${thisRun}"
+#ROOT_DIR="/Volumes/DRS-CHAIN-Study/CHAIN_MPRAGE/outputs/${thisRun}"  # Change this to the actual path
 OUTPUT_ROOT="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/nexpo_afirm_screenshots/${thisRun}"
+#OUTPUT_ROOT="/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/chain_mprage/${thisRun}"
 
 hemi_list=("lh" "rh")
 measure_list=("thickness" "volume")
@@ -13,11 +17,17 @@ measure_list=("thickness" "volume")
 #   Age_overall g2_vs_g5 g2_vs_g6 g5_vs_g6 g2_vs_g7 g5_vs_g7 g6_vs_g7
 # )
 
-contrast_dirs=(
-  g1_vs_g2 g2_vs_g1
-)
+# contrast_dirs=(
+#   Age_overall g1_vs_g2
+# )
 
-#contrast_dirs=(Age_overall g2_vs_g5 g2_vs_g6 g2_vs_g7 g5_vs_g6 g5_vs_g7 g6_vs_g7)
+# contrast_dirs=(
+#   Age_g2 Age_g5 Age_g6 Age_g7 g2_vs_g5 g2_vs_g6 g2_vs_g7 g5_vs_g6 g5_vs_g7 g6_vs_g7
+# )
+
+contrast_dirs=(
+  Age_g1 Age_g2 Age_g3 Age_g4 g1_vs_g2 g1_vs_g3 g1_vs_g4 g2_vs_g3 g2_vs_g4 g3_vs_g4
+)
 
 # measure_list=("thickness")
 # contrast_dirs=(
