@@ -8,24 +8,24 @@ import os
 #input_folder = '/Users/spmic/data/postDUST_MBSENSE_HEAD_200225/spm_check_motion/'
 #input_folder = '/Users/spmic/data/canapi_sub03_180325/spm_analysis/'
 #input_folder = '/Volumes/kratos/canapi_sub10_160725/spm_analysis/'
-input_folder = '/Volumes/DRS-Touchmap/ma_ares_backup/CANAPI/canapi_sub10_160725/spm_analysis/'
-#input_folder = '/Volumes/nemosine/caitlin_data/Map01/spmanalysis/'
+#input_folder = '/Volumes/DRS-Touchmap/ma_ares_backup/CANAPI/canapi_sub10_160725/spm_analysis/'
+input_folder = '/Volumes/nemosine/caitlin_data/Map01_3T/spmanalysis/'
 
 output_folder = os.path.join(input_folder, "motion_plots")  # Output folder for saving plots
 os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exist
 
 #List of input files
-input_files = [
-    "rp_canapi_sub10_160725_WIP1bar_TAP_R_20250716134752_3_nordic_clv",
-    "rp_canapi_sub10_160725_WIPlow_TAP_R_20250716134752_4_nordic_clv",
-    "rp_canapi_sub10_160725_WIP1bar_TAP_L_20250716134752_5_nordic_clv",
-    "rp_canapi_sub10_160725_WIPlow_TAP_L_20250716134752_6_nordic_clv",
-]
-
 # input_files = [
-#     "rp_Map01_Motor_TW_fwd_20230607123527_18_nordic_NoNoise_toppedup_clv",
-#     "rp_Map01_Motor_TW_rev_20230607123527_19_nordic_NoNoise_toppedup_clv",
+#     "rp_canapi_sub10_160725_WIP1bar_TAP_R_20250716134752_3_nordic_clv",
+#     "rp_canapi_sub10_160725_WIPlow_TAP_R_20250716134752_4_nordic_clv",
+#     "rp_canapi_sub10_160725_WIP1bar_TAP_L_20250716134752_5_nordic_clv",
+#     "rp_canapi_sub10_160725_WIPlow_TAP_L_20250716134752_6_nordic_clv",
 # ]
+
+input_files = [
+    "rp_Map01_TWfwd_toppedup",
+    "rp_Map01_TWrev_toppedup",
+]
 
 
 # Loop through each file
