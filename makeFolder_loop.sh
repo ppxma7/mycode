@@ -15,10 +15,11 @@ for subj in */; do
 
     # ---- Create directories ----
     [[ -d MPRAGE ]] || mkdir MPRAGE
-    [[ -d FLAIR  ]] || mkdir FLAIR
+    #[[ -d FLAIR  ]] || mkdir FLAIR
+    [[ -d fMRI ]] || mkdir fMRI
 
     # ---- Move MPRAGE ----
-    mprage_files=( *MPRAGE*.nii *MPRAGE*.json )
+    mprage_files=( *MPRAGE*.nii *MPRAGE*.json *PSIR*)
     if (( ${#mprage_files[@]} )); then
         echo "📦 Moving ${#mprage_files[@]} MPRAGE files"
         mv -i "${mprage_files[@]}" MPRAGE/
@@ -26,14 +27,23 @@ for subj in */; do
         echo "⚠️ No MPRAGE files found"
     fi
 
-    # ---- Move T2 FLAIR ----
-    flair_files=( *FLAIR*.nii *FLAIR*.json )
-    if (( ${#flair_files[@]} )); then
-        echo "📦 Moving ${#flair_files[@]} FLAIR files"
-        mv -i "${flair_files[@]}" FLAIR/
+    # ---- Move fMRI ----
+    mprage_files=( *TW*.nii *TW*.nii.gz *TW*.png)
+    if (( ${#mprage_files[@]} )); then
+        echo "📦 Moving ${#mprage_files[@]} MPRAGE files"
+        mv -i "${mprage_files[@]}" fMRI/
     else
-        echo "⚠️ No FLAIR files found"
+        echo "⚠️ No MPRAGE files found"
     fi
+
+    # ---- Move T2 FLAIR ----
+    # flair_files=( *FLAIR*.nii *FLAIR*.json )
+    # if (( ${#flair_files[@]} )); then
+    #     echo "📦 Moving ${#flair_files[@]} FLAIR files"
+    #     mv -i "${flair_files[@]}" FLAIR/
+    # else
+    #     echo "⚠️ No FLAIR files found"
+    # fi
 
     cd "$ROOT"
 done

@@ -18,7 +18,7 @@ function []=makeDigitROIs_BD_caitlin(path,n)
 %
 if nargin==0
     path = '/Volumes/nemosine/caitlin_data/atlas/';
-    n = 96; %64 96
+    n = 64; %64 96
 elseif nargin==1
     n = 80;
 end
@@ -27,7 +27,7 @@ numDigs = 4;
 
 %cd(path)
 
-subs = {'3T/'};
+subs = {'7T/'};
 for ii = 1:length(subs)
     
     cd([path subs{ii}]);
@@ -60,7 +60,7 @@ for ii = 1:length(subs)
     
     
     P=coherenceToP(CO,n);
-    pValThresh = coherenceToP(0.3,n);
+    pValThresh = coherenceToP(0.5,n);
     Pdata = P;
     %pValThresh = 0.05;
     index = Pdata<pValThresh;

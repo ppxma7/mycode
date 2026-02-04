@@ -8,7 +8,7 @@ export SUBJECTS_DIR='/Volumes/nemosine/caitlin_subs/'
 
 # Parallel arrays (same length, same order)
 subjectlist=("3T" "7T")
-anatsubs=("Map01_3T" "Map01_7T")   # or Map01_3T Map01_3T if intentional
+anatsubs=("Map01_3T" "Map01_3T")   # or Map01_3T Map01_3T if intentional
 
 for i in "${!subjectlist[@]}"; do
     subject="${subjectlist[i]}"
@@ -40,27 +40,27 @@ for i in "${!subjectlist[@]}"; do
             --min 0.1 \
             --o "${MOUNT}/${subject}/RD${k}_fsaverage.mgh"
 
-        mri_vol2surf \
-            --hemi rh \
-            --mov "${MOUNT}/${subject}/LD${k}.nii.gz" \
-            --regheader "$anatsub" \
-            --projfrac-avg 0.1 1 0.1 \
-            --surf-fwhm 1 \
-            --surf white \
-            --out "${MOUNT}/${subject}/LD${k}.mgh" \
-            --out_type mgh
+        # mri_vol2surf \
+        #     --hemi rh \
+        #     --mov "${MOUNT}/${subject}/LD${k}.nii.gz" \
+        #     --regheader "$anatsub" \
+        #     --projfrac-avg 0.1 1 0.1 \
+        #     --surf-fwhm 1 \
+        #     --surf white \
+        #     --out "${MOUNT}/${subject}/LD${k}.mgh" \
+        #     --out_type mgh
 
-        mri_surf2surf \
-            --srcsubject "$anatsub" \
-            --trgsubject fsaverage \
-            --hemi rh \
-            --sval "${MOUNT}/${subject}/LD${k}.mgh" \
-            --tval "${MOUNT}/${subject}/LD${k}_fsaverage.mgh"
+        # mri_surf2surf \
+        #     --srcsubject "$anatsub" \
+        #     --trgsubject fsaverage \
+        #     --hemi rh \
+        #     --sval "${MOUNT}/${subject}/LD${k}.mgh" \
+        #     --tval "${MOUNT}/${subject}/LD${k}_fsaverage.mgh"
 
-        mri_binarize \
-            --i "${MOUNT}/${subject}/LD${k}_fsaverage.mgh" \
-            --min 0.1 \
-            --o "${MOUNT}/${subject}/LD${k}_fsaverage.mgh"
+        # mri_binarize \
+        #     --i "${MOUNT}/${subject}/LD${k}_fsaverage.mgh" \
+        #     --min 0.1 \
+        #     --o "${MOUNT}/${subject}/LD${k}_fsaverage.mgh"
 
     done
 done
