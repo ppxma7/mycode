@@ -23,7 +23,7 @@ export OUTPUT_DIR="/gpfs01/home/ppzma/caitlin/outputs/"
 #"16798-002A" "16821-002A" "16835-002A" "16885-002A" \
 #"16994-002A" "16999-002B" "17057-002C" "17058-002A" "17059-002a")
 
-subjects=("Map01_3T")
+subjects=("Map02" "Map03" "Map04" "Map06" "Map07" "Map08" "Map09" "Map10" "Map11" "Map14")
 
 # Loop through each subject
 for subject in "${subjects[@]}"; do
@@ -39,9 +39,9 @@ for subject in "${subjects[@]}"; do
         #echo "T2: $T2_FILE"
 
         # Run structural pipeline
-        struc_preproc.sh --subject "$subject" --path "$OUTPUT_DIR" \
-                         --input "$T1_FILE" --t2 "$T2_FILE" \
-                         --subseg --nodefacing --regtype 3 --freesurfer --fastsurfer
+        # struc_preproc.sh --subject "$subject" --path "$OUTPUT_DIR" \
+        #                  --input "$T1_FILE" --t2 "$T2_FILE" \
+        #                  --subseg --nodefacing --regtype 3 --freesurfer --fastsurfer
 
         struc_preproc.sh --subject "$subject" --path "$OUTPUT_DIR" \
                          --input "$T1_FILE" \
