@@ -3,12 +3,14 @@
 cd ~
 source $FREESURFER_HOME/SetUpFreeSurfer.sh
 
-MOUNT='/Volumes/nemosine/caitlin_data/atlas/'
-export SUBJECTS_DIR='/Volumes/nemosine/caitlin_subs/'
+MOUNT='/Volumes/kratos/caitlin/subset/atlas/'
+export SUBJECTS_DIR='/Volumes/kratos/caitlin/caitlin_subs/'
 
 # Parallel arrays (same length, same order)
-subjectlist=("3T" "7T")
-anatsubs=("Map01_3T" "Map01_3T")   # or Map01_3T Map01_3T if intentional
+subjectlist=("Map01" "Map02" "Map03")
+anatsubs=("Map01_3T" "Map02" "Map03")   # or Map01_3T Map01_3T if intentional
+
+modality=("3T" "7T")
 
 for i in "${!subjectlist[@]}"; do
     subject="${subjectlist[i]}"
@@ -16,51 +18,35 @@ for i in "${!subjectlist[@]}"; do
 
     echo "Processing $subject with anatomy $anatsub"
 
-    for ((k=2; k<=5; k++)); do
+    for j in "${!modality[@]}"; do
+        
+        mod="${modality[j]}"
 
-        mri_vol2surf \
-            --hemi lh \
-            --mov "${MOUNT}/${subject}/RD${k}.nii" \
-            --regheader "$anatsub" \
-            --projfrac-avg 0.1 1 0.1 \
-            --surf-fwhm 1 \
-            --surf white \
-            --out "${MOUNT}/${subject}/RD${k}.mgh" \
-            --out_type mgh
+        for ((k=2; k<=5; k++)); do
 
-        mri_surf2surf \
-            --srcsubject "$anatsub" \
-            --trgsubject fsaverage \
-            --hemi lh \
-            --sval "${MOUNT}/${subject}/RD${k}.mgh" \
-            --tval "${MOUNT}/${subject}/RD${k}_fsaverage.mgh"
+            mri_vol2surf \
+                --hemi lh \
+                --mov "${MOUNT}/${subject}/${mod}/RD${k}.nii" \
+                --regheader "$anatsub" \
+                --projfrac-avg 0.1 1 0.1 \
+                --surf-fwhm 1 \
+                --surf white \
+                --out "${MOUNT}/${subject}/${mod}/RD${k}.mgh" \
+                --out_type mgh
 
-        mri_binarize \
-            --i "${MOUNT}/${subject}/RD${k}_fsaverage.mgh" \
-            --min 0.1 \
-            --o "${MOUNT}/${subject}/RD${k}_fsaverage.mgh"
+            mri_surf2surf \
+                --srcsubject "$anatsub" \
+                --trgsubject fsaverage \
+                --hemi lh \
+                --sval "${MOUNT}/${subject}/${mod}/RD${k}.mgh" \
+                --tval "${MOUNT}/${subject}/${mod}/RD${k}_fsaverage.mgh"
 
-        # mri_vol2surf \
-        #     --hemi rh \
-        #     --mov "${MOUNT}/${subject}/LD${k}.nii.gz" \
-        #     --regheader "$anatsub" \
-        #     --projfrac-avg 0.1 1 0.1 \
-        #     --surf-fwhm 1 \
-        #     --surf white \
-        #     --out "${MOUNT}/${subject}/LD${k}.mgh" \
-        #     --out_type mgh
+            mri_binarize \
+                --i "${MOUNT}/${subject}/${mod}/RD${k}_fsaverage.mgh" \
+                --min 0.1 \
+                --o "${MOUNT}/${subject}/${mod}/RD${k}_fsaverage_bin.mgh"
 
-        # mri_surf2surf \
-        #     --srcsubject "$anatsub" \
-        #     --trgsubject fsaverage \
-        #     --hemi rh \
-        #     --sval "${MOUNT}/${subject}/LD${k}.mgh" \
-        #     --tval "${MOUNT}/${subject}/LD${k}_fsaverage.mgh"
-
-        # mri_binarize \
-        #     --i "${MOUNT}/${subject}/LD${k}_fsaverage.mgh" \
-        #     --min 0.1 \
-        #     --o "${MOUNT}/${subject}/LD${k}_fsaverage.mgh"
+        done
 
     done
 done

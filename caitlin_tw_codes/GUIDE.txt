@@ -1,0 +1,5 @@
+- FreeSurfer and realign data in mrAlign (align TW to surfRelax 3T MPRAGE)
+- Run TW on flat, swap to mprage, and run exportOverlay_caitlin.m this will get the co,ph and roi.
+- Then run makeDigitROIs_BD_caitlin.m to make digits
+- Then run ImportROIs_BH_PhBin_caitlin.sh to move everything to atlas space
+- Then diceCoeff_caitlin_feb2026.m to save out PNGs. 
