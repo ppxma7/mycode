@@ -20,7 +20,7 @@ for i in "${!subjectlist[@]}"; do
 
         mri_vol2surf \
             --hemi lh \
-            --mov "${MOUNT}/${subject}/RD${k}.nii.gz" \
+            --mov "${MOUNT}/${subject}/RD${k}.nii" \
             --regheader "$anatsub" \
             --projfrac-avg 0.1 1 0.1 \
             --surf-fwhm 1 \

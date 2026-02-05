@@ -7,7 +7,7 @@ function[] = exportOverlay_caitlin()
 %thisPath = '/Volumes/LaCie/digitMap/Map02/';
 thisPath = '/Volumes/kratos/caitlin/subset/atlas/';
 
-thisSub = 'Map02/3T/';
+thisSub = 'Map03/7T/';
 
 thisName = 'co';
 v = viewGet([],'view',1);
@@ -30,7 +30,7 @@ v = viewGet([],'view',1);
 myROIs = {'cothr.nii'};
 roiNums = 1;
 for ii = 1:length(myROIs)
-    mlrExportROI_group(v,myROIs{ii},'roiNum',roiNums(ii));
+    mlrExportROI_group(v,fullfile(thisPath,thisSub,myROIs{ii}),'roiNum',roiNums(ii));
 end
 
 
