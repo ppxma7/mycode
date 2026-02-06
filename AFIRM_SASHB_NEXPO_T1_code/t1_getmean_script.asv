@@ -6,7 +6,7 @@
 
 thisRUN = 'AFIRM';
 thisTYPE = 'T1';
-GMorWM = 'WM';
+GMorWM = 'GM';
 
 if strcmpi(thisRUN,'AFIRM')
     % THIS ISNT FIXED YET ON ACCOUNT OF BAD T1 SUBJECTS
@@ -215,9 +215,9 @@ groups(contains(thisFileList,"NEXPOG2")) = "NEXPOG2";
 groups(contains(thisFileList,"AFIRM"))   = "AFIRM";
 groups(contains(thisFileList,"SASHB"))   = "SASHB";
 
-%origGroups = unique(groups);
-%markers = {'o','d','s'};                 % shape per group
-%faces   = {[1 1 1],[0 0 0],[0 0 0]};    % default face RGB for missing EGFR (white/black)
+origGroups = unique(groups);
+markers = {'o','d','s'};                 % shape per group
+faces   = {[1 1 1],[0 0 0],[0 0 0]};    % default face RGB for missing EGFR (white/black)
 
 
 
@@ -318,29 +318,21 @@ if exist('ages','var')
         %         'DisplayName', char(origGroups{i}));
         % end
         % ---- Scatter ---- use EGFR Colouring
-        groupFaceRGB = {[1 1 1],[0 0 0],[0 0 0]};
         for i = 1:numel(origGroups)
             idx = grpPlot == origGroups{i};
 
             groupIdx = find(idx);
             hasEGFR   = ~isnan(x24MonthEGFR(groupIdx));
 
-            faceColorsRGB = repmat(groupFaceRGB{i}, sum(idx),1);       % default faces
+            faceColorsRGB = repmat(faces{i}, sum(idx),1);       % default faces
             faceColorsRGB(hasEGFR,:) = C(groupIdx(hasEGFR),:); % override with EGFR colours
 
-            scatter(x(idx), y(idx), 60, faceColorsRGB,...
+            scatter(x(idx), y(idx), 60, faceColoursRGB,...
                 'Marker', markers{i}, ...
                 'MarkerEdgeColor','k', ...
                 'MarkerFaceColor', 'flat', ...
                 'LineWidth',1.2, ...
                 'DisplayName', char(origGroups{i}));
-
-
-            % Add EGFR value labels to check it's correctly assigning
-            % text(x(idx), y(idx), string(x24MonthEGFR(idx)), ...
-            %     'FontSize',8, ...
-            %     'HorizontalAlignment','center', ...
-            %     'VerticalAlignment','bottom');
         end
 
 
