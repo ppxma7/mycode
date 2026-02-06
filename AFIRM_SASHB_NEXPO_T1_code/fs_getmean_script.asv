@@ -7,7 +7,7 @@ tissueType = 'CSF';
 
 userName = char(java.lang.System.getProperty('user.name'));
 rootdir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Michael_Sue - General/AFIRM_SASHB_NEXPO/'];
-savedir = fullfile(rootdir,['freesurfer_plots/' groupNames '/']);
+savedir = fullfile(rootdir(['freesurfer_plots/' groupNames '/']));
 
 
 basedir = '/Volumes/DRS-GBPerm/other/outputs/FS_aseg_stats';
@@ -86,12 +86,17 @@ D.EGFR_high(x > 60) = "high";
 %D(D.x24MonthEGFR > 60, {'ID','x24MonthEGFR','EGFR_high'})
 
 % fro graph
-cHigh    = [0.85 0.33 0.10];   % red
+cLow    = [0.85 0.33 0.10];   % red
 cMedium = [0.93 0.69 0.13];   % yellow
-cLow   = [0.30 0.75 0.93];   % blue
+cHigh   = [0.30 0.75 0.93];   % blue
 cMissing = [0.7 0.7 0.7];     % grey
 
-
+C = zeros(height(Dsub),3);
+xEGFR = Dsub.x24MonthEGFR;
+C(xEGFR < 30,:)                 = repmat(cLow,    sum(xEGFR < 30),1);
+C(xEGFR >= 30 & xEGFR <= 60,:)  = repmat(cMedium, sum(xEGFR >= 30 & xEGFR <= 60),1);
+C(xEGFR > 60,:)                 = repmat(cHigh,   sum(xEGFR > 60),1);
+C(isnan(xEGFR),:)               = repmat(cMissing,sum(isnan(xEGFR)),1);
 
 
 %% now plotting and fitting
@@ -240,52 +245,39 @@ if sum(contains(groupNames,'3group_wchain'))
     markers = {'o','o','d','d'};
     faces   = {'none','k','k','none'};
 
-    % complicated colouring for AFIRM
-    C = zeros(height(Dsub),3);
-    xEGFR = Dsub.x24MonthEGFR;
-    C(xEGFR < 30,:)                 = repmat(cLow,    sum(xEGFR < 30),1);
-    C(xEGFR >= 30 & xEGFR <= 60,:)  = repmat(cMedium, sum(xEGFR >= 30 & xEGFR <= 60),1);
-    C(xEGFR > 60,:)                 = repmat(cHigh,   sum(xEGFR > 60),1);
-    C(isnan(xEGFR),:)               = repmat(cMissing,sum(isnan(xEGFR)),1);
+    % ---- Scatter ----
+    % for i = 1:numel(groups)
+    %     idx = grp == groups{i};
+    %
+    %     scatter(x(idx), y(idx), 60, ...
+    %         'Marker', markers{i}, ...
+    %         'MarkerEdgeColor','k', ...
+    %         'MarkerFaceColor', faces{i}, ...
+    %         'LineWidth',1.2, ...
+    %         'DisplayName', char(groups{i}));
+    % end
 
     % ---- Scatter with small horizontal jitter ----
     jitterAmount = 0.5;  % adjust as needed (in same units as x)
-    groupFaceRGB = {[1 1 1], [0 0 0], [0 0 0], [1 1 1]}; % white or black for CHAIN,NEXPO,SASHB,AFIRM
+
     for i = 1:numel(origGroups)
         %idx = grp == groups{i};
         idx = Dsub.GROUP == origGroups{i};
         % Generate random jitter
         xJittered = x(idx) + (rand(sum(idx),1)-0.5)*2*jitterAmount;
-        
-        groupIdx = find(idx);                     % numeric indices
-        hasEGFR   = ~isnan(Dsub.x24MonthEGFR(groupIdx));
-        % Default face colours for group
-        faceColorsRGB = repmat(groupFaceRGB{i}, sum(idx), 1);  
-        % Assign EGFR colours only where available
-        faceColorsRGB(hasEGFR,:) = C(groupIdx(hasEGFR),:);
 
-        scatter(xJittered, y(idx), 60, faceColorsRGB,...
+        scatter(xJittered, y(idx), 60, ...
             'Marker', markers{i}, ...
             'MarkerEdgeColor','k', ...
-            'MarkerFaceColor', 'flat', ...
+            'MarkerFaceColor', faces{i}, ...
             'LineWidth',1.2, ...
             'DisplayName', char(origGroups{i}));
-
-        % 'MarkerFaceColor', faces{i}, ...
         
         % labels = Dsub.ID;
         % text(x(idx), y(idx), labels(idx), ...
         %     'FontSize',8, ...
         %     'VerticalAlignment','bottom', ...
         %     'HorizontalAlignment','left');
-
-
-        % Add EGFR value labels to check it's correctly assigning
-        % text(xJittered, y(idx), string(Dsub.x24MonthEGFR(idx)), ...
-        %     'FontSize',8, ...
-        %     'HorizontalAlignment','center', ...
-        %     'VerticalAlignment','bottom');
-
     end
 
     
