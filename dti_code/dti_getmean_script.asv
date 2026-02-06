@@ -1,10 +1,10 @@
 
 thisRUN = 'CHAIN';
-thisTYPE = 'FA';
+thisTYPE = 'MD';
 % options are either NEXPO or CHAIN 
 % MD or FA
-%root = '/Volumes/DRS-GBPerm/other/';
-root = '/Volumes/kratos/';
+root = '/Volumes/DRS-GBPerm/other/';
+%root = '/Volumes/kratos/';
 if strcmpi(thisRUN,'CHAIN')
     % chain afirm sashb
     ages = [
@@ -316,23 +316,23 @@ if exist('ages','var')
         markers = {'o','o','d'};
         faces   = {'none','k','k'};
         groupFaceRGB = {[1 1 1],[0 0 0],[0 0 0]};
+        
+        % ---- Scatter ----
+        for i = 1:numel(origGroups)
+            idx = grpPlot == origGroups{i};
 
-        % % ---- Scatter ----
-        % for i = 1:numel(origGroups)
-        %     idx = grpPlot == origGroups{i};
-        % 
-        %     scatter(x(idx), y(idx), 60, ...
-        %         'Marker', markers{i}, ...
-        %         'MarkerEdgeColor','k', ...
-        %         'MarkerFaceColor', faces{i}, ...
-        %         'LineWidth',1.2, ...
-        %         'DisplayName', char(origGroups{i}));
-        %     % %Add text labels
-        %     % text(x(idx), y(idx), labels(idx), ...
-        %     %     'FontSize',8, ...
-        %     %     'VerticalAlignment','bottom', ...
-        %     %     'HorizontalAlignment','left');
-        % end
+            scatter(x(idx), y(idx), 60, ...
+                'Marker', markers{i}, ...
+                'MarkerEdgeColor','k', ...
+                'MarkerFaceColor', faces{i}, ...
+                'LineWidth',1.2, ...
+                'DisplayName', char(origGroups{i}));
+            % %Add text labels
+            % text(x(idx), y(idx), labels(idx), ...
+            %     'FontSize',8, ...
+            %     'VerticalAlignment','bottom', ...
+            %     'HorizontalAlignment','left');
+        end
 
         for i = 1:numel(origGroups)
             idx = grpPlot == origGroups{i};
