@@ -9,19 +9,19 @@ import xml.etree.ElementTree as ET
 # -----------------------------------------------------------
 
 #TBSS_DIR = "/Volumes/kratos/dti_data/tbss_analysis_justnexpo/"             # point to the main TBSS directory
-TBSS_DIR = "/Volumes/kratos/dti_data/tbss_analysis_wchain/"
-STATS_DIR = os.path.join(TBSS_DIR, "stats/MD")
-OUTPUT_DIR = os.path.join(TBSS_DIR, "roi_output_tstat3")
+TBSS_DIR = "/Volumes/kratos/dti_data/tbss_analysis_wchain_less300/"
+STATS_DIR = os.path.join(TBSS_DIR, "stats/")
+OUTPUT_DIR = os.path.join(TBSS_DIR, "roi_output_tstat6")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-SIGNIFICANT_MASK = os.path.join(STATS_DIR, "tbss_tfce_corrp_tstat3.nii.gz")
+SIGNIFICANT_MASK = os.path.join(STATS_DIR, "tbss_tfce_corrp_tstat6.nii.gz")
 
 # Where your per-subject skeletonised data live
 # Typically TBSS creates all_FA_skeletonised.nii.gz etc.
 # If you have MD, RD, AD available, add paths later.
-METRIC = "MD"
-#SKEL_4D = os.path.join(STATS_DIR, "all_FA_skeletonised.nii.gz")
-SKEL_4D = os.path.join(STATS_DIR, "all_MD_skeletonised.nii.gz")
+METRIC = "FA"
+SKEL_4D = os.path.join(STATS_DIR, "all_FA_skeletonised.nii.gz")
+#SKEL_4D = os.path.join(STATS_DIR, "all_MD_skeletonised.nii.gz")
 
 SUBJECTS = [
     "AFIRM_1688-002C", "AFIRM_15234-003B", "AFIRM_16469-002A", "AFIRM_16498-002A",
@@ -29,10 +29,14 @@ SUBJECTS = [
     "AFIRM_16602-002B", "AFIRM_16707-002A", "AFIRM_16708-03A", "AFIRM_16797-002C",
     "AFIRM_16798-002A", "AFIRM_16821-002A", "AFIRM_16835-002A", "AFIRM_16885-002A",
     "AFIRM_16994-002A", "AFIRM_16999-002B", "AFIRM_17057-002C", "AFIRM_17058-002A",
-    "AFIRM_17059-002a", "AFIRM_17311-002b", "CHAIN_CHN001_V6", "CHAIN_CHN002_V6",
-    "CHAIN_CHN003_V6", "CHAIN_CHN005_V6", "CHAIN_CHN006_V6", "CHAIN_CHN007_V6",
-    "CHAIN_CHN008_V6", "CHAIN_CHN009_V6", "CHAIN_CHN010_V6", "CHAIN_CHN012_V6",
-    "CHAIN_CHN013_V6", "CHAIN_CHN014_V6", "CHAIN_CHN015_V6", "CHAIN_CHN019_V6",
+    "AFIRM_17059-002a", "AFIRM_17311-002b", 
+    "CHAIN_CHN001_V6_C_less300", "CHAIN_CHN002_V6_C_less300",
+    "CHAIN_CHN003_V6_C_less300", "CHAIN_CHN005_v6_redo_C_less300", 
+    "CHAIN_CHN006_V6_C_less300", "CHAIN_CHN007_V6_C_less300",
+    "CHAIN_CHN008_V6_DTI_C_less300", "CHAIN_CHN009_V6_C_less300", 
+    "CHAIN_CHN010_V6_2_DTI_C_less300", "CHAIN_CHN012_less300",
+    "CHAIN_CHN013_v6_classic_less300", "CHAIN_CHN014_V6_DTI_C_less300", 
+    "CHAIN_CHN015_V6_DTI_C_less300", "CHAIN_CHN019_V6_C_less300",
     "SASHB_16905_004", "SASHB_156862_004", "SASHB_4_1", "SASHB_5_1", "SASHB_6_1",
     "SASHB_7_1"
 ]

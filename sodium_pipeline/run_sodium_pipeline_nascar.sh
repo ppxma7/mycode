@@ -13,7 +13,9 @@ REF_BASENAME=$2
 SITE=$3
 
 # Root directory where subject folders live
-ROOTDIR="/Volumes/nemosine/SAN/NASCAR/"
+#ROOTDIR="/Volumes/nemosine/SAN/NASCAR/"
+ROOTDIR="/Volumes/kratos/sodium/"
+
 
 # Build paths
 ARG1="${ROOTDIR}/${SUBJECT}/${SITE}/pipeline/proton"
@@ -31,8 +33,9 @@ for d in "$ARG1" "$ARG2" "$ARG3"; do
     fi
 done
 
-echo "Running sodium NASCAR pipeline for $SUBJECT (reference=${REF_BASENAME}.nii)"
+#echo "Running sodium NASCAR pipeline for $SUBJECT (reference=${REF_BASENAME}.nii)"
 python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_nascar_multi_TSC.py "$ARG1" "$ARG2" "$ARG3" "$REF_BASENAME"
+#python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_nascar.py "$ARG1" "$ARG2" "$ARG3" "$REF_BASENAME"
 
 #Check that all three paths exist
 for d in "$ARG4"; do
@@ -44,8 +47,9 @@ done
 
 echo "Running sodium NASCAR MNI pipeline for $SUBJECT"
 python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_nascar_to_mni_multi_TSC.py "$ARG4" "$REF_BASENAME" "$ARG1"
+#python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_nascar_to_mni.py "$ARG4" "$REF_BASENAME" "$ARG1"
 
-echo "atlas rois"
+#echo "atlas rois"
 python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_atlasread.py "$REF_BASENAME" "$SITE" "$SUBJECT"
 
 

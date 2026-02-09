@@ -134,7 +134,9 @@ def roi_table_catchexceptions(sodium_file, atlas_file, out_csv, max_roi=47):
 
 # --- Paths ---
 subject = ARG3   # <-- replace or parse dynamically
-base_dir = "/Volumes/nemosine/SAN/NASCAR/"
+#base_dir = "/Volumes/nemosine/SAN/NASCAR/"
+base_dir = "/Volumes/kratos/sodium/"
+
 outputs_mni = os.path.join(base_dir, subject, ARG2, "outputs_mni")
 outputs_native = os.path.join(base_dir, subject, ARG2, "outputs")
 outputs_pve_native = os.path.join(base_dir, subject, ARG2, "outputs_pve_native")
