@@ -7,9 +7,11 @@
 
 # Source and destination directories
 #SRC="/Volumes/kratos/dti_data/sashbdatasets"
-SRC="/Volumes/DRS-CHAIN-Study/dti_data/outputs/"
+#SRC="/Volumes/DRS-CHAIN-Study/dti_data/outputs/"
+SRC="/Volumes/kratos/dti_data/chaindatasets/less300/"
 #DST="/Volumes/kratos/dti_data/tbss_analysis_wchain"
-DST="/Volumes/DRS-CHAIN-Study/dti_data/dti_md/"
+#DST="/Volumes/DRS-CHAIN-Study/dti_data/dti_md/"
+DST="/Volumes/kratos/dti_data/tbss_analysis_wchain_less300/MD/origMD/"
 
 #DST="/Volumes/kratos/dti_data/tbss_analysis_wchain"
 

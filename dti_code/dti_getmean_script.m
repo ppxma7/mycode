@@ -1,6 +1,6 @@
 
 thisRUN = 'CHAIN';
-thisTYPE = 'FA';
+thisTYPE = 'MD';
 % options are either NEXPO or CHAIN 
 % MD or FA
 %root = '/Volumes/DRS-GBPerm/other/';
@@ -15,9 +15,9 @@ if strcmpi(thisRUN,'CHAIN')
     groupNames = {'CHAIN','AFIRM','SASHB'};
     savedgroup = 'afirm_chain_sashb_jan2026';
     if strcmpi(thisTYPE,'FA')
-        pathin = fullfile(root,'/dti_data/tbss_analysis_wchain/origdata');
+        pathin = fullfile(root,'/dti_data/tbss_analysis_wchain_less300/origdata/');
     else
-        pathin = fullfile(root,'/dti_data/tbss_analysis_wchain/MD/origMD/');
+        pathin = fullfile(root,'/dti_data/tbss_analysis_wchain_less300/MD/origMD/');
     end
 
 elseif strcmpi(thisRUN,'NEXPO')

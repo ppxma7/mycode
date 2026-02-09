@@ -34,8 +34,11 @@ export OUTPUT_DIR="/gpfs01/home/ppzma/chain_dti/outputs/"
 # "CHN014_v20_C" "CHN014_v33_DTI_C" "CHN015_V13_classic" "CHN015_v33_C" \
 # "CHN019_V13_DTI_C" "CHN019_V20_C")
 
-subjects=("CHN010_V20_Classic" "CHN015_v20_Classic")
-
+subjects=("CHN002_V6_C_less300" "CHN003_V6_C_less300" \
+"CHN005_v6_redo_C_less300" "CHN006_V6_C_less300" "CHN007_V6_C_less300" \
+"CHN008_V6_DTI_C_less300" "CHN009_V6_C_less300" "CHN010_V6_2_DTI_C_less300" "CHN012_less300" \
+"CHN013_v6_classic_less300" "CHN014_V6_DTI_C_less300" "CHN015_V6_DTI_C_less300" \
+"CHN019_V6_C_less300")
 
 for subject in "${subjects[@]}"; do
     echo "==========================================="
