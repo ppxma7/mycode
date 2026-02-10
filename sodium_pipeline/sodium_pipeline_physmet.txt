@@ -1,0 +1,35 @@
+
+You need to setup your folders like this
+
+|- Subject1
+	|- site1
+		|- pipeline
+			|- clinical
+				|- clinicalT1.nii
+			|- proton
+				|- 3DT1.nii
+			|- other_sodium
+				|- floret.nii
+				|- 23NaSeiffert.nii
+			|- reference_sodium
+				|- radial.nii
+
+You need to run run_sodium_pipeline_nascar.sh
+This is a bash wrapper script that runs
+- run_sodium_pipeline_nascar_multi_TSC.py
+- run_sodium_pipeline_nascar_to_mni_multi_TSC.py
+- run_sodium_pipeline_atlasread.py
+- run_sodium_pipeline_clinical.py
+
+
+Make sure you setup your paths in these locations:
+This is in run_sodium_pipeline_nascar.sh: ROOTDIR="/Volumes/kratos/sodium/"
+In that same code, check your paths for code, e.g.
+- python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_clinical.py "$ARG4" "$ARG5"
+
+This is in run_sodium_pipeline_atlasread.py: base_dir = "/Volumes/kratos/sodium/"
+
+This is in run_sodium_pipeline_nascar_multi_TSC: OPTIBET_PATH = "/Users/ppzma/Documents/MATLAB/optibet.sh"
+
+
+

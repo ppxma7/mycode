@@ -15,7 +15,8 @@ MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_1mm_brain.nii.gz"
 MNI_BRAIN_MASK = f"{FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz"
 #MY_CONFIG_DIR = "/Users/ppzma/data"  # contains bb_fnirt.cnf
 atlas = f"{FSLDIR}/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr0-1mm.nii.gz"
-    
+OPTIBET_PATH = "/Users/ppzma/Documents/MATLAB/optibet.sh"
+
 parser = argparse.ArgumentParser(description="Run sodium MRI pipeline")
 
 parser.add_argument("ARG1", help="Path to outputs")
@@ -29,6 +30,9 @@ ARG2 = args.ARG2
 subject = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(ARG1))))
 print(subject)
 
+
+######### USEFUL FUNCTIONS
+
 def strip_ext(fname):
     if fname.endswith(".nii.gz"):
         return fname[:-7]  # strip 7 chars for '.nii.gz'
@@ -36,9 +40,9 @@ def strip_ext(fname):
         return os.path.splitext(fname)[0]
 
 
-def run(cmd, check=True):
+def run(cmd, check=True, cwd=None):
     print("🔧 Running:", " ".join(cmd))
-    subprocess.run(cmd, check=check)
+    subprocess.run(cmd, check=check, cwd=cwd)
 
 def load_atlas_labels(xml_file):
     tree = ET.parse(xml_file)
@@ -50,6 +54,7 @@ def load_atlas_labels(xml_file):
         labels[idx] = name
     return labels
 
+######### this one for atlas lookup
 def roi_table_catchexceptions(sodium_file, atlas_file, out_csv, max_roi=47):
     try:
         sodium_img = nib.load(sodium_file)
@@ -109,8 +114,7 @@ def roi_table_catchexceptions(sodium_file, atlas_file, out_csv, max_roi=47):
         return
 
 
-
-
+######### 
 
 parent_dir = os.path.dirname(os.path.dirname(ARG1))
 outputs_clinical = os.path.join(parent_dir, "outputs_clinical")
@@ -143,7 +147,7 @@ mprage_file_clinical = mprage_matches_clin[0]
 
 
 
-# move files to new folder created
+######################### move files to new folder created ##########################
 dest = os.path.join(outputs_clinical, os.path.basename(mprage_file))
 if not os.path.exists(dest):
     shutil.copy(mprage_file, dest)
@@ -173,21 +177,43 @@ for f in sodium_files:
     print(f"📦 Copied {os.path.basename(f)} → {outputs_clinical}/")
 
 
-# now begin operations
+######################### Bet the clinical T1 ##########################
+
+clin_base = strip_ext(os.path.basename(mprage_file_clinical))
+mprage_clinical_optibrain = os.path.join(outputs_clinical, f"{clin_base}_optibrain.nii.gz")
+
+if not os.path.exists(mprage_clinical_optibrain):
+
+    run(["sh", OPTIBET_PATH, "-i", os.path.basename(mprage_file_clinical)], cwd=outputs_clinical, check=True)
+
+    optibet_brain = os.path.join(outputs_clinical, f"{clin_base}_optiBET_brain.nii.gz")
+
+    # Rename/move to desired output names
+    shutil.move(optibet_brain, mprage_clinical_optibrain)
+    print(f"✅ optiBET brain created: {mprage_clinical_optibrain}")
+
+else:
+    print(f"⏭️ optiBET brain {mprage_clinical_optibrain} already exists, skipping.")
+
+
+sys.exit(0)
+
+######################### Begin FLIRT ##########################
 # move the MPRAGE file to the clinical MPRAGE file using flirt
 # apply those transforms to the sodium files I"ve grabbed
 
 mprage_base = strip_ext(os.path.basename(mprage_file))
-clin_base   = strip_ext(os.path.basename(mprage_file_clinical))
+#clin_base   = strip_ext(os.path.basename(mprage_file_clinical))
 
 mprage2clin_mat = os.path.join(outputs_clinical, f"{mprage_base}_to_clinical.mat")
 mprage2clin_img = os.path.join(outputs_clinical, f"{mprage_base}_in_clinical.nii.gz")
 
+# First flirt the MPRAGE to the Clinical MPRAGE
 if not os.path.exists(mprage2clin_img):
 	run([
         "flirt",
         "-in", mprage_file,
-        "-ref", mprage_file_clinical,
+        "-ref", mprage_file_clinical, #mprage_clinical_optibrain?
         "-out", mprage2clin_img,
         "-omat", mprage2clin_mat,
         "-bins", "256",
@@ -201,7 +227,7 @@ if not os.path.exists(mprage2clin_img):
 else:
 	print(f"⏭️ Already exists in outputs_clinical: {mprage2clin_img}")
 
-
+# Apply the transform the sodium files
 for sodium in sodium_files:
 
     sodium_base = strip_ext(os.path.basename(sodium))
@@ -218,12 +244,14 @@ for sodium in sodium_files:
     else:
     	print(f"⏭️ Already exists in outputs_clinical: {sodium_out}")
 
+######################### Atlas stuff ##########################
 
 ## Now we need to apply the atlas to these sodium files in clinical T1 space.
 
 t1_to_mni_mat = os.path.join(outputs_clinical, "clinical2mni.mat")
 t1_to_mni_img = os.path.join(outputs_clinical, "clinical_in_MNI.nii.gz")
 
+# First move clinical T1 to MNI space
 if not os.path.exists(t1_to_mni_img):
     print("Running FLIRT MPRAGE → MNI")
     run([
@@ -245,25 +273,30 @@ else:
 
 mni_to_t1_mat = os.path.join(outputs_clinical, "mni2clinical.mat")
 
-run([
-    "convert_xfm",
-    "-omat", mni_to_t1_mat,
-    "-inverse", t1_to_mni_mat
-])
+# Invert transform
+if not os.path.exists(mni_to_t1_mat):
+	run([
+		"convert_xfm",
+		"-omat", mni_to_t1_mat,
+		"-inverse", t1_to_mni_mat
+		])
 
 atlas = f"{FSLDIR}/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr0-1mm.nii.gz"
 atlas_in_clinical = os.path.join(outputs_clinical, "HarvardOxford_in_clinical.nii.gz")
 
-run([
-    "flirt",
-    "-in", atlas,
-    "-ref", mprage_file_clinical,
-    "-out", atlas_in_clinical,
-    "-applyxfm",
-    "-init", mni_to_t1_mat,
-    "-interp", "nearestneighbour"
-])
+# Apply inverted transform to atlas
+if not os.path.exists(atlas_in_clinical):
+	run([
+		"flirt",
+		"-in", atlas,
+		"-ref", mprage_file_clinical,
+		"-out", atlas_in_clinical,
+		"-applyxfm",
+		"-init", mni_to_t1_mat,
+		"-interp", "nearestneighbour"
+		])
 
+# Now use atlas in clinical T1 space to the sodium files in clinical T1 space
 for sodium in sodium_files:
 
     sodium_base = strip_ext(os.path.basename(sodium))

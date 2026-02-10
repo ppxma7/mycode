@@ -25,6 +25,7 @@ ARG3="${ROOTDIR}/${SUBJECT}/${SITE}/pipeline/other_sodium"
 # then send to mni script
 ARG4="${ROOTDIR}/${SUBJECT}/${SITE}/outputs/"
 
+# adding this for PHYSMET project when we have a clinical T1
 ARG5="${ROOTDIR}/${SUBJECT}/${SITE}/pipeline/clinical"
 
 # Check that all three paths exist
@@ -54,6 +55,7 @@ echo "Running sodium NASCAR MNI pipeline for $SUBJECT"
 #echo "atlas rois"
 #python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_atlasread.py "$REF_BASENAME" "$SITE" "$SUBJECT"
 
+# comment this if not doing PHYSMET
 python3 /Users/ppzma/Documents/MATLAB/mycode/sodium_pipeline/run_sodium_pipeline_clinical.py "$ARG4" "$ARG5"
 
 
