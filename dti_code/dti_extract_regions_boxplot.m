@@ -3,7 +3,7 @@ clc
 close all
 clear variables
 %csvdir = "/Volumes/kratos/dti_data/tbss_analysis_justnexpo/roi_output_tstat10/";
-csvdir = "/Volumes/kratos/dti_data/tbss_analysis_wchain_less300/roi_output_tstat1/";
+csvdir = "/Volumes/kratos/dti_data/tbss_analysis_wchain_less300/roi_output_tstat2/";
 %csvdir = "/Volumes/nemosine/SAN/t1mnispace/nocsfver_justnexpo/atlasextract12/";
 
 files = dir(csvdir);
@@ -53,7 +53,7 @@ clear g
 figure('Position',[100 100 1600 768])
 g = gramm('x', truncROI_Label, 'y', allData.Mean, 'color', allData.Group);
 g.stat_boxplot2('drawoutlier',1);
-g.set_names('x','ROI','y','Mean FA','color','Group');
+g.set_names('x','ROI','y','Mean MD','color','Group');
 %g.set_names('x','ROI','y','Mean T1','color','Group');
 %g.set_point_options('base_size',1)
 %g.axe_property('XTickLabelRotation',45,'YLim',[0 1],'YGrid','on','XGrid','on');
