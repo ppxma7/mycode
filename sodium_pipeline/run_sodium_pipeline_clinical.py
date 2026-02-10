@@ -196,7 +196,7 @@ else:
     print(f"⏭️ optiBET brain {mprage_clinical_optibrain} already exists, skipping.")
 
 
-sys.exit(0)
+#sys.exit(0)
 
 ######################### Begin FLIRT ##########################
 # move the MPRAGE file to the clinical MPRAGE file using flirt
@@ -213,7 +213,7 @@ if not os.path.exists(mprage2clin_img):
 	run([
         "flirt",
         "-in", mprage_file,
-        "-ref", mprage_file_clinical, #mprage_clinical_optibrain?
+        "-ref", mprage_clinical_optibrain, #mprage_file_clinical no skullstrip
         "-out", mprage2clin_img,
         "-omat", mprage2clin_mat,
         "-bins", "256",
@@ -236,7 +236,7 @@ for sodium in sodium_files:
         run([
             "flirt",
             "-in", sodium,
-            "-ref", mprage_file_clinical,
+            "-ref", mprage_clinical_optibrain,
             "-out", sodium_out,
             "-applyxfm",
             "-init", mprage2clin_mat
@@ -256,7 +256,7 @@ if not os.path.exists(t1_to_mni_img):
     print("Running FLIRT MPRAGE → MNI")
     run([
         f"{FSLDIR}/bin/flirt",
-        "-in", mprage_file_clinical,
+        "-in", mprage_clinical_optibrain,
         "-ref", MNI_TEMPLATE,
         "-omat", t1_to_mni_mat,
         "-out", t1_to_mni_img,
@@ -289,7 +289,7 @@ if not os.path.exists(atlas_in_clinical):
 	run([
 		"flirt",
 		"-in", atlas,
-		"-ref", mprage_file_clinical,
+		"-ref", mprage_clinical_optibrain,
 		"-out", atlas_in_clinical,
 		"-applyxfm",
 		"-init", mni_to_t1_mat,
