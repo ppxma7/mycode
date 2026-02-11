@@ -53,7 +53,16 @@ sodium_mprage_file = sodium_mprage_matches[0]
 
 # 3. Sodium image (must contain subject ID + 23Na)
 #sodium_matches = glob.glob(os.path.join(ARG3, f"{subject}_WIP_23Na_*_401.nii*"))
-sodium_matches = glob.glob(os.path.join(ARG3, f"{subject}*_23Na_*.nii*"))
+
+#sodium_matches = glob.glob(os.path.join(ARG3, f"{subject}*_23Na_*.nii*"))
+
+
+sodium_matches = [
+    f for f in glob.glob(os.path.join(ARG3, f"{subject}*_23Na_*.nii*"))
+    if "MNI" not in os.path.basename(f)
+    and "mprage" not in os.path.basename(f).lower()
+]
+
 
 if len(sodium_matches) == 0:
     raise FileNotFoundError(f"No sodium image found in {ARG3}")
@@ -61,6 +70,15 @@ elif len(sodium_matches) > 1:
     print(f"⚠️ Multiple sodium image files found, using first: {sodium_matches[0]}")
 sodium_file = sodium_matches[0]
 
+# --- Additional sodium-space images to carry along ---
+extra_sodium_images = [
+    os.path.join(ARG3, "TSC_3_bottles.nii"),
+    os.path.join(ARG3, "TSC.nii")
+]
+# keep only ones that exist
+extra_sodium_images = [f for f in extra_sodium_images if os.path.exists(f)]
+print("Extra sodium images:", extra_sodium_images)
+all_sodium_images = [sodium_file] + extra_sodium_images
 
 # Locate input files (customize patterns as needed)
 #mprage_file = os.path.join(ARG1, "WIP_MPRAGE_CS3p5_601.nii")
@@ -195,6 +213,36 @@ def runSodium2SodiumMPRAGE():
     else:
         print("⏭️ Sodium already registered to sodium-MPRAGE.")
 
+def runSodium2SodiumMPRAGE_wtsc():
+    for sodium_input in all_sodium_images:
+        base = os.path.splitext(os.path.basename(sodium_input))[0]
+        out_img = os.path.join(ARG3, f"{base}_in_sodium_mprage_space.nii.gz")
+        print(out_img)
+        out_mat = os.path.join(ARG3, f"{base}_in_sodium_mprage_space.mat")
+
+        if os.path.exists(out_img):
+            print(f"⏭️ {base} already registered to sodium-MPRAGE")
+            continue
+
+            run([
+                f"{FSLDIR}/bin/flirt",
+                "-in", sodium_input,
+                "-ref", sodium_mprage_file_optibrain,
+                "-omat", out_mat,
+                "-out", out_img,
+                "-bins","256",
+                "-dof", "6",
+                "-schedule","/usr/local/fsl/etc/flirtsch/sch3Dtrans_3dof",
+                "-cost", "normmi",
+                "-searchrx", "0", "0",
+                "-searchry", "0", "0",
+                "-searchrz", "0", "0",
+                "-interp", "trilinear"
+            ])
+            print(f"✅ Sodium registered to sodium-MPRAGE: {out_img}")
+        else:
+            print("⏭️ Sodium already registered to sodium-MPRAGE.")
+
 
 def runSodium2Mprage():
     if not os.path.exists(sodium_in_mprage_space):
@@ -209,6 +257,29 @@ def runSodium2Mprage():
         print(f"✅ Sodium image transformed into MPRAGE space: {sodium_in_mprage_space}")
     else:
         print("⏭️ Sodium image already transformed, skipping.")
+
+def runSodium2Mprage_wtsc():
+    for sodium_input in all_sodium_images:
+        base = os.path.splitext(os.path.basename(sodium_input))[0]
+
+        in_img = os.path.join(ARG3, f"{base}_in_sodium_mprage_space.nii.gz")
+        out_img = os.path.join(ARG3, f"{base}_in_mprage_space.nii.gz")
+
+        if os.path.exists(out_img):
+            print(f"⏭️ {base} already in MPRAGE space")
+            continue
+
+            run([
+                f"{FSLDIR}/bin/flirt",
+                "-in", in_img,
+                "-ref", mprage_optibrain,
+                "-applyxfm",
+                "-init", sodium_mprage_file2mprage_mat,
+                "-out", out_img
+            ])
+            print(f"✅ Sodium image transformed into MPRAGE space: {sodium_in_mprage_space}")
+        else:
+            print("⏭️ Sodium image already transformed, skipping.")
 
 def runMPRAGE2MNI():
     if not os.path.exists(mprage_to_mni):
@@ -290,6 +361,28 @@ def runSodiumtoMNI():
         print(f"✅ Sodium moved to MNI space (linear only): {sodium_file_mni}")
     else:
         print("⏭️ Sodium already in MNI space.")
+
+def runSodiumtoMNI_wtsc():
+    for sodium_input in all_sodium_images:
+        base = os.path.splitext(os.path.basename(sodium_input))[0]
+
+        in_img = os.path.join(ARG3, f"{base}_in_mprage_space.nii.gz")
+        out_img = os.path.join(ARG3, f"{base}_MNI.nii.gz")
+
+        if os.path.exists(out_img):
+            print(f"⏭️ {base} already in MNI")
+            continue
+            run([
+                f"{FSLDIR}/bin/flirt",
+                "-in", in_img,
+                "-ref", MNI_TEMPLATE,
+                "-applyxfm",
+                "-init", affine_mprage_to_mni,
+                "-out", out_img
+            ])
+            print(f"✅ Sodium moved to MNI space (linear only): {sodium_file_mni}")
+        else:
+            print("⏭️ Sodium already in MNI space.")
 
 
 def runSodiumtoMNI_FNIRT():
@@ -539,6 +632,7 @@ def load_atlas_labels(xml_file):
 def roiTable():
     # Load sodium image and atlas
     sodium_img = nib.load(sodium_file)
+
     atlas_img = nib.load(atlas_in_sodium)  
     sodium_data = sodium_img.get_fdata()
     atlas_data = atlas_img.get_fdata().astype(int)
@@ -577,6 +671,49 @@ def roiTable():
     df.to_csv(out_csv, index=False)
 
     print(f"✅ ROI stats saved to {out_csv}")
+
+
+def roiTable_wtsc():
+    # --- Load atlas once ---
+    atlas_img = nib.load(atlas_in_sodium)
+    atlas_data = atlas_img.get_fdata().astype(int)
+
+    roi_labels = np.unique(atlas_data)
+    roi_labels = roi_labels[(roi_labels >= 0) & (roi_labels <= 47)]
+
+    xml_file = f"{FSLDIR}/data/atlases/HarvardOxford-Cortical.xml"
+    label_dict = load_atlas_labels(xml_file)
+
+    # ---- process every sodium image ----
+    for sodium_file in all_sodium_images:
+
+        sodium_img = nib.load(sodium_file)
+        sodium_data = sodium_img.get_fdata()
+
+        results = []
+
+        for roi in roi_labels:
+            mask = atlas_data == roi
+            values = sodium_data[mask]
+
+            if values.size > 0:
+                mean_val = np.mean(values)
+                std_val = np.std(values)
+                median_val = np.median(values)
+
+                roi_name = label_dict.get(roi, f"ROI_{roi}")
+                results.append([roi, roi_name, mean_val, std_val, median_val])
+
+        df = pd.DataFrame(results, columns=["ROI", "Name", "Mean", "StdDev", "Median"])
+
+        # ---- output name tied to image ----
+        base = os.path.splitext(os.path.basename(sodium_file))[0]
+        out_csv = os.path.join(ARG3, f"{base}_ROIstats.csv")
+
+        df.to_csv(out_csv, index=False)
+        print(f"✅ ROI stats saved to {out_csv}")
+
+
 
 def roi_tableMNI(sodium_file, atlas_file, out_csv, max_roi=47):
     # Load sodium image and atlas
@@ -675,6 +812,31 @@ def moveOutputs():
         else:
             print(f"⚠️ Missing file, skipping: {f}")
 
+def moveOutputs_tsc():
+    subject_root = os.path.dirname(ARG1)
+    output_dir = os.path.join(subject_root, "outputs")
+    os.makedirs(output_dir, exist_ok=True)
+    print(f"📦 Collecting outputs in: {output_dir}")
+
+    # fixed outputs
+    files_to_copy = [
+        atlas_in_sodium,
+        out_csv
+    ]
+
+    # NEW: grab every *_MNI.nii.gz produced in ARG3
+    mni_images = glob.glob(os.path.join(ARG3, "*_MNI.nii.gz"))
+    files_to_copy.extend(mni_images)
+
+    # copy
+    for f in files_to_copy:
+        if os.path.exists(f):
+            shutil.copy2(f, output_dir)
+            print("Copied:", os.path.basename(f))
+        else:
+            print("Missing:", f)
+
+
 def processFastMasksAndOutputs():
     """After FAST maps are in sodium space, binarise/erode masks, apply to sodium, make MNI versions, and organise outputs."""
     parent_dir = os.path.dirname(ARG1)
@@ -707,12 +869,30 @@ def processFastMasksAndOutputs():
             binarised_masks[idx] = ero_file
 
     # --- Apply each binary/eroded mask to sodium image ---
-    for mask in binarised_masks:
-        mask_base = os.path.basename(mask).replace(".nii.gz", "").replace("_bin", "").replace("_ero", "")
-        out_file = os.path.join(ARG3, f"{subject}_sodium_masked_{mask_base}.nii.gz")
-        if not os.path.exists(out_file):
-            run([f"{FSLDIR}/bin/fslmaths", sodium_file, "-mas", mask, out_file])
-            print(f"✅ Applied {mask_base} → {os.path.basename(out_file)}")
+    # for mask in binarised_masks:
+    #     mask_base = os.path.basename(mask).replace(".nii.gz", "").replace("_bin", "").replace("_ero", "")
+    #     out_file = os.path.join(ARG3, f"{subject}_sodium_masked_{mask_base}.nii.gz")
+    #     if not os.path.exists(out_file):
+    #         run([f"{FSLDIR}/bin/fslmaths", sodium_file, "-mas", mask, out_file])
+    #         print(f"✅ Applied {mask_base} → {os.path.basename(out_file)}")
+
+    # --- Apply each binary/eroded mask to all sodium images ---
+    #print(all_sodium_images)
+    for sodium_input in all_sodium_images:
+        sodium_base = os.path.splitext(os.path.basename(sodium_input))[0]
+
+        print(sodium_input)
+        #sys.exit(0)
+
+        for mask in binarised_masks:
+            mask_base = os.path.basename(mask).replace(".nii.gz", "").replace("_bin", "").replace("_ero", "")
+            out_file = os.path.join(ARG3, f"{sodium_base}_masked_{mask_base}.nii.gz")
+
+            if not os.path.exists(out_file):
+                run([f"{FSLDIR}/bin/fslmaths", sodium_input, "-mas", mask, out_file])
+                print(f"✅ Applied {mask_base} → {os.path.basename(out_file)} for {sodium_base}")
+            else:
+                print(f"⏭️ {os.path.basename(out_file)} already exists, skipping.")
 
     # --- Move FAST outputs to MNI space ---
     print("\n--- Moving FAST outputs to MNI space ---")
@@ -727,6 +907,7 @@ def processFastMasksAndOutputs():
                 "-interp", "nearestneighbour", "-out", out_file
             ])
             print(f"✅ Transformed {base} → {out_file}")
+
 
     # --- Binarise & erode PVE masks in MNI space ---
     print("\n--- Processing MNI-space FAST masks ---")
@@ -751,9 +932,17 @@ def processFastMasksAndOutputs():
     os.makedirs(outputs_pve_native, exist_ok=True)
 
     # Move the masked sodium PVEs instead of the raw FAST maps
+    # masked_pve_files = sorted(
+    #     glob.glob(os.path.join(ARG3, f"{subject}_sodium_masked_*fast_in_sodium_pve_*.nii*"))
+    # )
     masked_pve_files = sorted(
-        glob.glob(os.path.join(ARG3, f"{subject}_sodium_masked_*fast_in_sodium_pve_*.nii*"))
+        glob.glob(os.path.join(ARG3, f"*masked_{subject}_fast_in_sodium_pve_*.nii*"))
     )
+
+    #print(masked_pve_files)
+
+    #sys.exit(0)
+
     if not masked_pve_files:
         print("⚠️ No masked sodium PVE files found to move.")
     else:
@@ -770,9 +959,13 @@ def processFastMasksAndOutputs():
     # --- 7. Compute global PVE stats in native space ---
     print("\n--- Processing PVE files with atlas ---")
 
+    # pve_files = sorted(
+    #     glob.glob(os.path.join(outputs_pve_native, f"{subject}_sodium_masked_*fast_in_sodium_pve_*.nii*"))
+    # )
     pve_files = sorted(
-        glob.glob(os.path.join(outputs_pve_native, f"{subject}_sodium_masked_*fast_in_sodium_pve_*.nii*"))
+        glob.glob(os.path.join(outputs_pve_native, f"*masked_{subject}_fast_in_sodium_pve_*.nii*"))
     )
+
     if not pve_files:
         print(f"⚠️ No PVE files found in {outputs_pve_native}")
     else:
@@ -835,26 +1028,32 @@ if __name__ == "__main__":
     runFAST()
     runOptibetOnSodiumMPRAGE()
     runMPRAGE2MPRAGE()
+
     runSodium2SodiumMPRAGE()
-    runSodium2Mprage()
+    runSodium2SodiumMPRAGE_wtsc()
+
+    #runSodium2Mprage()
+    runSodium2Mprage_wtsc()
     runMPRAGE2MNI()
 
     runSodiumMPRAGEtoMNI_linear()
-    #runSodiumMPRAGEtoMNI()
+    ##runSodiumMPRAGEtoMNI()
 
-    runSodiumtoMNI()
-    #runSodiumtoMNI_FNIRT()
+    #runSodiumtoMNI()
+    runSodiumtoMNI_wtsc()
+    ##runSodiumtoMNI_FNIRT()
 
     moveAtlasToSodium()
-    #moveAtlasToSodium_FNIRT()
+    ##moveAtlasToSodium_FNIRT()
 
     processFastMasksAndOutputs()
 
-    roiTable()
-
+    #roiTable()
+    roiTable_wtsc()
   
 
-    moveOutputs()
+    #moveOutputs()
+    moveOutputs_tsc()
 
     atlasMNI()
 

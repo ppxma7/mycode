@@ -185,7 +185,7 @@ mprage_clinical_optibrain = os.path.join(outputs_clinical, f"{clin_base}_optibra
 if not os.path.exists(mprage_clinical_optibrain):
 
     run(["sh", OPTIBET_PATH, "-i", os.path.basename(mprage_file_clinical)], cwd=outputs_clinical, check=True)
-
+    # if this is taking too long, just run bet, that worked for me.
     optibet_brain = os.path.join(outputs_clinical, f"{clin_base}_optiBET_brain.nii.gz")
 
     # Rename/move to desired output names

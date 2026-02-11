@@ -11,7 +11,7 @@ fi
 SUBJECT=$1
 
 # Root directory where subject folders live
-ROOTDIR="/Volumes/nemosine/SAN/SASHB/inputs"
+ROOTDIR="/Volumes/kratos/sodium_new"
 
 # Build paths
 ARG1="${ROOTDIR}/${SUBJECT}/MPRAGE"
