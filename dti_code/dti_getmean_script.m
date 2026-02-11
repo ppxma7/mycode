@@ -1,6 +1,6 @@
 
 thisRUN = 'CHAIN';
-thisTYPE = 'MD';
+thisTYPE = 'FA';
 % options are either NEXPO or CHAIN 
 % MD or FA
 %root = '/Volumes/DRS-GBPerm/other/';
@@ -158,6 +158,12 @@ end
 % save vm_nexpo_fa vm
 % save vm_nexpo_md vm
 % save vm_chainafirmsash_md vm
+
+% get the subjectID
+% [~, fname, ext] = cellfun(@fileparts, thisFileList, 'UniformOutput', false);
+% fname = strcat(fname, ext);   % put .nii.gz back
+% subjID = erase(fname, ['_T1_to_MPRAGE_' gmorwm '_MNI.nii.gz']);
+% 
 
 %% egfr
 
@@ -356,6 +362,11 @@ if exist('ages','var')
             %     'FontSize',8, ...
             %     'HorizontalAlignment','center', ...
             %     'VerticalAlignment','bottom');
+
+            text(x(idx), y(idx), labels(idx), ...
+                'FontSize',8, ...
+                'HorizontalAlignment','center', ...
+                'VerticalAlignment','bottom');
         end
 
 
@@ -415,11 +426,11 @@ if exist('ages','var')
                 end
             else
                 if strcmpi(type,'MD')
-                    thisFilename = fullfile(savedir,'MD_plot_combined');
+                    thisFilename = fullfile(savedir,'MD_plot_combined_subjid');
                     lmcoefs = fullfile(savedir,'MD_fitlm_coefficients_combined.csv');
                     pvalssave = fullfile(savedir,'MD_pairwise_pvalues_combined.csv');
                 elseif strcmpi(type,'FA')
-                    thisFilename = fullfile(savedir,'FA_plot_combined');
+                    thisFilename = fullfile(savedir,'FA_plot_combined_subjid');
                     lmcoefs = fullfile(savedir,'FA_fitlm_coefficients_combined.csv');
                     pvalssave = fullfile(savedir,'FA_pairwise_pvalues_combined.csv');
                 end

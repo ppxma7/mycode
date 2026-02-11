@@ -175,6 +175,11 @@ outIdx = abs(z) > 3;
 table(thisFileList(outIdx), groupList(outIdx), vm(outIdx), z(outIdx), ...
     'VariableNames', {'File','Group','MeanT1','Z'})
 
+% get the subjectID
+[~, fname, ext] = cellfun(@fileparts, thisFileList, 'UniformOutput', false);
+fname = strcat(fname, ext);   % put .nii.gz back
+subjID = erase(fname, ['_T1_to_MPRAGE_' gmorwm '_MNI.nii.gz']);
+
 
 %% now colouring for EGFR
 % Example: extract file names from full paths
@@ -341,6 +346,11 @@ if exist('ages','var')
             %     'FontSize',8, ...
             %     'HorizontalAlignment','center', ...
             %     'VerticalAlignment','bottom');
+
+            text(x(idx), y(idx), subjID(idx), ...
+                'FontSize',8, ...
+                'HorizontalAlignment','center', ...
+                'VerticalAlignment','bottom');
         end
 
 
@@ -401,11 +411,11 @@ if exist('ages','var')
                 end
             else
                 if strcmpi(gmorwm,'GM')
-                    thisFilename = fullfile(savedir,'GM_plot_combined');
+                    thisFilename = fullfile(savedir,'GM_plot_combined_subjid');
                     lmcoefs = fullfile(savedir,'GM_fitlm_coefficients_combined.csv');
                     pvalssave = fullfile(savedir,'GM_pairwise_pvalues_combined.csv');
                 elseif strcmpi(gmorwm,'WM')
-                    thisFilename = fullfile(savedir,'WM_plot_combined');
+                    thisFilename = fullfile(savedir,'WM_plot_combined_subjid');
                     lmcoefs = fullfile(savedir,'WM_fitlm_coefficients_combined.csv');
                     pvalssave = fullfile(savedir,'WM_pairwise_pvalues_combined.csv');
                 end
