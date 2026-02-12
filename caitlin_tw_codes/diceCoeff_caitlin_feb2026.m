@@ -8,7 +8,7 @@ savedir = ['/Users/' userName ...
     '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/' ...
     'Caitlin Michael - Sensorimotor - Documents/General/'];
 
-subjects = {'Map01','Map02','Map03'};
+subjects = {'Map01','Map02','Map03','Map04','Map06','Map07','Map08','Map09','Map10','Map11','Map14'};
 nSubj = numel(subjects);
 nD = 4;   % D2–D5
 
@@ -72,8 +72,6 @@ end
 %% plot mean
 MeanDice = mean(DiceAll, 3);
 
-print(gcf, '-dpng', fullfile(savedir, 'Dice_MEAN.png'), '-r300');
-
 figure;
 imagesc(MeanDice);
 title(['Mean Dice coefficients (3T vs 7T) n=' num2str(length(subjects))]);
@@ -91,4 +89,25 @@ xlabel('7T');
 ylabel('3T');
 
 print(gcf, '-dpng', fullfile(savedir, 'Dice_MEAN.png'), '-r300');
+
+
+stdDice = std(DiceAll, [], 3);
+
+figure;
+imagesc(stdDice);
+title(['stdev Dice coefficients (3T vs 7T) n=' num2str(length(subjects))]);
+
+axis square;
+colorbar;
+colormap viridis
+clim([0 1]); % Dice is between 0 and 1
+
+xticks(1:4); yticks(1:4);
+xticklabels({'D2','D3','D4','D5'});
+yticklabels({'D2','D3','D4','D5'});
+
+xlabel('7T');
+ylabel('3T');
+
+print(gcf, '-dpng', fullfile(savedir, 'Dice_STDEV.png'), '-r300');
 
