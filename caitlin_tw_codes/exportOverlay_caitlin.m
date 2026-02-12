@@ -7,7 +7,7 @@ function[] = exportOverlay_caitlin()
 %thisPath = '/Volumes/LaCie/digitMap/Map02/';
 thisPath = '/Volumes/kratos/caitlin/subset/atlas/';
 
-thisSub = 'Map08/7T/';
+thisSub = 'Map14/7T/';
 %thisSub = 'Map06/3T/';
 
 thisName = 'co';

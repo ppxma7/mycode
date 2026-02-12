@@ -32,7 +32,7 @@ numDigs = 4;
 mypath = '/Volumes/kratos/caitlin/subset/atlas/';
 %n = 96; %64 96
 
-subs = {'Map01','Map02','Map03'};
+subs = {'Map01','Map02','Map03','Map04','Map06','Map07','Map08','Map09','Map10','Map11','Map14'};
 
 modality = {'7T'};
 if strcmpi(modality,'3T')
