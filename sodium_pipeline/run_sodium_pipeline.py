@@ -224,24 +224,24 @@ def runSodium2SodiumMPRAGE_wtsc():
             print(f"⏭️ {base} already registered to sodium-MPRAGE")
             continue
 
-            run([
-                f"{FSLDIR}/bin/flirt",
-                "-in", sodium_input,
-                "-ref", sodium_mprage_file_optibrain,
-                "-omat", out_mat,
-                "-out", out_img,
-                "-bins","256",
-                "-dof", "6",
-                "-schedule","/usr/local/fsl/etc/flirtsch/sch3Dtrans_3dof",
-                "-cost", "normmi",
-                "-searchrx", "0", "0",
-                "-searchry", "0", "0",
-                "-searchrz", "0", "0",
-                "-interp", "trilinear"
-            ])
-            print(f"✅ Sodium registered to sodium-MPRAGE: {out_img}")
-        else:
-            print("⏭️ Sodium already registered to sodium-MPRAGE.")
+        run([
+            f"{FSLDIR}/bin/flirt",
+            "-in", sodium_input,
+            "-ref", sodium_mprage_file_optibrain,
+            "-omat", out_mat,
+            "-out", out_img,
+            "-bins","256",
+            "-dof", "6",
+            "-schedule","/usr/local/fsl/etc/flirtsch/sch3Dtrans_3dof",
+            "-cost", "normmi",
+            "-searchrx", "0", "0",
+            "-searchry", "0", "0",
+            "-searchrz", "0", "0",
+            "-interp", "trilinear"
+        ])
+        print(f"✅ Sodium registered to sodium-MPRAGE: {out_img}")
+        # else:
+        #     print("⏭️ Sodium already registered to sodium-MPRAGE.")
 
 
 def runSodium2Mprage():
@@ -269,17 +269,22 @@ def runSodium2Mprage_wtsc():
             print(f"⏭️ {base} already in MPRAGE space")
             continue
 
-            run([
-                f"{FSLDIR}/bin/flirt",
-                "-in", in_img,
-                "-ref", mprage_optibrain,
-                "-applyxfm",
-                "-init", sodium_mprage_file2mprage_mat,
-                "-out", out_img
-            ])
-            print(f"✅ Sodium image transformed into MPRAGE space: {sodium_in_mprage_space}")
-        else:
-            print("⏭️ Sodium image already transformed, skipping.")
+        run([
+            f"{FSLDIR}/bin/flirt",
+            "-in", in_img,
+            "-ref", mprage_optibrain,
+            "-applyxfm",
+            "-init", sodium_mprage_file2mprage_mat,
+            "-out", out_img
+        ])
+
+        print(f"✅ Sodium image transformed into MPRAGE space: {out_img}")
+        # else:
+        #     print(f"⏭️ Sodium image already transformed into MPRAGE space: {out_img}.")
+
+        #sys.exit(0)
+
+
 
 def runMPRAGE2MNI():
     if not os.path.exists(mprage_to_mni):
@@ -372,17 +377,18 @@ def runSodiumtoMNI_wtsc():
         if os.path.exists(out_img):
             print(f"⏭️ {base} already in MNI")
             continue
-            run([
-                f"{FSLDIR}/bin/flirt",
-                "-in", in_img,
-                "-ref", MNI_TEMPLATE,
-                "-applyxfm",
-                "-init", affine_mprage_to_mni,
-                "-out", out_img
-            ])
-            print(f"✅ Sodium moved to MNI space (linear only): {sodium_file_mni}")
-        else:
-            print("⏭️ Sodium already in MNI space.")
+            
+        run([
+            f"{FSLDIR}/bin/flirt",
+            "-in", in_img,
+            "-ref", MNI_TEMPLATE,
+            "-applyxfm",
+            "-init", affine_mprage_to_mni,
+            "-out", out_img
+        ])
+        print(f"✅ Sodium moved to MNI space (linear only): {sodium_file_mni}")
+        # else:
+        #     print("⏭️ Sodium already in MNI space.")
 
 
 def runSodiumtoMNI_FNIRT():
