@@ -11,9 +11,10 @@ import os
 #input_folder = '/Volumes/DRS-Touchmap/ma_ares_backup/CANAPI/canapi_sub10_160725/spm_analysis/'
 input_folder = '/Volumes/kratos/caitlin/subset/7T/'
 
-subjects = ["Map02", "Map03", "Map04", "Map06", "Map07",
-             "Map08", "Map09", "Map10", "Map11", "Map14"]
+# subjects = ["Map02", "Map03", "Map04", "Map06", "Map07",
+#              "Map08", "Map09", "Map10", "Map11", "Map14"]
 
+subjects = ["TS279"]
 
 for subject in subjects:
 

@@ -34,6 +34,9 @@ mypath = '/Volumes/kratos/caitlin/subset/atlas/';
 
 subs = {'Map01','Map02','Map03','Map04','Map06','Map07','Map08','Map09','Map10','Map11','Map14'};
 
+subs = {'TS279'};
+
+
 modality = {'7T'};
 if strcmpi(modality,'3T')
     n = 96;

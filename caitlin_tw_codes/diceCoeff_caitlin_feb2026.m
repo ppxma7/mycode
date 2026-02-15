@@ -9,6 +9,7 @@ savedir = ['/Users/' userName ...
     'Caitlin Michael - Sensorimotor - Documents/General/'];
 
 subjects = {'Map01','Map02','Map03','Map04','Map06','Map07','Map08','Map09','Map10','Map11','Map14'};
+subjects = {'TS279'}
 nSubj = numel(subjects);
 nD = 4;   % D2–D5
 

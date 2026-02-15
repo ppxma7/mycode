@@ -7,8 +7,13 @@ MOUNT='/Volumes/kratos/caitlin/subset/atlas/'
 export SUBJECTS_DIR='/Volumes/kratos/caitlin/caitlin_subs/'
 
 # Parallel arrays (same length, same order)
-subjectlist=("Map01" "Map02" "Map03" "Map04" "Map06" "Map07" "Map08" "Map09" "Map10" "Map11" "Map14")
-anatsubs=("Map01_3T" "Map02" "Map03" "Map04" "Map06" "Map07" "Map08" "Map09" "Map10" "Map11" "Map14")   # or Map01_3T Map01_3T if intentional
+#subjectlist=("Map01" "Map02" "Map03" "Map04" "Map06" "Map07" "Map08" "Map09" "Map10" "Map11" "Map14")
+#anatsubs=("Map01_3T" "Map02" "Map03" "Map04" "Map06" "Map07" "Map08" "Map09" "Map10" "Map11" "Map14")   # or Map01_3T Map01_3T if intentional
+
+
+subjectlist=("TS279")
+anatsubs=("TS279")   # or Map01_3T Map01_3T if intentional
+
 
 modality=("3T" "7T")
 
