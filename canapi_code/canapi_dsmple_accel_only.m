@@ -392,10 +392,17 @@ g.export('file_name',filename, ...
     'file_type','pdf')
 
 %% I want to look at amplitudes of the no conv EMG traces
+nRuns = 1;
+nSubjects = 1;
+%subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 1:10, 'UniformOutput', false);
 
-subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 1:10, 'UniformOutput', false);
+subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 1, 'UniformOutput', false);
+
 run_labels = {'1barR', 'lowR', '1barL', 'lowL'};
 channel_labels = {'EMG ch1', 'EMG ch2', 'Accel X', 'Accel Y', 'Accel Z'};
+
+run_labels = {'test'};
+channel_labels = {'ACCEL1', 'ACCEL2'};
 
 
 nChans = 2;  % Only EMG 1 and 2
@@ -443,7 +450,7 @@ rms_matrix_corrected = rms_matrix;
 %rms_matrix_corrected(3,:) = sub03rms_corr;
 
 nSubjects = size(rms_matrix, 1);
-nRuns = 4;
+nRuns = 1 %4;
 
 ch1_vs_ch2 = zeros(nRuns, nSubjects); % channel dominance ratio
 
