@@ -4,19 +4,18 @@ set -e
 echo "====  Threshold SPM at 2.3 and 3.1 ===="
 fslmaths spmT_0003.nii.gz -thr 2.3 spmT_2p3.nii.gz
 fslmaths spmT_0003.nii.gz -thr 3.1 spmT_3p1.nii.gz
+fslmaths spmT_0003.nii.gz -thr 1.96 spmT_1p96.nii.gz
 
 echo "==== Binary SPM maps ===="
 fslmaths spmT_2p3.nii.gz -bin spmT_2p3_bin.nii.gz
 fslmaths spmT_3p1.nii.gz -bin spmT_3p1_bin.nii.gz
+fslmaths spmT_1p96.nii.gz -bin spmT_1p96_bin.nii.gz
 
 echo "==== Create NPS positive and negative maps ===="
-
 # Positive weights
-
 fslmaths weights_NSF_grouppred_cvpcr.nii -thr 0 nps_pos.nii.gz
 
 # Negative weights
-
 fslmaths weights_NSF_grouppred_cvpcr.nii -uthr 0 nps_neg.nii.gz
 fslmaths nps_neg.nii.gz -abs nps_neg_abs.nii.gz
 
@@ -75,23 +74,19 @@ fslmaths spmT_2p3.nii.gz -mas spm2p3_minus_posneg_bin.nii.gz spm2p3_masked
 fslmaths spmT_3p1.nii.gz -mas spm3p1_minus_posneg_bin.nii.gz spm3p1_masked
 
 
-# echo "==== Optional: report voxel counts ===="
-# echo "SPM 2.3 voxels:"
-# fslstats spmT_2p3_bin.nii.gz -V
+# Should also do the opposite way
+fslmaths nps_pos_bin_2mm.nii.gz -sub spmT_1p96_bin.nii.gz NPS_pos_minus_spmT_1p96.nii.gz
+fslmaths nps_pos_bin_2mm.nii.gz -sub spmT_2p3_bin.nii.gz NPS_pos_minus_spmT_2p3.nii.gz
+fslmaths nps_pos_bin_2mm.nii.gz -sub spmT_3p1_bin.nii.gz NPS_pos_minus_spmT_3p1.nii.gz
+fslmaths NPS_pos_minus_spmT_1p96.nii.gz -thr 0.5 -bin NPS_pos_minus_spmT_1p96_bin
+fslmaths NPS_pos_minus_spmT_2p3.nii.gz -thr 0.5 -bin NPS_pos_minus_spmT_2p3_bin
+fslmaths NPS_pos_minus_spmT_3p1.nii.gz -thr 0.5 -bin NPS_pos_minus_spmT_3p1_bin
 
-# echo "SPM 2.3 minus NPS positive:"
-# fslstats spm2p3_minus_pos_bin.nii.gz -V
 
-# echo "SPM 2.3 minus NPS negative:"
-# fslstats spm2p3_minus_neg_bin.nii.gz -V
 
-# echo "SPM 3.1 voxels:"
-# fslstats spmT_3p1_bin.nii.gz -V
 
-# echo "SPM 3.1 minus NPS positive:"
-# fslstats spm3p1_minus_pos_bin.nii.gz -V
 
-# echo "SPM 3.1 minus NPS negative:"
-# fslstats spm3p1_minus_neg_bin.nii.gz -V
+
+
 
 echo "DONE"
