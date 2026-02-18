@@ -18,7 +18,8 @@ func_list=""
 
 for s in "${SUBS[@]}"; do
 
-    FUNC=$(ls $ROOT/$s/outputs/*_brain_mc_MNI.nii.gz)
+    #FUNC=$(ls $ROOT/$s/outputs/*_brain_mc_MNI.nii.gz)
+    FUNC=$(ls $ROOT/$s/outputs/${s}.ica/filtered_func_data_clean.nii.gz)
     MASK=$(ls $ROOT/$s/outputs/*_brain_mc_MNI_mean_mask.nii.gz)
 
     echo "Found $s"
