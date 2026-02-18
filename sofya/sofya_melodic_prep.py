@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import sys
 import shutil
 
+# Michael Asghar 2026
+
 # ---------- USER CONFIG ----------
 FSLDIR = "/usr/local/fsl"
 MNI_TEMPLATE = f"{FSLDIR}/data/standard/MNI152_T1_2mm_brain.nii.gz"

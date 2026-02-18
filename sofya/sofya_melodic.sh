@@ -1,4 +1,6 @@
 #!/bin/bash
+# Michael Asghar 2026
+
 set -e
 
 # -------- SETTINGS --------
