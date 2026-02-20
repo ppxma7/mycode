@@ -44,7 +44,9 @@ elif len(mprage_matches) > 1:
 mprage_file = mprage_matches[0]
 
 # 2. Sodium MPRAGE (must contain subject ID + MPRAGE + 301)
+#sodium_mprage_matches = glob.glob(os.path.join(ARG2, f"{subject}_WIP_MPRAGE_*_301.nii*"))
 sodium_mprage_matches = glob.glob(os.path.join(ARG2, f"{subject}_WIP_MPRAGE_*_301.nii*"))
+
 if len(sodium_mprage_matches) == 0:
     raise FileNotFoundError(f"No sodium MPRAGE found in {ARG2}")
 elif len(sodium_mprage_matches) > 1:
