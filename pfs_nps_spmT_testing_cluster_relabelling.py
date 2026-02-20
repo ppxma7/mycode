@@ -43,7 +43,8 @@ new = np.zeros(data.shape, dtype=np.int16)
 
 # your mappings
 new[np.isin(data, [76, 77])] = 1
-new[np.isin(data, [68, 69, 70, 73, 74, 75])] = 2
+#new[np.isin(data, [68, 69, 70, 73, 74, 75])] = 2
+new[np.isin(data, [68, 75])] = 2
 new[data == 78] = 3
 
 # IMPORTANT: create fresh header
