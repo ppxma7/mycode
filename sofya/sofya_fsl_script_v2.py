@@ -16,7 +16,7 @@ MY_CONFIG_DIR = "/Users/ppzma/data"  # contains bb_fnirt.cnf
 OPTIBET_PATH = "/Users/ppzma/Documents/MATLAB/optibet.sh"
 FASTPATH = f"{FSLDIR}/share/fsl/bin/fast"
 
-thisSubject = '16728'
+thisSubject = '16662'
 
 # Paths to input and output folders
 rootFold = os.path.join("/Volumes/kratos/SOFYA/melodic_analysis/",thisSubject)
@@ -312,6 +312,21 @@ for file in fMRI_files:
         ])
     else:
         print("Skipping apply MNI transform to fMRI")
+
+    # Step 6.5 Spatial smoothing (5mm FWHM)
+    fMRI_MNI_smooth = os.path.join(fmri_outdir, f"{strip_ext(fMRI_MNI)}_sm5.nii.gz")
+
+    if not os.path.exists(fMRI_MNI_smooth):
+        run([
+            "fslmaths", fMRI_MNI,
+            "-s", "2.12",
+            fMRI_MNI_smooth
+        ])
+    else:
+        print("Skipping smoothing")
+
+    # from here onward USE THE SMOOTHED DATA
+    fMRI_MNI = fMRI_MNI_smooth
 
 
     # make mean mask for single subject

@@ -3,7 +3,7 @@
 set -e
 
 ROOT=/Volumes/kratos/SOFYA/melodic_analysis
-SUBS=(16662 16728)
+SUBS=(16662)
 TR=1.5
 MODEL=Standard
 THRESH=20
@@ -16,7 +16,7 @@ for s in "${SUBS[@]}"; do
     SUBDIR=$ROOT/$s/outputs
     STRUCT=$ROOT/$s/structural
 
-    FUNC=$(ls $SUBDIR/*_brain_mc_MNI.nii.gz)
+    FUNC=$(ls $SUBDIR/*_brain_mc_MNI_sm5.nii.gz)
     ICADIR=$SUBDIR/${s}.ica
     
     # ---- Run MELODIC if not done ----
@@ -49,8 +49,8 @@ for s in "${SUBS[@]}"; do
         cp $FUNC $ICADIR/filtered_func_data.nii.gz
 
         echo "Copying mean and mask..."
-        MEAN=$(ls $SUBDIR/*_MNI_mean.nii.gz)
-        MASK=$(ls $SUBDIR/*_MNI_mean_mask.nii.gz)
+        MEAN=$(ls $SUBDIR/*_MNI_sm5_mean.nii.gz)
+        MASK=$(ls $SUBDIR/*_MNI_sm5_mean_mask.nii.gz)
         cp $MEAN $ICADIR/mean_func.nii.gz
         cp $MASK $ICADIR/mask.nii.gz
 
