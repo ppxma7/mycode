@@ -252,7 +252,7 @@ subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 1:2, 'UniformOutput', f
 %channel_labels = {'EMG ch1', 'EMG ch2', 'Accel X', 'Accel Y', 'Accel Z'};
 
 run_labels = {'1barR', 'lowR', '1barL', 'lowL'};
-channel_labels = {'Active Leg', 'Passive Leg'};
+channel_labels = {'ACCEL1', 'ACCEL2'};
 % Get sizes
 [nRuns, nChans, nSubj] = size(correlations);
 
