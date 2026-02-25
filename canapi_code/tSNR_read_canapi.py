@@ -12,9 +12,10 @@ from statsmodels.formula.api import ols
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 import seaborn as sns
 import re
+import sys
 
 # ==== CONFIG ====
-root_path = "/Volumes/kratos/"
+root_path = "/Volumes/kratos/CANAPI/"
 savedir = "/Users/ppzma/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/grouplevel_results/"
 mode = 'doroi'  # 'dogen' for whole image, 'doroi' for ROI
 ROI = 1 if mode == 'doroi' else 0
@@ -35,12 +36,14 @@ subject_folders = sorted([
     if os.path.isdir(os.path.join(root_path, f)) and f.startswith("canapi_sub")
 ])
 
-print(f"Found {len(subject_folders)} subject folders.")
-print("Subject folders:", subject_folders)
-#subject_folders = ['canapi_sub03_180325', 'canapi_sub04_280425']
+#print(f"Found {len(subject_folders)} subject folders.")
+#print("Subject folders:", subject_folders)
+#subject_folders = ['canapi_sub11', 'canapi_sub12']
 
 for subj in subject_folders:
     subj_match = re.search(r"canapi_sub(\d+)", subj)
+    print(subj_match)
+    #sys.exit(0)
     if not subj_match:
         print(f"Could not extract subject ID from folder name {subj}")
         continue
