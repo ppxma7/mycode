@@ -1,4 +1,4 @@
-close all
+cd close all
 clear variables
 clc
 
