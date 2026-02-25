@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import glob
+import sys
 
 # Input and output folders
 #input_folder = "/Volumes/nemosine/CANAPI_210125/spmanalysis/"  # Replace with your input folder path
@@ -9,35 +11,55 @@ import os
 #input_folder = '/Users/spmic/data/canapi_sub03_180325/spm_analysis/'
 #input_folder = '/Volumes/kratos/canapi_sub10_160725/spm_analysis/'
 #input_folder = '/Volumes/DRS-Touchmap/ma_ares_backup/CANAPI/canapi_sub10_160725/spm_analysis/'
-input_folder = '/Volumes/kratos/caitlin/subset/7T/'
+input_folder = '/Volumes/kratos/CANAPI/'
 
 # subjects = ["Map02", "Map03", "Map04", "Map06", "Map07",
 #              "Map08", "Map09", "Map10", "Map11", "Map14"]
 
-subjects = ["TS279"]
+subjects = ["canapi_sub12"]
+
+# subjects = [
+#     d for d in os.listdir(input_folder)
+#     if d.startswith("canapi_sub") and os.path.isdir(os.path.join(input_folder, d))
+# ]
 
 for subject in subjects:
 
+    print(f"Processing {subject}")
+
     output_folder = os.path.join(input_folder, subject, "motion_plots")  # Output folder for saving plots
     os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exist
+    print(f"This is the output folder: {output_folder}")
 
     #List of input files
     # input_files = [
-    #     "rp_canapi_sub10_160725_WIP1bar_TAP_R_20250716134752_3_nordic_clv",
-    #     "rp_canapi_sub10_160725_WIPlow_TAP_R_20250716134752_4_nordic_clv",
-    #     "rp_canapi_sub10_160725_WIP1bar_TAP_L_20250716134752_5_nordic_clv",
-    #     "rp_canapi_sub10_160725_WIPlow_TAP_L_20250716134752_6_nordic_clv",
+    #     "rp_CANAPI12_WIP1bar_TAP_R_20260224125628_3_nordic_clv",
+    #     "rp_CANAPI12_WIPlow_TAP_R_20260224125628_4_nordic_clv",
+    #     "rp_CANAPI12_WIP1bar_TAP_L_20260224125628_5_nordic_clv",
+    #     "rp_CANAPI12_WIPlow_TAP_L_20260224125628_6_nordic_clv",
     # ]
 
-    input_files = [
-        f"rp_{subject}_TWfwd_toppedup",
-        f"rp_{subject}_TWrev_toppedup",
-    ]
+    spm_dir = os.path.join(input_folder, subject, "spm_analysis")
+    input_files = sorted(glob.glob(os.path.join(spm_dir, "rp_*")))
+
+    if not input_files:
+        print(f"  No motion files found for {subject}")
+        continue
+
+    # input_files = [
+    #     f"rp_{subject}_TWfwd_toppedup",
+    #     f"rp_{subject}_TWrev_toppedup",
+    # ]
 
 
     # Loop through each file
     for file in input_files:
-        par_file = os.path.join(input_folder, subject,'fMRI/', file + ".txt")
+        #par_file = os.path.join(input_folder, subject,'spm_analysis/', file + ".txt")
+        par_file = os.path.join(input_folder, subject,'spm_analysis/', file)
+
+        print(file)
+        #sys.exit(0)
+
         #par_file = os.path.join(input_folder, file + ".txt")  # Assuming motion parameter files end with "_mc.par"
         
         # Check if the .par file exists
@@ -91,7 +113,13 @@ for subject in subjects:
 
 
         # Save the plot as PNG
-        plot_file = os.path.join(output_folder, f"{file}_motion_plot.png")
+        name = os.path.splitext(os.path.basename(par_file))[0]
+        #print(name)
+        #sys.exit(0)
+        plot_file = os.path.join(output_folder, f"{name}_motion_plot.png")
+        #plot_file = os.path.join(output_folder, f"{file}_motion_plot.png")
+        print(plot_file)
+        #sys.exit(0)
         plt.tight_layout()
         plt.savefig(plot_file, dpi=300)
         plt.close()  # Close the plot to free memory
