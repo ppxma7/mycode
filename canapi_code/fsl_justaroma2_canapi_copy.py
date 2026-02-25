@@ -4,7 +4,7 @@ import subprocess
 
 # Paths to input and output folders
 #rootFold = "/Volumes/hermes/canapi_051224/aroma_mni_space/"
-rootFold = "/Volumes/kratos/canapi_sub10_160725/spm_analysis/"
+rootFold = "/Volumes/kratos/CANAPI/canapi_sub12/spm_analysis/"
 
 #strucFold = "/Volumes/nemosine/canapi_sub06_240625/structurals/"
 ica_aroma_path = "/Users/ppzma/Documents/MATLAB/ICA-AROMA/ICA_AROMA.py"  # Path to ICA-AROMA script
@@ -18,14 +18,19 @@ os.makedirs(rootFold, exist_ok=True)
 
 # Input files and corresponding motion parameter files
 input_files = [
-    "rwrcanapi_sub10_160725_WIP1bar_TAP_R_20250716134752_3_nordic_clv.nii",
-    "rwrcanapi_sub10_160725_WIPlow_TAP_R_20250716134752_4_nordic_clv.nii",
-    "rwrcanapi_sub10_160725_WIP1bar_TAP_L_20250716134752_5_nordic_clv.nii",
-    "rwrcanapi_sub10_160725_WIPlow_TAP_L_20250716134752_6_nordic_clv.nii"
+    "rwrCANAPI12_WIP1bar_TAP_R_20260224125628_3_nordic_clv.nii",
+    "rwrCANAPI12_WIPlow_TAP_R_20260224125628_4_nordic_clv.nii",
+    "rwrCANAPI12_WIP1bar_TAP_L_20260224125628_5_nordic_clv.nii",
+    "rwrCANAPI12_WIPlow_TAP_L_20260224125628_6_nordic_clv.nii"
 ]
 
+# motion_files = [
+#     f.replace("rwrcanapi_", "rp_canapi_").replace(".nii", ".txt")
+#     for f in input_files
+# ]
+
 motion_files = [
-    f.replace("rwrcanapi_", "rp_canapi_").replace(".nii", ".txt")
+    f.replace("rwr", "rp_").replace(".nii", ".txt")
     for f in input_files
 ]
 

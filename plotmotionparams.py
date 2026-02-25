@@ -124,3 +124,6 @@ for subject in subjects:
         plt.savefig(plot_file, dpi=300)
         plt.close()  # Close the plot to free memory
         print(f"Saved motion parameter plot: {plot_file}")
+
+
+        
