@@ -16,14 +16,5 @@ for subj in "${SUBJECTS[@]}"; do
 	echo $mprageFile
 
 	sh "$optibetPath" -i "$mprageFile"
-	
-	# Check that file exists
-    # if [ -f "$mprageFile" ]; then
-    #     echo "Found $mprageFile"
-    #     #sh "$optibetPath" -i "$mprageFile"
-    #     echo "optibet complete for subject $subj"
-    # else
-    #     echo "No MPRAGE file found for $subj"
-    # fi
 
 done
