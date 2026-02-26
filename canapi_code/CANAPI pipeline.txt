@@ -17,8 +17,13 @@
 		- DEP Segment FWD def
 		- DEP Realign Resliced images
 
+- SPM preproc scripts can be found in subj folders
+
 - Now, check mean fMRI image matches to rMPRAGE image
 - Also check that wrfMRI image matches canonical MNI space image from `SPM/canonical/`
 - Coregister (Reslice) wrfMRI images to MNI 152 space, using FSL 152
 - Now you can run ICA Aroma using `/Users/spmic/Documents/MATLAB/mycode/fsl_analysis_code/fsl_justaroma2.py`
+- copyAromaFiles.sh
+- dvars.py
+
 - Now smooth data in SPM.

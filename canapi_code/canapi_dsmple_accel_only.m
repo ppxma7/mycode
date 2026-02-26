@@ -1,8 +1,8 @@
-cd close all
+close all
 clear variables
 clc
 
-dataset = {'CANAPI11', 'CANAPI12'};
+dataset = {'canapi_sub11', 'canapi_sub12','canapi_sub13', 'canapi_sub14'};
 
 saveem = 1;
 ch2normch1 = 1;
@@ -11,11 +11,15 @@ userName = char(java.lang.System.getProperty('user.name'));
 savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/ACCELplots/'];
 
 myfiles = {'canapi11_1barR_Rectify.dat','canapi11_lowR_Rectify.dat',...
-    'canapi11_1barL_Rectify.dat','canapi11_lowL_Rectify.dat',...
-    'canapi12_1barR_Rectify.dat','canapi12_lowR_Rectify.dat',...
-    'canapi12_1barL_Rectify.dat','canapi12_lowL_Rectify.dat'};
+        'canapi11_1barL_Rectify.dat','canapi11_lowL_Rectify.dat',...
+        'canapi12_1barR_Rectify.dat','canapi12_lowR_Rectify.dat',...
+        'canapi12_1barL_Rectify.dat','canapi12_lowL_Rectify.dat',...
+        'canapi13_1barR_Rectify.dat','canapi13_lowR_Rectify.dat',...
+        'canapi13_1barL_Rectify.dat','canapi13_lowL_Rectify.dat',...
+        'canapi14_1barR_Rectify.dat','canapi14_lowR_Rectify.dat',...
+        'canapi14_1barL_Rectify.dat','canapi14_lowL_Rectify.dat'};
 
-mySlices = {1:4, 5:8};
+mySlices = {1:4, 5:8, 9:12, 13:16};
 
 markerFiles = cell(1,length(myfiles));
 for ii = 1:length(myfiles)
@@ -222,13 +226,13 @@ keyboard
 
 [~,signal] = wavySignal(0,1,227);
 signal = signal./2;
-
+nSUB = 4;
 
 % Assume  cell array  size 4x5x10
 %correlations = zeros(4, 5, 10);  % Preallocate
 
 % Loop over runs, channels, subjects
-for subj = 1:2 %2:10
+for subj = 1:nSUB %2:10
     for ch = 1:2
         for run = 1:4 %:4
             emg_trace = opMatsubs_noconv{run, ch, subj};  % 1x227 double
@@ -246,7 +250,7 @@ end
 % Predefine labels
 %subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 2:10, 'UniformOutput', false);
 
-subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 1:2, 'UniformOutput', false);
+subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 1:nSUB, 'UniformOutput', false);
 
 %run_labels = {'1barR', 'lowR', '1barL', 'lowL'};
 %channel_labels = {'EMG ch1', 'EMG ch2', 'Accel X', 'Accel Y', 'Accel Z'};
@@ -264,7 +268,7 @@ corr_vec = zeros(size(subj_vec));
 
 % Fill in
 idx = 1;
-for subj = 1:2 %:9
+for subj = 1:nSUB %:9
     for chan = 1:2
         for run = 1:4 %:4
             subj_vec{idx} = subject_labels{subj};
@@ -280,7 +284,7 @@ end
 
 % Flatten manually
 corr_flat = [];
-for subj = 1:2 %:9
+for subj = 1:nSUB %:9
     for chan = 1:2 %5
         for run = 1:4 %:4
             corr_flat(end+1,1) = correlations(run, chan, subj);
@@ -342,7 +346,7 @@ g.export('file_name',filename, ...
 
 %% what about channel 1 to 2
 nRuns = 4;
-nSubjects = 10;
+nSubjects = nSUB;
 
 ch1vch2_corrs = zeros(nRuns, nSubjects);  % run × subject
 
@@ -415,10 +419,10 @@ g.export('file_name',filename, ...
 
 %% I want to look at amplitudes of the no conv EMG traces
 nRuns = 1;
-nSubjects = 1;
+nSubjects = nSUB;
 %subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 1:10, 'UniformOutput', false);
 
-subject_labels = arrayfun(@(s) sprintf('Subject %d', s), 1, 'UniformOutput', false);
+subject_labels = arrayfun(@(s) sprintf('Subject %d', s), nSUB, 'UniformOutput', false);
 
 run_labels = {'1barR', 'lowR', '1barL', 'lowL'};
 channel_labels = {'EMG ch1', 'EMG ch2', 'Accel X', 'Accel Y', 'Accel Z'};
