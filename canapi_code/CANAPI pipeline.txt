@@ -22,6 +22,11 @@
 - Now, check mean fMRI image matches to rMPRAGE image
 - Also check that wrfMRI image matches canonical MNI space image from `SPM/canonical/`
 - Coregister (Reslice) wrfMRI images to MNI 152 space, using FSL 152
+	- e.g. reslice2mni152_job13 a spm script
+- Rerun tSNR post alignment.
+- Check motion plotmotionparams.py
+- Check group tSNR tSNR_read_canapi.py
+
 - Now you can run ICA Aroma using `/Users/spmic/Documents/MATLAB/mycode/fsl_analysis_code/fsl_justaroma2.py`
 - copyAromaFiles.sh
 - dvars.py

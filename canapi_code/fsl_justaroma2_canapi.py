@@ -4,7 +4,7 @@ import subprocess
 
 # Paths to input and output folders
 #rootFold = "/Volumes/hermes/canapi_051224/aroma_mni_space/"
-rootFold = "/Volumes/kratos/CANAPI/canapi_sub11/spm_analysis/"
+rootFold = "/Volumes/kratos/CANAPI/canapi_sub13/spm_analysis/"
 
 #strucFold = "/Volumes/nemosine/canapi_sub06_240625/structurals/"
 ica_aroma_path = "/Users/ppzma/Documents/MATLAB/ICA-AROMA/ICA_AROMA.py"  # Path to ICA-AROMA script

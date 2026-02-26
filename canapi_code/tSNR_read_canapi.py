@@ -37,7 +37,7 @@ subject_folders = sorted([
 ])
 
 #print(f"Found {len(subject_folders)} subject folders.")
-#print("Subject folders:", subject_folders)
+print("Subject folders:", subject_folders)
 #subject_folders = ['canapi_sub11', 'canapi_sub12']
 
 for subj in subject_folders:
