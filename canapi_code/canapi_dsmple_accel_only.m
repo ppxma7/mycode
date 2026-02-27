@@ -2,7 +2,7 @@ close all
 clear variables
 clc
 
-dataset = {'canapi_sub11', 'canapi_sub12','canapi_sub13', 'canapi_sub14'};
+dataset = {'canapi_sub11', 'canapi_sub12','canapi_sub13', 'canapi_sub14', 'canapi_sub15', 'canapi_sub16'};
 
 saveem = 1;
 ch2normch1 = 1;
@@ -17,9 +17,13 @@ myfiles = {'canapi11_1barR_Rectify.dat','canapi11_lowR_Rectify.dat',...
         'canapi13_1barR_Rectify.dat','canapi13_lowR_Rectify.dat',...
         'canapi13_1barL_Rectify.dat','canapi13_lowL_Rectify.dat',...
         'canapi14_1barR_Rectify.dat','canapi14_lowR_Rectify.dat',...
-        'canapi14_1barL_Rectify.dat','canapi14_lowL_Rectify.dat'};
+        'canapi14_1barL_Rectify.dat','canapi14_lowL_Rectify.dat',...
+        'canapi15_1barR_Rectify.dat','canapi15_lowR_Rectify.dat',...
+        'canapi15_1barL_Rectify.dat','canapi15_lowL_Rectify.dat',...
+        'canapi16_1barR_Rectify.dat','canapi16_lowR_Rectify.dat',...
+        'canapi16_1barL_Rectify.dat','canapi16_lowL_Rectify.dat'};
 
-mySlices = {1:4, 5:8, 9:12, 13:16};
+mySlices = {1:4, 5:8, 9:12, 13:16, 17:20, 21:24};
 
 markerFiles = cell(1,length(myfiles));
 for ii = 1:length(myfiles)
@@ -126,6 +130,14 @@ for iSub = 1:length(dataset)
 
         task_dsmpl    = resample(task, target_num_samples, thisLen);
         nontask_dsmpl = resample(nontask, target_num_samples, thisLen);
+
+
+        maxVal = max(task_dsmpl);
+        maxVal2 = max(nontask_dsmpl);
+        if maxVal > 0
+            task_dsmpl = task_dsmpl ./ maxVal;
+            nontask_dsmpl = nontask_dsmpl ./ maxVal2;
+        end
         
         figure
         plot(task_dsmpl)

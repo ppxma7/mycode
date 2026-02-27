@@ -6,8 +6,8 @@ BASE_PATH="/Volumes/kratos/CANAPI/"
 optibetPath="/Users/ppzma/Documents/MATLAB/optibet.sh"
 # List of subjects
 SUBJECTS=(
-  "canapi_sub13"
-  "canapi_sub14"
+  "canapi_sub15"
+  "canapi_sub16"
 )
 
 for subj in "${SUBJECTS[@]}"; do

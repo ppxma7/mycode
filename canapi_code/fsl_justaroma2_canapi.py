@@ -18,10 +18,10 @@ os.makedirs(rootFold, exist_ok=True)
 
 # Input files and corresponding motion parameter files
 input_files = [
-    "rwrCANAPI11_WIP1bar_TAP_R_20260224112556_3_nordic_clv.nii",
-    "rwrCANAPI11_WIPlow_TAP_R_20260224112556_4_nordic_clv.nii",
-    "rwrCANAPI11_WIP1bar_TAP_L_20260224112556_5_nordic_clv.nii",
-    "rwrCANAPI11_WIPlow_TAP_L_20260224112556_6_nordic_clv.nii"
+    "rwrcanapi_sub13_WIP1bar_TAP_R_20260226103758_3_nordic_clv.nii",
+    "rwrcanapi_sub13_WIPlow_TAP_R_20260226103758_4_nordic_clv.nii",
+    "rwrcanapi_sub13_WIP1bar_TAP_L_20260226103758_5_nordic_clv.nii",
+    "rwrcanapi_sub13_WIPlow_TAP_L_20260226103758_6_nordic_clv.nii"
 ]
 
 # motion_files = [

@@ -5,6 +5,7 @@
 - NORDIC denoise using `/Users/spmic/Documents/MATLAB/mycode/preprocessing`
 - Run QA using `/Users/spmic/Documents/MATLAB/qa/fMRI_report_python/`
 - Check QA using `/Users/spmic/Documents/MATLAB/canapi_code/tSNR_read_canapi.py`
+- Run optibet
 - Run through normal SPM12 preprocessing:
 	- Realign (Estimate & Reslice
 	- Coregister (Estimate & Reslice)
