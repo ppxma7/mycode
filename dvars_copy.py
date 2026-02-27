@@ -15,14 +15,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Define the parent folder where the subject folders and pre-denoising file reside.
-parent_path = "/Volumes/kratos/CANAPI/canapi_sub12/spm_analysis"
+parent_path = "/Volumes/kratos/CANAPI/canapi_sub14/spm_analysis"
 
 # List of subject folder names (exactly as they appear in the parent folder)
 subjects = [
-    "rwrCANAPI12_WIP1bar_TAP_R_20260224125628_3_nordic_clv", 
-    "rwrCANAPI12_WIPlow_TAP_R_20260224125628_4_nordic_clv", 
-    "rwrCANAPI12_WIP1bar_TAP_L_20260224125628_5_nordic_clv", 
-    "rwrCANAPI12_WIPlow_TAP_L_20260224125628_6_nordic_clv"
+    "rwrcanapi_sub14_WIP1bar_TAP_R_20260226121206_3_nordic_clv", 
+    "rwrcanapi_sub14_WIPlow_TAP_R_20260226121206_4_nordic_clv", 
+    "rwrcanapi_sub14_WIP1bar_TAP_L_20260226121206_5_nordic_clv", 
+    "rwrcanapi_sub14_WIPlow_TAP_L_20260226121206_6_nordic_clv"
 ]
 
 for subj in subjects:

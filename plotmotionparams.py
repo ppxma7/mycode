@@ -16,7 +16,7 @@ input_folder = '/Volumes/kratos/CANAPI/'
 # subjects = ["Map02", "Map03", "Map04", "Map06", "Map07",
 #              "Map08", "Map09", "Map10", "Map11", "Map14"]
 
-subjects = ["canapi_sub12"]
+subjects = ["canapi_sub13", "canapi_sub14"]
 
 # subjects = [
 #     d for d in os.listdir(input_folder)

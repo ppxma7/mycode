@@ -119,13 +119,13 @@ for iSub = 1:length(dataset)
 
         if ii == 1 || ii == 2        % RIGHT PUSH
             task   = right_zero;
-            nontask = left_zero  / max(right_zero); % not sure if this is correct. if i normalize, then the accel of non task looks far too high
+            %nontask = left_zero  / max(right_zero); % not sure if this is correct. if i normalize, then the accel of non task looks far too high
             nontask = left_zero;
 
         elseif ii == 3 || ii == 4    % LEFT PUSH
             task   = left_zero;
-            nontask = right_zero / max(left_zero);
-            nontask = right_zero 
+            %nontask = right_zero / max(left_zero);
+            nontask = right_zero; 
         end
 
         task_dsmpl    = resample(task, target_num_samples, thisLen);
@@ -139,10 +139,10 @@ for iSub = 1:length(dataset)
             nontask_dsmpl = nontask_dsmpl ./ maxVal2;
         end
         
-        figure
-        plot(task_dsmpl)
-        hold on
-        plot(nontask_dsmpl)
+        % figure
+        % plot(task_dsmpl)
+        % hold on
+        % plot(nontask_dsmpl)
 
         task_conv    = conv(task_dsmpl, hrf);
         nontask_conv = conv(nontask_dsmpl, hrf);
@@ -215,7 +215,7 @@ for iSub = 1:length(dataset)
             title(thisFile,'Interpreter','none')  % <-- full filename
 
             %title([extractBefore(myfiles{jj},'.')],'Interpreter','none')
-            ylim([0 0.5])
+            %ylim([0 0.5])
         end
 
         h = gcf;
