@@ -15,19 +15,27 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Define the parent folder where the subject folders and pre-denoising file reside.
-parent_path = "/Volumes/kratos/CANAPI/canapi_sub14/spm_analysis"
+parent_path = "/Volumes/kratos/CANAPI/canapi_sub16/spm_analysis"
 
 # List of subject folder names (exactly as they appear in the parent folder)
+# subjects = [
+#     "rwrcanapi_sub13_WIP1bar_TAP_R_20260226103758_3_nordic_clv", 
+#     "rwrcanapi_sub13_WIPlow_TAP_R_20260226103758_4_nordic_clv", 
+#     "rwrcanapi_sub13_WIP1bar_TAP_L_20260226103758_5_nordic_clv", 
+#     "rwrcanapi_sub13_WIPlow_TAP_L_20260226103758_6_nordic_clv"
+# ]
+
 subjects = [
-    "rwrcanapi_sub14_WIP1bar_TAP_R_20260226121206_3_nordic_clv", 
-    "rwrcanapi_sub14_WIPlow_TAP_R_20260226121206_4_nordic_clv", 
-    "rwrcanapi_sub14_WIP1bar_TAP_L_20260226121206_5_nordic_clv", 
-    "rwrcanapi_sub14_WIPlow_TAP_L_20260226121206_6_nordic_clv"
+    "rwrcanapi_sub16_WIP1bar_TAP_R_20260227133942_3_nordic_clv_nonan_aroma",
+    "rwrcanapi_sub16_WIPlow_TAP_R_20260227133942_4_nordic_clv_nonan_aroma",
+    "rwrcanapi_sub16_WIP1bar_TAP_L_20260227133942_5_nordic_clv_nonan_aroma",
+    "rwrcanapi_sub16_WIPlow_TAP_L_20260227133942_6_nordic_clv_nonan_aroma",
 ]
 
 for subj in subjects:
     print(f"\nProcessing subject: {subj}")
-    subj_path = os.path.join(parent_path, subj + "_nonan_aroma")
+    #subj_path = os.path.join(parent_path, subj + "_nonan_aroma")
+    subj_path = os.path.join(parent_path,subj)
     # The post-denoising file is inside the subject folder.
     data_before = os.path.join(parent_path, subj + "_nonan.nii.gz")
     data_after = os.path.join(subj_path, "denoised_func_data_nonaggr.nii.gz")

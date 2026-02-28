@@ -8,14 +8,14 @@ if [[ "$1" == "--dry-run" ]]; then
 fi
 
 # Define top path
-top_path="/Volumes/kratos/CANAPI/canapi_sub14/spm_analysis"
+top_path="/Volumes/kratos/CANAPI/canapi_sub16/spm_analysis"
 
 # Define folder names
 folders=(
-    "rwrcanapi_sub14_WIPlow_TAP_R_20260226121206_4_nordic_clv_nonan_aroma"
-    "rwrcanapi_sub14_WIP1bar_TAP_R_20260226121206_3_nordic_clv_nonan_aroma"
-    "rwrcanapi_sub14_WIPlow_TAP_L_20260226121206_6_nordic_clv_nonan_aroma"
-    "rwrcanapi_sub14_WIP1bar_TAP_L_20260226121206_5_nordic_clv_nonan_aroma"
+    "rwrcanapi_sub16_WIP1bar_TAP_R_20260227133942_3_nordic_clv_nonan_aroma"
+    "rwrcanapi_sub16_WIPlow_TAP_R_20260227133942_4_nordic_clv_nonan_aroma"
+    "rwrcanapi_sub16_WIP1bar_TAP_L_20260227133942_5_nordic_clv_nonan_aroma"
+    "rwrcanapi_sub16_WIPlow_TAP_L_20260227133942_6_nordic_clv_nonan_aroma"
 )
 
 # Define corresponding suffixes
