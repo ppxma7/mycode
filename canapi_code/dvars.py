@@ -26,16 +26,16 @@ parent_path = "/Volumes/kratos/CANAPI/canapi_sub16/spm_analysis"
 # ]
 
 subjects = [
-    "rwrcanapi_sub16_WIP1bar_TAP_R_20260227133942_3_nordic_clv_nonan_aroma",
-    "rwrcanapi_sub16_WIPlow_TAP_R_20260227133942_4_nordic_clv_nonan_aroma",
-    "rwrcanapi_sub16_WIP1bar_TAP_L_20260227133942_5_nordic_clv_nonan_aroma",
-    "rwrcanapi_sub16_WIPlow_TAP_L_20260227133942_6_nordic_clv_nonan_aroma",
+    "rwrcanapi_sub16_WIP1bar_TAP_R_20260227133942_3_nordic_clv",
+    "rwrcanapi_sub16_WIPlow_TAP_R_20260227133942_4_nordic_clv",
+    "rwrcanapi_sub16_WIP1bar_TAP_L_20260227133942_5_nordic_clv",
+    "rwrcanapi_sub16_WIPlow_TAP_L_20260227133942_6_nordic_clv",
 ]
 
 for subj in subjects:
     print(f"\nProcessing subject: {subj}")
-    #subj_path = os.path.join(parent_path, subj + "_nonan_aroma")
-    subj_path = os.path.join(parent_path,subj)
+    subj_path = os.path.join(parent_path, subj + "_nonan_aroma")
+    #subj_path = os.path.join(parent_path,subj)
     # The post-denoising file is inside the subject folder.
     data_before = os.path.join(parent_path, subj + "_nonan.nii.gz")
     data_after = os.path.join(subj_path, "denoised_func_data_nonaggr.nii.gz")

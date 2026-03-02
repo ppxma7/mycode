@@ -19,10 +19,10 @@ parent_path = "/Volumes/kratos/CANAPI/canapi_sub15/spm_analysis"
 
 # List of subject folder names (exactly as they appear in the parent folder)
 subjects = [
-    "rwrcanapi_sub15_WIP1bar_TAP_R_20260227120330_4_nordic_clv_nonan_aroma", 
-    "rwrcanapi_sub15_WIPlow_TAP_R_20260227120330_5_nordic_clv_nonan_aroma", 
-    "rwrcanapi_sub15_WIP1bar_TAP_L_20260227120330_6_nordic_clv_nonan_aroma", 
-    "rwrcanapi_sub15_WIPlow_TAP_L_20260227120330_7_nordic_clv_nonan_aroma"
+    "rwrcanapi_sub15_WIP1bar_TAP_R_20260227120330_4_nordic_clv", 
+    "rwrcanapi_sub15_WIPlow_TAP_R_20260227120330_5_nordic_clv", 
+    "rwrcanapi_sub15_WIP1bar_TAP_L_20260227120330_6_nordic_clv", 
+    "rwrcanapi_sub15_WIPlow_TAP_L_20260227120330_7_nordic_clv"
 ]
 
 for subj in subjects:

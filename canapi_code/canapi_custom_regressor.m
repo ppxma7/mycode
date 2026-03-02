@@ -3,7 +3,7 @@ function[myMat]=canapi_custom_regressor()
 % look at lines 276 in spm_fMRI_design.m
 
 %mypath='/Volumes/kratos/canapi_sub02_180325/EMG/Export/';
-mypath='/Volumes/kratos/canapi_sub10_160725/EEG/Export/';
+mypath='/Volumes/kratos/CANAPI/canapi_sub11/accel/Export/';
 %mypath='/Volumes/kratos/canapi_sub06_240625/EMG/Export/';
 
 %myfiles = {'1bar_ch1_dsmpled.txt','30prc_ch1_dsmpled.txt','50prc_ch1_dsmpled.txt'};
@@ -21,8 +21,8 @@ mypath='/Volumes/kratos/canapi_sub10_160725/EEG/Export/';
 % myfiles = {'CANAPI_sub05_RL_1bar_Rectify_rectify_ch1_dsmpled.txt','CANAPI_sub05_RL_15per_Rectify_rectify_ch1_dsmpled.txt',...
 %     'CANAPI_sub05_LL_1bar_r2_Rectify_rectify_ch5_dsmpled.txt','CANAPI_sub05_LL_15per_Rectify_rectify_ch5_dsmpled.txt'};
 
-myfiles = {'CANAPI_sub10_RL_1bar_Rectify.dat','CANAPI_sub10_RL_15per_Rectify.dat',...
-    'CANAPI_sub10_LL_1bar_Rectify.dat','CANAPI_sub10_LL_15per_Rectify.dat',...
+myfiles = {'canapi11_1barR_Rectify_rectify_ACTIVE_dsmpled.txt','canapi11_lowR_Rectify_rectify_ACTIVE_dsmpled.txt',...
+    'canapi11_1barL_Rectify_rectify_ACTIVE_dsmpled.txt','canapi11_lowL_Rectify_rectify_ACTIVE_dsmpled.txt',...
     };
 % myfiles = {'CANAPI_sub05_LL_1bar_r2_Rectify_rectify_ch5_dsmpled.txt','CANAPI_sub05_LL_15per_Rectify_rectify_ch5_dsmpled.txt',...
 %     'CANAPI_sub05_RL_1bar_Rectify_rectify_ch1_dsmpled.txt','CANAPI_sub05_RL_15per_Rectify_rectify_ch1_dsmpled.txt'};
@@ -42,16 +42,19 @@ myfiles = {'CANAPI_sub10_RL_1bar_Rectify.dat','CANAPI_sub10_RL_15per_Rectify.dat
 
 for ii = 1:length(myfiles)
 
-    thisfile = [extractBefore(myfiles{ii},'.') '_rectify_ch1_dsmpled.txt']; % just for accel z axis run thorugh
+    %thisfile = [extractBefore(myfiles{ii},'.') '_rectify_ch1_dsmpled.txt']; % just for accel z axis run thorugh
     %custReg(:,ii) = readtable([mypath myfiles{ii}]);
+    thisfile = myfiles{ii};
     custReg(:,ii) = readtable([mypath thisfile]);
 end
 
-if length(myfiles) > 3
-    myMat = [custReg.Var1 custReg.Var2 custReg.Var3 custReg.Var4];
-    %myMat = [custReg.Var1 custReg.Var2 custReg.Var3 custReg.Var4 custReg.Var5 custReg.Var6];
-else
-    myMat = [custReg.Var1 custReg.Var2 custReg.Var3];
-end
+myMat = [custReg.Var1 custReg.Var2 custReg.Var3 custReg.Var4];
+
+% if length(myfiles) > 3
+%     myMat = [custReg.Var1 custReg.Var2 custReg.Var3 custReg.Var4];
+%     %myMat = [custReg.Var1 custReg.Var2 custReg.Var3 custReg.Var4 custReg.Var5 custReg.Var6];
+% else
+%     myMat = [custReg.Var1 custReg.Var2 custReg.Var3];
+% end
 
 end
