@@ -626,16 +626,18 @@ for subj = 1:nSubjects
         trace1m = trace1 - mean(trace1);
         trace2m = trace2 - mean(trace2);
 
-        [xc, lags] = xcorr(trace1m, trace2m);
-        xc_norm = xc / N;  % mean-normalised, still amplitude-sensitive
-        peakXC = max(abs(xc_norm));
-
         % --- Compute raw (unnormalized) cross-correlation ---
-        %[xc, lags] = xcorr(trace1m, trace2m,'coeff');
+        [xc, lags] = xcorr(trace1m, trace2m,'coeff');
 
+        % Synchrony at zero lag (simultaneous co-activation)
+        zerolagXC = xc(lags == 0);
+
+        % Peak correlation (at whatever lag maximises it)
+        [peakXC, peakIdx] = max(abs(xc));
+        peakLag = lags(peakIdx);  % in samples — divide by Fs for seconds
 
         % --- Find peak (amplitude × synchrony) ---
-        %peakXC = max(abs(xc));
+        peakXC = max(abs(xc));
 
         % --- Save your preferred metric ---
         ch1vch2_xcorr_peakXC(run, subj) = peakXC;
