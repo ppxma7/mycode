@@ -635,7 +635,7 @@ for subj = 1:nSubjects
 
 
         % --- Find peak (amplitude × synchrony) ---
-        %peakXC = max(abs(xc));
+        peakXC = max(abs(xc));
 
         % --- Save your preferred metric ---
         ch1vch2_xcorr_peakXC(run, subj) = peakXC;
@@ -679,7 +679,7 @@ g.set_names('x',[],'y','Amplitude cross-correlation index','color','Task');
 g.set_title('Per-run amplitude cross-correlation between Active & Non-Active ACCEL');
 
 g.set_text_options('Font','Helvetica', 'base_size', 12)
-%g.axe_property('FontSize',16,'ylim',[0 16],'XGrid','on','YGrid','on');
+g.axe_property('FontSize',16,'ylim',[0 16],'XGrid','on','YGrid','on');
 g.set_color_options("map",cmapped)
 g.set_order_options("color",0)
 %g.no_legend()
