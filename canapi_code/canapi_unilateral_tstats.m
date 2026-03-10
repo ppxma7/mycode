@@ -2,10 +2,11 @@ close all
 clear variables
 clc
 
-dataset = {'canapi_sub01_030225', 'canapi_sub02_180325', 'canapi_sub03_180325',...
+dataset = {'canapi_sub02_180325', 'canapi_sub03_180325',...
     'canapi_sub04_280425','canapi_sub05_240625', 'canapi_sub06_240625',...
     'canapi_sub07_010725', 'canapi_sub08_010725', 'canapi_sub09_160725', ...
-    'canapi_sub10_160725'};
+    'canapi_sub10_160725','canapi_sub11','canapi_sub12','canapi_sub13',...
+    'canapi_sub14','canapi_sub15','canapi_sub16'};
 
 %dataset = {'canapi_sub01_030225'};
 
@@ -24,7 +25,7 @@ for iSub = 1:length(dataset)
 
     for ii = 1:length(myfiles)
 
-        mypath=['/Volumes/kratos/CANAPI/' dataset{iSub} '/spm_analysis/first_level/'];
+        mypath=['/Volumes/kratos/CANAPI/' dataset{iSub} '/spm_analysis/first_level_waccel/'];
         
         thisFile = fullfile(mypath,myfiles{ii});
 
@@ -67,7 +68,9 @@ y_std = weightedStd(:);
 
 
 
-subs = repmat({'sub01','sub02','sub03','sub04','sub05','sub06','sub07','sub08','sub09','sub10'},length(myfiles),1);
+subs = repmat({'sub02','sub03','sub04',...
+    'sub05','sub06','sub07','sub08','sub09','sub10',...
+    'sub11','sub12','sub13','sub14','sub15','sub16'},length(myfiles),1);
 subs = subs(:);
 
 filestack = repmat(myfiles(:),length(dataset),1);
@@ -222,7 +225,7 @@ g.set_title('fMRI Cluster-weighted T-values');
 g.axe_property('FontSize',12,'ylim',[0 35],'XGrid','on','YGrid','on');
 g.set_order_options('x',0,'color',0)
 g.set_color_options('map',cmapped)
-g.no_legend
+%g.no_legend
 g.draw();
 
 g.update()
@@ -240,6 +243,7 @@ g.export('file_name',filename, ...
 
 
 
+return
 
 %% manual plot - optional with error bars (stdev)
 % close all
