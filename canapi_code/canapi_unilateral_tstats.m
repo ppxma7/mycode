@@ -25,7 +25,7 @@ for iSub = 1:length(dataset)
 
     for ii = 1:length(myfiles)
 
-        mypath=['/Volumes/kratos/CANAPI/' dataset{iSub} '/spm_analysis/first_level_waccel/'];
+        mypath=['/Volumes/DRS-MSK-MRI/CANAPI/' dataset{iSub} '/spm_analysis/first_level_waccel/'];
         
         thisFile = fullfile(mypath,myfiles{ii});
 
@@ -52,6 +52,11 @@ for iSub = 1:length(dataset)
         %weightedTs2(ii,iSub)  = wmean;
         weightedStd(ii,iSub) = wstd;
 
+        % Inside the loop, after computing wstd:
+        n_clusters = sum(validIdx);
+        weightedSEM(ii,iSub) = wstd / sqrt(n_clusters);
+        weightedCI95(ii,iSub) = weightedSEM(ii,iSub) * tinv(0.975, n_clusters - 1);
+
 
 
     end
@@ -60,13 +65,15 @@ toc
 % now plot?
 
 % swap sub10 because he's left handed
-weightedTs(:,10) = [weightedTs(3:4,10); weightedTs(1:2,10)];
-weightedStd(:,10) = [weightedStd(3:4,10); weightedStd(1:2,10)];
+% weightedTs(:,10) = [weightedTs(3:4,10); weightedTs(1:2,10)];
+% weightedStd(:,10) = [weightedStd(3:4,10); weightedStd(1:2,10)];
+% weightedSEM(:,10) = [weightedSEM(3:4,10); weightedSEM(1:2,10)];
+% weightedCI95(:,10) = [weightedCI95(3:4,10); weightedCI95(1:2,10)];
 
 y = weightedTs(:);
 y_std = weightedStd(:);
-
-
+y_sem = weightedSEM(:);
+y_ci = weightedCI95(:);
 
 subs = repmat({'sub02','sub03','sub04',...
     'sub05','sub06','sub07','sub08','sub09','sub10',...
@@ -94,6 +101,8 @@ n = numel(y);
 % preallocate
 y_swapped = y;
 y_swapped_std = y_std;
+y_swapped_sem = y_sem;
+y_swapped_ci = y_ci;
 labels_swapped = legendLabels(:);
 
 % loop through pairs (every 4 if pattern repeats in 4s)
@@ -105,11 +114,13 @@ for i = 1:4:n
 
     y_swapped(idx) = y(new_order);
     y_swapped_std(idx) = y_std(new_order);
+    y_swapped_sem(idx) = y_sem(new_order);
+    y_swapped_ci(idx) = y_ci(new_order);
     labels_swapped(idx) = legendLabels(new_order);
 end
 
-T = table(subs, y_swapped, y_swapped_std, labels_swapped, ...
-          'VariableNames', {'Subject','Y','stdev','Label'});
+T = table(subs, y_swapped, y_swapped_std, y_swapped_sem, y_swapped_ci, labels_swapped, ...
+          'VariableNames', {'Subject','Y','stdev','sem','ci','Label'});
 writetable(T, fullfile(savedir,'output.csv'));
 
 
@@ -242,7 +253,7 @@ g.export('file_name',filename, ...
     'file_type','pdf')
 
 
-
+keyboard
 return
 
 %% manual plot - optional with error bars (stdev)
