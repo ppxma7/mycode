@@ -9,7 +9,13 @@ clc
 
 % --- USER TO SET ---
 
-theSubList = {'canapi_sub02_180325'};
+% theSubList = {'canapi_sub02_180325'};
+
+theSubList = {'canapi_sub08_010725', 'canapi_sub09_160725', ...
+    'canapi_sub10_160725','canapi_sub11','canapi_sub12','canapi_sub13',...
+    'canapi_sub14','canapi_sub15','canapi_sub16'};
+
+
 
 for s = 1:numel(theSubList)
     thisSub = theSubList{s};
@@ -90,9 +96,10 @@ for s = 1:numel(theSubList)
             data = cellfun(@(x) round_if_numeric(x), data, 'UniformOutput', false);
 
             moo = cell2table(data, 'VariableNames', headers);
-
-            exportSPMtable(moo,name)
-            spm_glass_quick(xSPM,name)
+            if ~isempty(data)
+                exportSPMtable(moo,name)
+                spm_glass_quick(xSPM,name)
+            end
 
             % Optional: save to CSV
             %writetable(Moo, 'spm_results.csv');

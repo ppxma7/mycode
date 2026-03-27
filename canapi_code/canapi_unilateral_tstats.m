@@ -11,9 +11,11 @@ dataset = {'canapi_sub02_180325', 'canapi_sub03_180325',...
 %dataset = {'canapi_sub01_030225'};
 
 userName = char(java.lang.System.getProperty('user.name'));
-savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/unilateral_tstats/'];
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/unilateral_tstats_15prc/'];
 
-myfiles = {'1barR_Lmask.csv','1barR_Rmask.csv','1barL_Rmask.csv','1barL_Lmask.csv'};
+%myfiles = {'1barR_Lmask.csv','1barR_Rmask.csv','1barL_Rmask.csv','1barL_Lmask.csv'};
+
+myfiles = {'lowR_Lmask.csv','lowR_Rmask.csv','lowL_Rmask.csv','lowL_Lmask.csv'};
 
 tfiles = zeros(length(myfiles),length(dataset));
 weightedTs = zeros(length(myfiles),length(dataset));
@@ -88,10 +90,17 @@ cmapped = validatecolor(cmap,'multiple');
 
 legendLabels = filestack; % start with same names
 
-legendLabels(strcmpi(filestack, '1barR_Lmask.csv')) = {'1barR_contralateral'};
-legendLabels(strcmpi(filestack, '1barR_Rmask.csv')) = {'1barR_ipsilateral'};
-legendLabels(strcmpi(filestack, '1barL_Rmask.csv')) = {'1barL_contralateral'};
-legendLabels(strcmpi(filestack, '1barL_Lmask.csv')) = {'1barL_ipsilateral'};
+% legendLabels(strcmpi(filestack, '1barR_Lmask.csv')) = {'1barR_contralateral'};
+% legendLabels(strcmpi(filestack, '1barR_Rmask.csv')) = {'1barR_ipsilateral'};
+% legendLabels(strcmpi(filestack, '1barL_Rmask.csv')) = {'1barL_contralateral'};
+% legendLabels(strcmpi(filestack, '1barL_Lmask.csv')) = {'1barL_ipsilateral'};
+
+
+legendLabels(strcmpi(filestack, 'lowR_Lmask.csv')) = {'lowR_contralateral'};
+legendLabels(strcmpi(filestack, 'lowR_Rmask.csv')) = {'lowR_ipsilateral'};
+legendLabels(strcmpi(filestack, 'lowL_Rmask.csv')) = {'lowL_contralateral'};
+legendLabels(strcmpi(filestack, 'lowL_Lmask.csv')) = {'lowL_ipsilateral'};
+
 
 % CAREFUL SWAP THIS FOR PLOTTING
 

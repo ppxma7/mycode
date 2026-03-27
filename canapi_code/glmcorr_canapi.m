@@ -14,6 +14,7 @@ dataset = {'canapi_sub02_180325', 'canapi_sub03_180325',...
     'canapi_sub07_010725', 'canapi_sub08_010725', 'canapi_sub09_160725', ...
     'canapi_sub10_160725','canapi_sub11', 'canapi_sub12','canapi_sub13', 'canapi_sub14', 'canapi_sub15', 'canapi_sub16'};
 
+%dataset = {'canapi_sub08_010725'}
 
 for ii = 1:length(dataset)
 
@@ -49,35 +50,55 @@ for ii = 1:length(dataset)
 
     fname_corr = [savedir 'GLM_reg_corr_' dataset{ii} '.png'];
     h = gcf;
-    exportgraphics(h, fname_corr, 'ContentType', 'vector', 'Resolution', 300);
-    % 
-    % h = gcf;
-    % set(h, 'Renderer', 'painters'); 
-    % set(h, 'PaperOrientation', 'landscape');
-    % set(h, 'PaperUnits', 'inches');
-    % set(h, 'PaperSize', [14 10]);
-    % set(h, 'PaperPosition', [0 0 14 10]);
-    % print(h, '-dpdf', fname_corr, '-r300');  % drop -fillpage, it can override PaperPosition
+    %exportgraphics(h, fname_corr, 'ContentType', 'vector', 'Resolution', 300);
 
+    n_sessions = 4;
+    VIF_task = [];
+    VIF_labels = {};
 
-    % VIF for each regressor
-    X = Xsc(:, cols);
-    n = size(X, 2);
-    VIF = zeros(1, n);
-    for i = 1:n
-        others = X(:, setdiff(1:n, i));
-        r2 = 1 - (var(X(:,i) - others*(others\X(:,i))) / var(X(:,i)));
-        VIF(i) = 1 / (1 - r2);
+    for s = 1:n_sessions
+        sn_str = sprintf('Sn(%d)', s);
+
+        %s_task = find(cellfun(@(x) contains(x, sn_str) && contains(x, 'bf('), names));
+        s_task = find(cellfun(@(x) contains(x, sn_str) && contains(x, 'bf(1)'), names)); % just look at task regressor not derivtive
+        s_motion = find(cellfun(@(x) contains(x, sn_str) && contains(x, ' R'), names));
+
+        for vi = 1:numel(s_task)
+            y = Xsc(:, s_task(vi));
+            M = Xsc(:, s_motion);
+            yhat = M * (M \ y);
+            r2 = 1 - var(y - yhat) / var(y);
+            VIF_task(end+1) = 1 / (1 - r2);
+            VIF_labels{end+1} = names{s_task(vi)};
+        end
     end
-    disp(VIF)  % >5-10 is a concern
 
+    %The 1/(1-R²) transformation amplifies sensitivity at high R² values
+    % % — the scale is intentionally nonlinear to flag severe collinearity clearly.
+    %%%% example
+    % R² 1 - R² VIF
+    % 0.0 1.0 1 — motion explains nothing
+    % 0.5 0.5 2 — modest overlap
+    % 0.8 0.2 5 — concerning
+    % 0.9 0.1 10 — serious
+    % 0.99 0.01 100 — near-perfect collinearity
+
+
+
+    %%
     figure
-    bar(VIF);
-    xticks(1:n);
-    xticklabels(labels);
+    bar(VIF_task);
+
+
+    xticks(1:numel(VIF_task));
+    xticklabels(VIF_labels);
+
     xtickangle(45);
+
+
+    title('Task regressor VIF (w.r.t. motion parameters only)');    
     ylabel('VIF');
-    title('Variance Inflation Factor');
+    %title('Variance Inflation Factor');
     yline(5,  'r--', 'VIF=5',  'LabelHorizontalAlignment','left');
     yline(10, 'r-',  'VIF=10', 'LabelHorizontalAlignment','left');
 
@@ -85,7 +106,7 @@ for ii = 1:length(dataset)
     fname_corr2 = [savedir 'GLM_reg_vif_' dataset{ii} '.png'];
 
     h = gcf;
-    exportgraphics(h, fname_corr2, 'ContentType', 'vector', 'Resolution', 300);
+    %exportgraphics(h, fname_corr2, 'ContentType', 'vector', 'Resolution', 300);
 
 
 end
