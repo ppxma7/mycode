@@ -121,10 +121,10 @@ for iSub = 1:length(dataset)
         task_dsmpl    = resample(task, target_num_samples, thisLen);
         
         % --- scale to 0-1 ---
-        maxVal = max(task_dsmpl);
-        if maxVal > 0
-            task_dsmpl = task_dsmpl ./ maxVal;
-        end
+        % maxVal = max(task_dsmpl);
+        % if maxVal > 0
+        %     task_dsmpl = task_dsmpl ./ maxVal;
+        % end
  
         % figure
         % plot(task_dsmpl)
@@ -165,7 +165,7 @@ for iSub = 1:length(dataset)
     if saveem
         %close all
         t = datetime('now','TimeZone','local','Format','dd-MM-yyyy-HH-mm-ss');
-        filename1 = [savedir 'accel_dwnsmpl_' dataset{iSub} '-' char(t)];
+        filename1 = [savedir 'accel_dwnsmpl_nomaxscale_' dataset{iSub} '-' char(t)];
         figure('Position',[0 0 1400 800])
         tiledlayout(2,2)
 
@@ -177,10 +177,10 @@ for iSub = 1:length(dataset)
 
             nexttile
             plot(saveMat_noconv{jj,1},'linewidth',2,'Color','#1f78b4')
-            hold on
+            %hold on
             
-            plot(signal)
-            legend('Active','ideal block')
+            %plot(signal)
+            %legend('Active','ideal block')
             title(thisFile,'Interpreter','none')  % <-- full filename
 
             %title([extractBefore(myfiles{jj},'.')],'Interpreter','none')

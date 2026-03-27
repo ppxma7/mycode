@@ -9,13 +9,12 @@ clc
 
 % --- USER TO SET ---
 
-theSubList = {'canapi_sub13', 'canapi_sub14',...
-    'canapi_sub15', 'canapi_sub16'};
+theSubList = {'canapi_sub02_180325'};
 
 for s = 1:numel(theSubList)
     thisSub = theSubList{s};
 
-    for contrast_index = [1, 3] % 1barR and 1barL
+    for contrast_index = [2, 4] % [1 3] 1barR and 1barL [2 4] lowR and lowL
 
         for hemi = ['L','R'] % Left and right mask
 
@@ -30,10 +29,18 @@ for s = 1:numel(theSubList)
 
             maskname = ['prepostsmaCG_' hemi '_bin'];
 
-            if contrast_index == 1
-                name = ['1barR_' hemi 'mask'];
-            elseif contrast_index == 3
-                name = ['1barL_' hemi 'mask'];
+            % if contrast_index == 1
+            %     name = ['1barR_' hemi 'mask'];
+            % elseif contrast_index == 3
+            %     name = ['1barL_' hemi 'mask'];
+            % else
+            %     error('contrast 1 or 3 please = 1barR or 1barL')
+            % end
+
+            if contrast_index == 2
+                name = ['lowR_' hemi 'mask'];
+            elseif contrast_index == 4
+                name = ['lowL_' hemi 'mask'];
             else
                 error('contrast 1 or 3 please = 1barR or 1barL')
             end
