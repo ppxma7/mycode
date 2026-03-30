@@ -8,6 +8,8 @@ dataset = {'canapi_sub02_180325', 'canapi_sub03_180325',...
     'canapi_sub10_160725','canapi_sub11','canapi_sub12','canapi_sub13',...
     'canapi_sub14','canapi_sub15','canapi_sub16'};
 
+%dataset={'canapi_sub08_010725'}
+
 %dataset = {'canapi_sub01_030225'};
 
 userName = char(java.lang.System.getProperty('user.name'));
@@ -27,9 +29,20 @@ for iSub = 1:length(dataset)
 
     for ii = 1:length(myfiles)
 
-        mypath=['/Volumes/DRS-MSK-MRI/CANAPI/' dataset{iSub} '/spm_analysis/first_level_waccel/'];
+        mypath=['/Volumes/kratos/CANAPI/' dataset{iSub} '/spm_analysis/first_level_waccel/'];
         
         thisFile = fullfile(mypath,myfiles{ii});
+
+        
+
+        if ~isfile(thisFile)
+            tfiles(ii,iSub)      = NaN;
+            weightedTs(ii,iSub)  = NaN;
+            weightedStd(ii,iSub) = NaN;
+            weightedSEM(ii,iSub) = NaN;
+            weightedCI95(ii,iSub)= NaN;
+            continue
+        end
 
         thisFile_contents = readtable(thisFile);
 

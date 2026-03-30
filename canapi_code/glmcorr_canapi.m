@@ -67,8 +67,8 @@ for ii = 1:length(dataset)
             y = Xsc(:, s_task(vi));
             M = Xsc(:, s_motion);
             yhat = M * (M \ y);
-            r2 = 1 - var(y - yhat) / var(y);
-            VIF_task(end+1) = 1 / (1 - r2);
+            r2 = 1 - var(y - yhat) / var(y); % regression how well can motion parameters reconstruct the task regressor
+            VIF_task(end+1) = 1 / (1 - r2); % R² = 1 - (unexplained / total) = proportion of task regressor variance explained by motion
             VIF_labels{end+1} = names{s_task(vi)};
         end
     end
