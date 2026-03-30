@@ -12,7 +12,7 @@ clc
 
 theConList = {'1barL_vs_1barR_flipped'};
 
-theConList = {'lowL_vs_lowR_flipped'};
+%theConList = {'lowL_vs_lowR_flipped'};
 
 for s = 1:numel(theConList)
     thisCon = theConList{s};
@@ -31,6 +31,8 @@ for s = 1:numel(theConList)
         use_atlas = true;
 
         %maskname = ['prepostsmaCG_' hemi '_bin'];
+        maskname = 'prepostsmaCG_bin';
+
 
         % if contrast_index == 1
         %     name = ['1barR_' hemi 'mask'];
@@ -48,23 +50,33 @@ for s = 1:numel(theConList)
         %     error('contrast 1 or 3 please = 1barR or 1barL')
         % end
 
+        % if contrast_index == 1
+        %     name = 'lowL_vs_lowR_flipped_masked';
+        % elseif contrast_index == 2
+        %     name = 'lowR_flipped_vs_lowL_masked';
+        % else
+        %     error('error')
+        % end
+
         if contrast_index == 1
-            name = 'lowL_vs_lowR_flipped';
+            name = '1barL_vs_1barR_flipped_masked';
         elseif contrast_index == 2
-            name = 'lowR_flipped_vs_lowL';
+            name = '1barR_flipped_vs_1barL_masked';
         else
             error('error')
         end
 
-        %mymask = ['/Users/ppzma/Documents/spm12/tpm/' maskname '.nii'];  % path to mask file
+
+
+        mymask = ['/Users/ppzma/Documents/spm12/tpm/' maskname '.nii'];  % path to mask file
 
         % Pre-create the masked image in your CWD
-        %mask_out = fullfile(thispath, [maskname '_mask_001.nii']);
-        %spm_imcalc({mymask}, mask_out, 'i1>0.5');  % binarise
+        mask_out = fullfile(thispath, [maskname '_mask_001.nii']);
+        spm_imcalc({mymask}, mask_out, 'i1>0.5');  % binarise
 
-        %xSPM.Im = {mask_out};
-        %xSPM.Ex = 0;
-        %xSPM.pm = [];
+        xSPM.Im = {mask_out};
+        xSPM.Ex = 0;
+        xSPM.pm = [];
 
 
         % --- LOAD SPM RESULTS ---
@@ -108,7 +120,7 @@ for s = 1:numel(theConList)
 
         % Optional: save to CSV
         %writetable(Moo, 'spm_results.csv');
-
+        %end
 
     end
 end
