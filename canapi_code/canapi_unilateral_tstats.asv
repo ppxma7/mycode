@@ -8,21 +8,18 @@ dataset = {'canapi_sub02_180325', 'canapi_sub03_180325',...
     'canapi_sub10_160725','canapi_sub11','canapi_sub12','canapi_sub13',...
     'canapi_sub14','canapi_sub15','canapi_sub16'};
 
-% user set these ----------------------------------
 doDom = true;
-thisFolder = 'unilateral_tstats/';
-% -------------------------------------------------
+
+%dataset={'canapi_sub08_010725'}
+
+%dataset = {'canapi_sub01_030225'};
 
 userName = char(java.lang.System.getProperty('user.name'));
-savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/' thisFolder];
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/CANAPI Study (Ankle injury) - General/data/unilateral_tstats/'];
 
+myfiles = {'1barR_Lmask.csv','1barR_Rmask.csv','1barL_Rmask.csv','1barL_Lmask.csv'};
 
-if contains(thisFolder,'15prc')
-    myfiles = {'lowR_Lmask.csv','lowR_Rmask.csv','lowL_Rmask.csv','lowL_Lmask.csv'};
-else
-    myfiles = {'1barR_Lmask.csv','1barR_Rmask.csv','1barL_Rmask.csv','1barL_Lmask.csv'};
-end
-
+%myfiles = {'lowR_Lmask.csv','lowR_Rmask.csv','lowL_Rmask.csv','lowL_Lmask.csv'};
 
 tfiles = zeros(length(myfiles),length(dataset));
 weightedTs = zeros(length(myfiles),length(dataset));
@@ -110,17 +107,16 @@ comesInBlack = ones(4,3).*0.3;
 
 legendLabels = filestack; % start with same names
 
-if contains(thisFolder, '15prc')
-    legendLabels(strcmpi(filestack, 'lowR_Lmask.csv')) = {'lowR_contralateral'};
-    legendLabels(strcmpi(filestack, 'lowR_Rmask.csv')) = {'lowR_ipsilateral'};
-    legendLabels(strcmpi(filestack, 'lowL_Rmask.csv')) = {'lowL_contralateral'};
-    legendLabels(strcmpi(filestack, 'lowL_Lmask.csv')) = {'lowL_ipsilateral'};
-else
-    legendLabels(strcmpi(filestack, '1barR_Lmask.csv')) = {'1barR_contralateral'};
-    legendLabels(strcmpi(filestack, '1barR_Rmask.csv')) = {'1barR_ipsilateral'};
-    legendLabels(strcmpi(filestack, '1barL_Rmask.csv')) = {'1barL_contralateral'};
-    legendLabels(strcmpi(filestack, '1barL_Lmask.csv')) = {'1barL_ipsilateral'};
-end
+legendLabels(strcmpi(filestack, '1barR_Lmask.csv')) = {'1barR_contralateral'};
+legendLabels(strcmpi(filestack, '1barR_Rmask.csv')) = {'1barR_ipsilateral'};
+legendLabels(strcmpi(filestack, '1barL_Rmask.csv')) = {'1barL_contralateral'};
+legendLabels(strcmpi(filestack, '1barL_Lmask.csv')) = {'1barL_ipsilateral'};
+
+
+% legendLabels(strcmpi(filestack, 'lowR_Lmask.csv')) = {'lowR_contralateral'};
+% legendLabels(strcmpi(filestack, 'lowR_Rmask.csv')) = {'lowR_ipsilateral'};
+% legendLabels(strcmpi(filestack, 'lowL_Rmask.csv')) = {'lowL_contralateral'};
+% legendLabels(strcmpi(filestack, 'lowL_Lmask.csv')) = {'lowL_ipsilateral'};
 
 
 % CAREFUL SWAP THIS FOR PLOTTING
@@ -240,43 +236,43 @@ if doDom
     title('Interaction')
     writetable(tbldom,[savedir 'clust_mult_d23_canapi_dominance' ],'FileType','spreadsheet')
 
-    %% plotting
-    T.ymin = T.Y - T.stdev;
-    T.ymax = T.Y + T.stdev;
+
+T.ymin = T.Y - T.stdev;
+T.ymax = T.Y + T.stdev;
 
 
-    clc
-    close all
-    figure('Position',[100 100 1000 500]);
+clc
+close all
+figure('Position',[100 100 1000 500]);
 
-    dodgeVal = 0.8;
+dodgeVal = 0.8;
 
 
-    T.DomLabel = strcat(T.TaskDom, '_', T.HemiDom);
+T.DomLabel = strcat(T.TaskDom, '_', T.HemiDom);
 
-    figure('Position',[100 100 1000 500]);
-    g2 = gramm( ...
-        'x', T.Subject, ...
-        'y', T.Y, ...
-        'color', T.DomLabel, ...
-        'ymin', T.ymin, ...
-        'ymax', T.ymax);
-    g2.geom_bar('width',0.8, 'stacked',false,'dodge',dodgeVal,'LineWidth',0.2)
-    g2.set_names('x',[],'y','Mean T','color','Condition');
-    g2.set_title('fMRI Cluster-weighted T-values (Dominance)');
-    g2.axe_property('FontSize',12,'ylim',[0 35],'XGrid','on','YGrid','on');
-    g2.set_order_options('x',0,'color',0)
-    g2.set_color_options('map',cmapped)
-    g2.draw();
-    g2.update()
-    g2.geom_interval('geom','errorbar','dodge',dodgeVal,'width',0.6);
-    g2.set_color_options('map',comesInBlack)
-    g2.no_legend
-    g2.draw()
-    filename = ('tstatfmriplot_grammstyle_dominance');
-    g2.export('file_name',filename, ...
-        'export_path', savedir, ...
-        'file_type','pdf')
+figure('Position',[100 100 1000 500]);
+g2 = gramm( ...
+    'x', T.Subject, ...
+    'y', T.Y, ...
+    'color', T.DomLabel, ...
+    'ymin', T.ymin, ...
+    'ymax', T.ymax);
+g2.geom_bar('width',0.8, 'stacked',false,'dodge',dodgeVal,'LineWidth',0.2)
+g2.set_names('x',[],'y','Mean T','color','Condition');
+g2.set_title('fMRI Cluster-weighted T-values (Dominance)');
+g2.axe_property('FontSize',12,'ylim',[0 35],'XGrid','on','YGrid','on');
+g2.set_order_options('x',0,'color',0)
+g2.set_color_options('map',cmapped)
+g2.draw();
+g2.update()
+g2.geom_interval('geom','errorbar','dodge',dodgeVal,'width',0.6);
+g2.set_color_options('map',comesInBlack)
+g2.no_legend
+g2.draw()
+filename = ('tstatfmriplot_grammstyle_dominance');
+g2.export('file_name',filename, ...
+    'export_path', savedir, ...
+    'file_type','pdf')
 
 elseif ~doDom
 
@@ -378,7 +374,15 @@ elseif ~doDom
 
 end
 
-%
+%% plot with error bars gramm style
+
+
+
+
+%% and now make same plot but for dominance
+
+
+%%
 keyboard
 return
 
