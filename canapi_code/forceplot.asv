@@ -134,79 +134,22 @@ outfile = fullfile(savedir, 'mvc_vals.txt');
 writelines(outstr, outfile)
 
 %% also do Sue % plots
-close all
 
-cmap = {'#0570b0','#74a9cf','#bdc9e1','#f1eef6'};
-cmapped = validatecolor(cmap,'multiple');
 
-ratioRight = T.x15_Right * 100;
+ratioRight = T.x15_Right * 100;  % already in bar, so *100 gives % of 1 bar
 ratioLeft  = T.x15_Left  * 100;
-
-% Recode to dominant/non-dominant
-ratioDom    = ratioRight;
-ratioNonDom = ratioLeft;
-leftDomSubs = [11, 12, 16];
-ratioDom(leftDomSubs)    = ratioLeft(leftDomSubs);
-ratioNonDom(leftDomSubs) = ratioRight(leftDomSubs);
 
 subjects = compose('sub%02d', (1:nSubs)');
 
-figure
-b = bar(1:nSubs, [ratioDom, ratioNonDom], 'grouped');
-b(1).FaceColor = cmapped(1,:);
-b(2).FaceColor = cmapped(2,:);
-yline(100, 'r--', '100%', 'LineWidth', 1.5);
+figure;
+b = bar(1:nSubs, [ratioRight, ratioLeft], 'grouped');
+b(1).DisplayName = 'Right Leg';
+b(2).DisplayName = 'Left Leg';
+yline(100, 'r--', '100% (perfect match)', 'LineWidth', 1.5);
 set(gca, 'XTick', 1:nSubs, 'XTickLabel', subjects, 'XTickLabelRotation', 45);
 ylabel('15% MVC as % of 1 Bar');
-title('15% MVC Target as % of 1 Bar');
-legend('Dominant Leg', 'Non-dominant Leg');
+title('15% MVC Target as Ratio of 1 Bar per Subject');
+legend('Dominant Leg', 'Non-dominant Leg') 
 grid on;
-ylim([0 120]);
-
-thisFilename = [savedir 'MVCbarplotSue'];
-h = gcf;
-xx = 12;
-yy = 8;
-set(h, 'PaperOrientation', 'landscape');
-set(h, 'PaperUnits', 'inches');
-set(h, 'PaperSize', [xx yy]);  % Increase the paper size to 20x12 inches
-set(h, 'PaperPosition', [0 0 xx yy]);  % Adjust paper position to fill the paper size
-print(h, '-dpdf', thisFilename, '-fillpage', '-r300');  % -r300 sets the resolution to 300 DPI
-
-
-
-%%
-domRight = repmat({'Dom'}, nSubs, 1);
-domRight(leftDomSubs) = {'NonDom'};
-domLeft = repmat({'NonDom'}, nSubs, 1);
-domLeft(leftDomSubs) = {'Dom'};
-
-MVCs = [T.MVCRightLegBar; T.MVCLeftLegBar; T.x15_Right; T.x15_Left];
-
-condGrp = [repmat({'MVC'},  nSubs*2, 1); repmat({'15pct'}, nSubs*2, 1)];
-domGrp  = [domRight; domLeft; domRight; domLeft];
-
-[P, TAB, STATS, TERMS] = anovan(MVCs, {condGrp, domGrp}, ...
-    'model', 'interaction', ...
-    'varnames', {'Condition', 'Dominance'});
-
-[COMPARISON, MEANS, H, GNAMES] = multcompare(STATS, 'Dimension', [1]);
-tbldom = array2table(COMPARISON,"VariableNames", ...
-    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
-tbldom.("Group A")=GNAMES(tbldom.("Group A"));
-tbldom.("Group B")=GNAMES(tbldom.("Group B"));
-writetable(tbldom,[savedir 'MVCdom_stats1'],'FileType','spreadsheet')
-
-[COMPARISON, MEANS, H, GNAMES] = multcompare(STATS, 'Dimension', [2]);
-tbldom = array2table(COMPARISON,"VariableNames", ...
-    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
-tbldom.("Group A")=GNAMES(tbldom.("Group A"));
-tbldom.("Group B")=GNAMES(tbldom.("Group B"));
-writetable(tbldom,[savedir 'MVCdom_stats2'],'FileType','spreadsheet')
-
-[COMPARISON, MEANS, H, GNAMES] = multcompare(STATS, 'Dimension', [1 2]);
-tbldom = array2table(COMPARISON,"VariableNames", ...
-    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
-tbldom.("Group A")=GNAMES(tbldom.("Group A"));
-tbldom.("Group B")=GNAMES(tbldom.("Group B"));
-writetable(tbldom,[savedir 'MVCdom_stats3'],'FileType','spreadsheet')
+color of bars should not be red and blue but nice, perceptually uniform colors like viridis or blues
+ylim([0 120])

@@ -10,14 +10,20 @@ clc
 % --- USER TO SET ---
 
 
-theConList = {'1barL_vs_1barR_flipped'};
+theConList = {'1barL_vs_1barR_flipped_dominance'};
+cons = {'1barL_vs_1barR_flipped', '1barR_flipped_vs_1barL'};
+
+theConList = {'lowL_vs_lowR_flipped_dominance'};
+cons = {'lowL_vs_lowR_flipped', 'lowR_flipped_vs_lowL'};
+
+doMask = true
 
 %theConList = {'lowL_vs_lowR_flipped'};
 
 for s = 1:numel(theConList)
     thisCon = theConList{s};
 
-    for contrast_index = [1, 2] %
+    for contrast_index = [1 2] %
 
         %for hemi = ['L','R'] % Left and right mask
 
@@ -31,7 +37,36 @@ for s = 1:numel(theConList)
         use_atlas = true;
 
         %maskname = ['prepostsmaCG_' hemi '_bin'];
-        maskname = 'prepostsmaCG_bin';
+
+        if doMask
+            maskname = 'prepostsmaCG_bin';
+            mymask = ['/Users/ppzma/Documents/spm12/tpm/' maskname '.nii'];  % path to mask file
+
+            % Pre-create the masked image in your CWD
+            mask_out = fullfile(thispath, [maskname '_mask_001.nii']);
+            spm_imcalc({mymask}, mask_out, 'i1>0.5');  % binarise
+
+            xSPM.Im = {mask_out};
+            xSPM.Ex = 0;
+            xSPM.pm = [];
+
+            if contrast_index == 1
+                name = [cons{1} '_masked']
+            elseif contrast_index == 2
+                name = [cons{2} '_masked']
+            else
+                error('error')
+            end
+        else
+            if contrast_index == 1
+                name = cons{1};
+            elseif contrast_index == 2
+                name = cons{2};
+            else
+                error('error')
+            end
+
+        end
 
 
         % if contrast_index == 1
@@ -58,25 +93,7 @@ for s = 1:numel(theConList)
         %     error('error')
         % end
 
-        if contrast_index == 1
-            name = '1barL_vs_1barR_flipped_masked';
-        elseif contrast_index == 2
-            name = '1barR_flipped_vs_1barL_masked';
-        else
-            error('error')
-        end
 
-
-
-        mymask = ['/Users/ppzma/Documents/spm12/tpm/' maskname '.nii'];  % path to mask file
-
-        % Pre-create the masked image in your CWD
-        mask_out = fullfile(thispath, [maskname '_mask_001.nii']);
-        spm_imcalc({mymask}, mask_out, 'i1>0.5');  % binarise
-
-        xSPM.Im = {mask_out};
-        xSPM.Ex = 0;
-        xSPM.pm = [];
 
 
         % --- LOAD SPM RESULTS ---

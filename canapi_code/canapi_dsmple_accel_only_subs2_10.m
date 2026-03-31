@@ -12,7 +12,7 @@ dataset = {'canapi_sub02_180325', 'canapi_sub03_180325',...
     'canapi_sub10_160725'};
 
 
-saveem = 1;
+saveem = 0;
 ch2normch1 = 1;
 
 userName = char(java.lang.System.getProperty('user.name'));
@@ -59,6 +59,7 @@ winLen = 10000;
 
 saveMat = cell(length(4),num_channels);
 hrf = spm_hrf(TR);
+rootPath = '/Volumes/kratos/CANAPI/';
 
 %% get default sig
 
@@ -73,7 +74,7 @@ for iSub = 1:length(dataset)
 
     for ii = 1:4
 
-        mypath=['/Volumes/kratos/CANAPI/' dataset{iSub} '/EMG/Export/'];
+        mypath=[rootPath dataset{iSub} '/EMG/Export/'];
 
 
         thisSlice = mySlices{iSub}(ii);
@@ -199,6 +200,9 @@ for iSub = 1:length(dataset)
 
 
 end
+%% save here?
+save(fullfile(rootPath,'accel_opmat_old'),'opMatsubs_noconv')
+
 toc
 disp('...done!')
 

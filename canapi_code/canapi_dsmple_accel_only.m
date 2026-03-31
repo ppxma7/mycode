@@ -4,7 +4,7 @@ clc
 
 dataset = {'canapi_sub11', 'canapi_sub12','canapi_sub13', 'canapi_sub14', 'canapi_sub15', 'canapi_sub16'};
 
-saveem = 1;
+saveem = 0;
 ch2normch1 = 1;
 
 userName = char(java.lang.System.getProperty('user.name'));
@@ -43,7 +43,7 @@ winLen = 500;
 
 saveMat = cell(length(4),num_channels);
 hrf = spm_hrf(TR);
-
+rootPath = '/Volumes/kratos/CANAPI/';
 %% get default sig
 
 [~,signal] = wavySignal(0,1);
@@ -57,7 +57,7 @@ for iSub = 1:length(dataset)
 
     for ii = 1:4
 
-        mypath=['/Volumes/kratos/CANAPI/' dataset{iSub} '/accel/Export/'];
+        mypath=[rootPath dataset{iSub} '/accel/Export/'];
 
         
         thisSlice = mySlices{iSub}(ii);
@@ -234,6 +234,12 @@ for iSub = 1:length(dataset)
 
 
 end
+
+%% save here?
+save(fullfile(rootPath,'accel_opmat'),'opMatsubs_noconv')
+
+
+%%
 toc
 disp('...done!')
 keyboard
@@ -595,7 +601,8 @@ close all
 %opMatsubs_noconv_sub01fix = opMatsubs_noconv;
 %opMatsubs_noconv_sub01fix(:,1,1) = opMatsubs_noconv(:,2,1);
 %opMatsubs_noconv_sub01fix(:,2,1) = opMatsubs_noconv(:,1,1);
-run_labels = {'1barL', '1barR'};
+%run_labels = {'1barL', '1barR'};
+run_labels = {'1barR', 'lowR', '1barL', 'lowL'};
 run_labels_stack = repmat(run_labels,1,length(dataset))';
 subs = repmat({'sub11','sub12','sub13','sub14','sub15','sub16'},length(run_labels),1);
 subs = subs(:);
@@ -605,7 +612,7 @@ cmapped = validatecolor(cmap,'multiple');
 
 channel_labels = {'Active', 'Non-active'};
 nRuns = 4;
-nSubjects = nSUB;
+nSubjects = length(dataset);
 %useRuns = [1 3];  % only these runs
 
 ch1vch2_xcorr_normXC = zeros(nRuns, nSubjects);  % run × subject
@@ -627,8 +634,8 @@ for subj = 1:nSubjects
         trace2m = trace2 - mean(trace2);
 
         [xc, lags] = xcorr(trace1m, trace2m);
-        xc_norm = xc / N;  % mean-normalised, still amplitude-sensitive
-        peakXC = max(abs(xc_norm));
+        %xc_norm = xc / N;  % mean-normalised, still amplitude-sensitive
+        %peakXC = max(abs(xc_norm));
 
         % --- Compute raw (unnormalized) cross-correlation ---
         %[xc, lags] = xcorr(trace1m, trace2m,'coeff');
@@ -658,13 +665,24 @@ save('canapi_xcorr_accel','ch1vch2_xcorr_peakXC')
 % print(h, '-dpdf', thisFilename, '-r300');  % -r300 sets the resolution to 300 DPI
 
 % CAREFUL HERE< JUST FOR PLOTTING FLIP SO LEFT IS ON LEFT OF BAR
-ch1vch2_xcorr_peakXC_subset = ch1vch2_xcorr_peakXC;
-peakxcsubset_flippedLR = [ch1vch2_xcorr_peakXC_subset(3,:); ch1vch2_xcorr_peakXC_subset(1,:)];
+
+% Keep all 4 runs, reorder so Left runs come before Right: 1barL, lowL, 1barR, lowR
+run_labels = {'1barR', '15%R', '1barL', '15%L'};  % original row order
+reorder_idx = [3, 4, 1, 2];  % 1barL, lowL, 1barR, lowR
+
+peakxcsubset_flippedLR = ch1vch2_xcorr_peakXC(reorder_idx, :);  % 4 x nSubjects
+run_labels_reordered = run_labels(reorder_idx);
+
+% Stack for gramm
+run_labels_stack = repmat(run_labels_reordered, 1, nSubjects)';
+run_labels_stack = run_labels_stack(:);
 peakxcsubset_flippedLR = peakxcsubset_flippedLR(:);
 
-% ch1vch2_xcorr_peakXC_subset(2,:) = NaN;
-% ch1vch2_xcorr_peakXC_subset(4,:) = NaN;
-% ch1vch2_xcorr_peakXC_subset = ch1vch2_xcorr_peakXC_subset(~isnan(ch1vch2_xcorr_peakXC_subset));
+
+%ch1vch2_xcorr_peakXC_subset = ch1vch2_xcorr_peakXC;
+%peakxcsubset_flippedLR = [ch1vch2_xcorr_peakXC_subset(3,:); ch1vch2_xcorr_peakXC_subset(1,:)];
+%peakxcsubset_flippedLR = peakxcsubset_flippedLR(:);
+
 %%
 dodgeVal = 0.8;
 clear g
@@ -679,7 +697,7 @@ g.set_names('x',[],'y','Amplitude cross-correlation index','color','Task');
 g.set_title('Per-run amplitude cross-correlation between Active & Non-Active ACCEL');
 
 g.set_text_options('Font','Helvetica', 'base_size', 12)
-g.axe_property('FontSize',16,'ylim',[0 16],'XGrid','on','YGrid','on');
+g.axe_property('FontSize',16,'ylim',[0 20],'XGrid','on','YGrid','on');
 g.set_color_options("map",cmapped)
 g.set_order_options("color",0)
 %g.no_legend()
