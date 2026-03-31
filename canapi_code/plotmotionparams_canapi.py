@@ -126,3 +126,38 @@ output_path = os.path.join(savedir, "CANAPI_all_subjects_motion_summary.png")
 plt.savefig(output_path, dpi=300)
 plt.close()
 #plt.show()
+
+
+###### --- Compute mean FD per subject ---
+
+# Fix 1: use subject_folders filtered to those that actually had data
+subject_labels = []
+fd_per_subject = []
+
+for subj, d in zip(subject_folders, all_data):
+    diff = np.diff(d, axis=0)
+    diff[:, 3:6] *= 50
+    fd = np.sum(np.abs(diff), axis=1)
+    fd_per_subject.append(np.mean(fd))
+    subject_labels.append(subj.replace('canapi_', ''))  # shorter labels
+
+fd_per_subject = np.array(fd_per_subject)
+
+# Fix 2: use xticks explicitly
+fig2, ax = plt.subplots(figsize=(8, 4))
+x = np.arange(len(subject_labels))
+colors_bar = ['#d62728' if fd > 0.5 else '#2ca02c' for fd in fd_per_subject]
+ax.bar(x, fd_per_subject, color=colors_bar, width=0.5)
+ax.axhline(0.5, color='red', linestyle='--', linewidth=1, label='0.5mm threshold')
+ax.set_xticks(x)
+ax.set_xticklabels(subject_labels, rotation=45, ha='right', fontsize=8)
+ax.set_ylabel('Mean Framewise Displacement (mm)')
+ax.set_title('Mean FD per Subject')
+ax.legend()
+ax.grid(axis='y')
+plt.tight_layout()
+output_path = os.path.join(savedir, "CANAPI_all_subjects_motion_summary_FD.png")
+plt.savefig(output_path, dpi=300)
+plt.close()
+
+

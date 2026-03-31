@@ -16,7 +16,7 @@ clc
 % theConList = {'lowL_vs_lowR_flipped_dominance'};
 % cons = {'lowL_vs_lowR_flipped', 'lowR_flipped_vs_lowL'};
 
-theConList = {'1barL','lowL','1barR','lowR','1barvslowL','1barvslowR'};
+theConList = {'1barL','lowL','1bar','lowR','1barvslowL','1barvslowR'};
 cons = theConList;
 
 doMask = false;
@@ -61,13 +61,8 @@ for s = 1:numel(theConList)
                 error('error')
             end
         else
-            % this code works for the paired ttest, where you have 2
-            % contrasts 1 -1 and -1 1
-            % but if we only have one contrast per thingy, then just grab
-            % name from cons
-            if contrast_index == 1 
-                %name = cons{1};
-                name = cons{s};
+            if contrast_index == 1
+                name = cons{1};
             elseif contrast_index == 2
                 name = cons{2};
             else
