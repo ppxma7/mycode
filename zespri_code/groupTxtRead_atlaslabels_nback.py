@@ -33,9 +33,9 @@ def get_region_from_coordinates(x, y, z):
 
 # Apply the function to each row of the DataFrame
 all_data['Region'] = all_data.apply(lambda row: get_region_from_coordinates(row['mm1'], row['mm2'], row['mm3']), axis=1)
-
+ 
 # Remove rows where the region is 'Unknown region'
-all_data = all_data[all_data['Region'] != 'Unknown region']
+#all_data = all_data[all_data['Region'] != 'Unknown region']
 
 # Save the updated DataFrame back to Excel
 output_file_with_regions = '/Users/spmic/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Zespri- fMRI - General/analysis/nback/combined_data_nback_regions.xlsx'
