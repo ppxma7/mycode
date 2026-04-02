@@ -1,0 +1,137 @@
+clear variables
+close all
+clc
+userName = char(java.lang.System.getProperty('user.name'));
+savedir = ['/Users/' userName '/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofNottingham/Zespri- fMRI - General/analysis/likeness_firmness_brix/'];
+mypath = savedir;
+myFile = [mypath 'likeness.xlsx'];
+likeness = readtable(myFile,'Sheet','likeness');
+brix_firm = readtable(myFile,'Sheet','brix');
+nSubs = 14;
+thismap = [215,48,39;...
+    253,184,99;...
+    26,152,80;
+    69,117,180];
+thismap = thismap./256;
+
+%% --- Reshape likeness data to long format ---
+kiwi_labels = {'Red','Green','Gold'};
+kiwi_cols   = {'x480','x619','x875'};  % readtable prefixes numeric headers with 'x'
+
+liking_long = [];
+kiwi_long = {};
+sub_long = {};
+
+for k = 1:3
+    vals = likeness.(kiwi_cols{k});
+    liking_long = [liking_long; vals];
+    kiwi_long   = [kiwi_long; repmat(kiwi_labels(k), nSubs, 1)];
+    sub_long    = [sub_long; likeness.NOTID];
+end
+
+%% --- 1) One-way repeated-measures ANOVA: Overall Liking ---
+% Arrange as nSubs x 3 matrix (cols = Red, Gold, Green)
+liking_mat = [likeness.(kiwi_cols{1}), likeness.(kiwi_cols{2}), likeness.(kiwi_cols{3})];
+
+[p_lik, tbl_lik, stats_lik] = anova1(liking_mat, kiwi_labels, 'on');
+fprintf('\n=== Overall Liking ANOVA ===\n');
+fprintf('F(%d,%d) = %.3f, p = %.4f\n', tbl_lik{2,3}, tbl_lik{3,3}, tbl_lik{2,5}, p_lik);
+[c_lik, ~, ~, gnames_lik] = multcompare(stats_lik, 'Display', 'on');
+
+tbldom = array2table(c_lik,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+
+disp('Post-hoc pairwise (Tukey):'); disp(tbldom);
+
+tbldom.("Group A")=gnames_lik(tbldom.("Group A"));
+tbldom.("Group B")=gnames_lik(tbldom.("Group B"));
+writecell(tbl_lik,sprintf([savedir 'anova_liking'],'%s'),'FileType','spreadsheet')
+writetable(tbldom,sprintf([savedir 'mult_liking'],'%s'),'FileType','spreadsheet')
+
+
+%% --- 2) One-way repeated-measures ANOVA: Firmness ---
+
+firm_mat = [brix_firm.Firmness(strcmp(brix_firm.Kiwifruit,'Red')), ...
+            brix_firm.Firmness(strcmp(brix_firm.Kiwifruit,'Gold')), ...
+            brix_firm.Firmness(strcmp(brix_firm.Kiwifruit,'Green'))];
+
+[p_firm, tbl_firm, stats_firm] = anova1(firm_mat, kiwi_labels, 'on');
+fprintf('\n=== Firmness ANOVA ===\n');
+fprintf('F(%d,%d) = %.3f, p = %.4f\n', tbl_firm{2,3}, tbl_firm{3,3}, tbl_firm{2,5}, p_firm);
+[c_firm, ~, ~, gnames_firm] = multcompare(stats_firm, 'Display', 'on');
+disp('Post-hoc pairwise (Tukey):'); disp(tbldom);
+
+tbldom = array2table(c_firm,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+
+disp('Post-hoc pairwise (Tukey):'); disp(tbldom);
+
+tbldom.("Group A")=gnames_firm(tbldom.("Group A"));
+tbldom.("Group B")=gnames_firm(tbldom.("Group B"));
+writecell(tbl_firm,sprintf([savedir 'anova_firm'],'%s'),'FileType','spreadsheet')
+writetable(tbldom,sprintf([savedir 'mult_firm'],'%s'),'FileType','spreadsheet')
+
+
+%% --- 3) One-way repeated-measures ANOVA: Brix ---
+
+brix_mat = [brix_firm.Brix(strcmp(brix_firm.Kiwifruit,'Red')), ...
+            brix_firm.Brix(strcmp(brix_firm.Kiwifruit,'Gold')), ...
+            brix_firm.Brix(strcmp(brix_firm.Kiwifruit,'Green'))];
+
+[p_brix, tbl_brix, stats_brix] = anova1(brix_mat, kiwi_labels, 'on');
+fprintf('\n=== Brix ANOVA ===\n');
+fprintf('F(%d,%d) = %.3f, p = %.4f\n', tbl_brix{2,3}, tbl_brix{3,3}, tbl_brix{2,5}, p_brix);
+[c_brix, ~, ~, ] = multcompare(stats_brix, 'Display', 'off');
+disp('Post-hoc pairwise (Tukey):'); disp(array2table(tbldom);
+
+tbldom = array2table(c_firm,"VariableNames", ...
+    ["Group A","Group B","Lower Limit","A-B","Upper Limit","P-value"]);
+
+disp('Post-hoc pairwise (Tukey):'); disp(tbldom);
+
+tbldom.("Group A")=gnames_firm(tbldom.("Group A"));
+tbldom.("Group B")=gnames_firm(tbldom.("Group B"));
+writecell(tbl_firm,sprintf([savedir 'anova_firm'],'%s'),'FileType','spreadsheet')
+writetable(tbldom,sprintf([savedir 'mult_firm'],'%s'),'FileType','spreadsheet')
+
+
+%% --- Gramm plots ---
+close all
+
+% Helper: build per-kiwi long vectors for brix_firm
+kiwi_long_bf = brix_firm.Kiwifruit;   % already long format
+sub_long_bf  = brix_firm.NOTID;
+
+
+% --- Plot 1: Overall Liking ---
+figure
+g1 = gramm('x', kiwi_long, 'y', liking_long, 'color', kiwi_long);
+g1.stat_boxplot();
+g1.geom_jitter('width', 0.15, 'alpha', 0.6);
+g1.set_names('x','Kiwifruit','y','Overall Liking','color','Kiwifruit');
+g1.set_color_options('map', thismap(1:3,:));
+g1.set_title(sprintf('Overall Liking (p=%.3f)', p_lik));
+g1.draw();
+
+% --- Plot 2: Firmness ---
+figure
+g2 = gramm('x', kiwi_long_bf, 'y', brix_firm.Firmness, 'color', kiwi_long_bf);
+g2.stat_boxplot();
+g2.geom_jitter('width', 0.15, 'alpha', 0.6);
+g2.set_names('x','Kiwifruit','y','Firmness (N)','color','Kiwifruit');
+g2.set_color_options('map', thismap(1:3,:));
+g2.set_title(sprintf('Firmness (p=%.3f)', p_firm));
+g2.draw();
+
+% --- Plot 3: Brix ---
+figure
+g3 = gramm('x', kiwi_long_bf, 'y', brix_firm.Brix, 'color', kiwi_long_bf);
+g3.stat_boxplot();
+g3.geom_jitter('width', 0.15, 'alpha', 0.6);
+g3.set_names('x','Kiwifruit','y','Sugar Content (Brix)','color','Kiwifruit');
+g3.set_color_options('map', thismap(1:3,:));
+g3.set_title(sprintf('Brix (p=%.3f)', p_brix));
+g3.draw();
+
+%sgtitle('Kiwifruit Comparisons');
+%saveas(gcf, [savedir 'kiwifruit_summary.png']);
